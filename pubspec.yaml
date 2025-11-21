@@ -1,0 +1,67 @@
+name: mta
+description: Multi-tenant Blood Pressure Management Application
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+    sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+    flutter:
+        sdk: flutter
+    flutter_localizations:
+        sdk: flutter
+    intl: any
+
+    # Drift core
+    drift: ^2.29.0
+    sqlite3_flutter_libs: ^0.5.0
+
+    # Path provider para ubicación de BD en móvil
+    path_provider: ^2.1.5
+    permission_handler: ^12.0.1
+
+    # State Management
+    flutter_bloc: ^9.1.1
+    equatable: ^2.0.5
+
+    # Navigation
+    go_router: ^17.0.0
+
+    # Dependency Injection
+    get_it: ^9.0.5
+
+    # Functional Programming
+    dartz: ^0.10.1
+
+    # Local Storage
+    path: ^1.9.0
+    shared_preferences: ^2.5.3
+    timezone: ^0.10.1
+
+    # Excel/CSV Export
+    excel: ^4.0.6
+
+    # UI
+    cupertino_icons: ^1.0.8
+
+dev_dependencies:
+    flutter_test:
+        sdk: flutter
+    flutter_lints: ^6.0.0
+    drift_dev: ^2.20.0
+    build_runner: ^2.4.0
+
+flutter:
+    uses-material-design: true
+    generate: true
+
+    # assets:
+    #   - assets/
+
+    # fonts:
+    #   - family: Schyler
+    #     fonts:
+    #       - asset: fonts/Schyler-Regular.ttf
+    #       - asset: fonts/Schyler-Italic.ttf
+    #         style: italic

@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "*.dart.js": "javascript"
+    },
+    "javascript.validate.enable": false,
+    "typescript.validate.enable": false,
+    "files.exclude": {
+        "**/*.dart.js": true,
+        "**/*.dart.js.map": true
+    }
+}
