@@ -1,6 +1,10 @@
 import 'package:get_it/get_it.dart';
 import 'package:mta/core/database/database.dart';
 import 'package:mta/core/database/database_helper.dart';
+import 'package:mta/features/export/data/datasources/export_data_source.dart';
+import 'package:mta/features/export/data/repositories/export_repository_impl.dart';
+import 'package:mta/features/export/domain/repositories/export_repository.dart';
+import 'package:mta/features/export/domain/usecases/export_measurements.dart';
 import 'package:mta/features/measurements/data/datasources/measurement_local_data_source.dart';
 import 'package:mta/features/measurements/data/repostoris/measurement_repository_impl.dart';
 import 'package:mta/features/measurements/domain/repositories/measurement_repository.dart';
@@ -138,18 +142,18 @@ Future<void> init() async {
 
   // ===== Features - Export =====
 
-  // // Use cases
-  // sl.registerLazySingleton(() => ExportMeasurements(sl()));
+  // Use cases
+  sl.registerLazySingleton(() => ExportMeasurements(sl()));
 
-  // // Repository
-  // sl.registerLazySingleton<ExportRepository>(
-  //   () => ExportRepositoryImpl(dataSource: sl()),
-  // );
+  // Repository
+  sl.registerLazySingleton<ExportRepository>(
+    () => ExportRepositoryImpl(dataSource: sl()),
+  );
 
-  // // Data sources
-  // sl.registerLazySingleton<ExportDataSource>(
-  //   () => ExportDataSourceImpl(),
-  // );
+  // Data sources
+  sl.registerLazySingleton<ExportDataSource>(
+    () => ExportDataSourceImpl(),
+  );
 
   // ===== External =====
 

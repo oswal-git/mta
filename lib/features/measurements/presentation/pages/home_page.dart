@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:mta/core/l10n/app_localizations.dart';
 import 'package:mta/core/utils/constants.dart';
 import 'package:mta/features/measurements/presentation/bloc/measurement_bloc.dart';
@@ -29,13 +30,20 @@ class _HomePageState extends State<HomePage> {
   void _loadMeasurements() {
     final userState = context.read<UserBloc>().state;
     if (userState is UsersLoaded && userState.activeUser != null) {
+      debugPrint(
+          '${DateFormat('HH:mm:ss').format(DateTime.now())} -🔄 HomePage - Loading measurements for: ${userState.activeUser!.name}');
       context.read<MeasurementBloc>().add(
             LoadMeasurementsEvent(userState.activeUser!.id),
           );
+    } else {
+      debugPrint(
+          '${DateFormat('HH:mm:ss').format(DateTime.now())} -⚠️ HomePage - No active user, cannot load measurements');
     }
   }
 
   void _onUserChanged() {
+    debugPrint(
+        '${DateFormat('HH:mm:ss').format(DateTime.now())} -🔄 HomePage - User changed, reloading measurements');
     _loadMeasurements();
   }
 
@@ -224,28 +232,28 @@ class _HomePageState extends State<HomePage> {
                   child: Row(
                     children: [
                       Expanded(
-                        flex: 2,
+                        flex: 5,
                         child: Text(
                           l10n.date,
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
                       Expanded(
-                        flex: 2,
+                        flex: 4,
                         child: Text(
                           l10n.day,
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
                       Expanded(
-                        flex: 1,
+                        flex: 3,
                         child: Text(
                           l10n.measurementTime,
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
                       Expanded(
-                        flex: 1,
+                        flex: 3,
                         child: Text(
                           l10n.systolic,
                           style: const TextStyle(fontWeight: FontWeight.bold),
@@ -253,7 +261,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       Expanded(
-                        flex: 1,
+                        flex: 3,
                         child: Text(
                           l10n.diastolic,
                           style: const TextStyle(fontWeight: FontWeight.bold),
@@ -261,7 +269,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       Expanded(
-                        flex: 1,
+                        flex: 3,
                         child: Text(
                           l10n.pulse,
                           style: const TextStyle(fontWeight: FontWeight.bold),

@@ -47,7 +47,7 @@ class MeasurementListItem extends StatelessWidget {
           children: [
             // Date
             Expanded(
-              flex: 2,
+              flex: 5,
               child: Text(
                 dateFormat.format(measurement.measurementTime),
                 style: const TextStyle(fontSize: 13),
@@ -55,7 +55,7 @@ class MeasurementListItem extends StatelessWidget {
             ),
             // Day
             Expanded(
-              flex: 2,
+              flex: 4,
               child: Text(
                 getDayName(measurement.measurementTime),
                 style: const TextStyle(fontSize: 13),
@@ -63,7 +63,7 @@ class MeasurementListItem extends StatelessWidget {
             ),
             // Time
             Expanded(
-              flex: 1,
+              flex: 3,
               child: Text(
                 timeFormat.format(measurement.measurementTime),
                 style:
@@ -72,7 +72,7 @@ class MeasurementListItem extends StatelessWidget {
             ),
             // Systolic
             Expanded(
-              flex: 1,
+              flex: 3,
               child: Text(
                 measurement.systolic.toString(),
                 style: const TextStyle(
@@ -84,7 +84,7 @@ class MeasurementListItem extends StatelessWidget {
             ),
             // Diastolic
             Expanded(
-              flex: 1,
+              flex: 3,
               child: Text(
                 measurement.diastolic.toString(),
                 style: const TextStyle(
@@ -96,7 +96,7 @@ class MeasurementListItem extends StatelessWidget {
             ),
             // Pulse
             Expanded(
-              flex: 1,
+              flex: 3,
               child: Text(
                 measurement.pulse?.toString() ?? '-',
                 style: const TextStyle(fontSize: 13),

@@ -17,8 +17,6 @@ import 'package:mta/features/users/presentation/bloc/user_event.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
   // Capturar errores de Flutter
   FlutterError.onError = (FlutterErrorDetails details) {
     debugPrint(
@@ -27,6 +25,8 @@ void main() async {
         '${DateFormat('HH:mm:ss').format(DateTime.now())} -Stack: ${details.stack}');
   };
   runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+
     try {
       // Initialize timezone data for notifications
       tz.initializeTimeZones();

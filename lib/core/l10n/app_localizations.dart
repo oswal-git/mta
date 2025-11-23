@@ -100,437 +100,473 @@ abstract class AppLocalizations {
     Locale('es')
   ];
 
-  /// No description provided for @appTitle.
+  /// No description provided for @activeUser.
   ///
   /// In es, this message translates to:
-  /// **'MTA - Blood Pressure Manager'**
-  String get appTitle;
+  /// **'Usuario Activo'**
+  String get activeUser;
 
-  /// No description provided for @users.
+  /// No description provided for @addMeasurement.
   ///
   /// In es, this message translates to:
-  /// **'Users'**
-  String get users;
+  /// **'Agregar Medición'**
+  String get addMeasurement;
 
-  /// No description provided for @measurements.
+  /// No description provided for @addSchedule.
   ///
   /// In es, this message translates to:
-  /// **'Measurements'**
-  String get measurements;
-
-  /// No description provided for @schedules.
-  ///
-  /// In es, this message translates to:
-  /// **'Schedules'**
-  String get schedules;
-
-  /// No description provided for @export.
-  ///
-  /// In es, this message translates to:
-  /// **'Export'**
-  String get export;
-
-  /// No description provided for @settings.
-  ///
-  /// In es, this message translates to:
-  /// **'Settings'**
-  String get settings;
-
-  /// No description provided for @userName.
-  ///
-  /// In es, this message translates to:
-  /// **'Name'**
-  String get userName;
-
-  /// No description provided for @userAge.
-  ///
-  /// In es, this message translates to:
-  /// **'Age'**
-  String get userAge;
-
-  /// No description provided for @hasMedication.
-  ///
-  /// In es, this message translates to:
-  /// **'Taking Medication?'**
-  String get hasMedication;
-
-  /// No description provided for @medicationName.
-  ///
-  /// In es, this message translates to:
-  /// **'Medication Name'**
-  String get medicationName;
-
-  /// No description provided for @enableNotifications.
-  ///
-  /// In es, this message translates to:
-  /// **'Enable Notifications?'**
-  String get enableNotifications;
+  /// **'Agregar Horario'**
+  String get addSchedule;
 
   /// No description provided for @addUser.
   ///
   /// In es, this message translates to:
-  /// **'Add User'**
+  /// **'Agregar Usuario'**
   String get addUser;
 
-  /// No description provided for @editUser.
+  /// No description provided for @alarmBody.
   ///
   /// In es, this message translates to:
-  /// **'Edit User'**
-  String get editUser;
+  /// **'Es hora de realizar tu medición de presión arterial'**
+  String get alarmBody;
 
-  /// No description provided for @deleteUser.
+  /// No description provided for @alarmTitle.
   ///
   /// In es, this message translates to:
-  /// **'Delete User'**
-  String get deleteUser;
+  /// **'Medición de Presión Arterial'**
+  String get alarmTitle;
 
-  /// No description provided for @newUser.
+  /// No description provided for @appTitle.
   ///
   /// In es, this message translates to:
-  /// **'New User'**
-  String get newUser;
+  /// **'MTA - Gestor de Presión Arterial'**
+  String get appTitle;
 
-  /// No description provided for @activeUser.
+  /// No description provided for @cancel.
   ///
   /// In es, this message translates to:
-  /// **'Active User'**
-  String get activeUser;
+  /// **'Cancelar'**
+  String get cancel;
 
-  /// No description provided for @systolic.
+  /// No description provided for @confirm.
   ///
   /// In es, this message translates to:
-  /// **'Systolic'**
-  String get systolic;
-
-  /// No description provided for @diastolic.
-  ///
-  /// In es, this message translates to:
-  /// **'Diastolic'**
-  String get diastolic;
-
-  /// No description provided for @pulse.
-  ///
-  /// In es, this message translates to:
-  /// **'Pulse'**
-  String get pulse;
-
-  /// No description provided for @measurementNumber.
-  ///
-  /// In es, this message translates to:
-  /// **'Measurement #'**
-  String get measurementNumber;
-
-  /// No description provided for @measurementTime.
-  ///
-  /// In es, this message translates to:
-  /// **'Time'**
-  String get measurementTime;
-
-  /// No description provided for @note.
-  ///
-  /// In es, this message translates to:
-  /// **'Note'**
-  String get note;
+  /// **'Confirmar'**
+  String get confirm;
 
   /// No description provided for @date.
   ///
   /// In es, this message translates to:
-  /// **'Date'**
+  /// **'Fecha'**
   String get date;
 
   /// No description provided for @day.
   ///
   /// In es, this message translates to:
-  /// **'Day'**
+  /// **'Día'**
   String get day;
-
-  /// No description provided for @addMeasurement.
-  ///
-  /// In es, this message translates to:
-  /// **'Add Measurement'**
-  String get addMeasurement;
-
-  /// No description provided for @editMeasurement.
-  ///
-  /// In es, this message translates to:
-  /// **'Edit Measurement'**
-  String get editMeasurement;
-
-  /// No description provided for @deleteMeasurement.
-  ///
-  /// In es, this message translates to:
-  /// **'Delete Measurement'**
-  String get deleteMeasurement;
-
-  /// No description provided for @measurementDetails.
-  ///
-  /// In es, this message translates to:
-  /// **'Measurement Details'**
-  String get measurementDetails;
-
-  /// No description provided for @save.
-  ///
-  /// In es, this message translates to:
-  /// **'Save'**
-  String get save;
-
-  /// No description provided for @finish.
-  ///
-  /// In es, this message translates to:
-  /// **'Finish'**
-  String get finish;
-
-  /// No description provided for @cancel.
-  ///
-  /// In es, this message translates to:
-  /// **'Cancel'**
-  String get cancel;
 
   /// No description provided for @delete.
   ///
   /// In es, this message translates to:
-  /// **'Delete'**
+  /// **'Eliminar'**
   String get delete;
-
-  /// No description provided for @edit.
-  ///
-  /// In es, this message translates to:
-  /// **'Edit'**
-  String get edit;
-
-  /// No description provided for @confirm.
-  ///
-  /// In es, this message translates to:
-  /// **'Confirm'**
-  String get confirm;
-
-  /// No description provided for @scheduleTime.
-  ///
-  /// In es, this message translates to:
-  /// **'Schedule Time'**
-  String get scheduleTime;
-
-  /// No description provided for @addSchedule.
-  ///
-  /// In es, this message translates to:
-  /// **'Add Schedule'**
-  String get addSchedule;
-
-  /// No description provided for @editSchedule.
-  ///
-  /// In es, this message translates to:
-  /// **'Edit Schedule'**
-  String get editSchedule;
-
-  /// No description provided for @deleteSchedule.
-  ///
-  /// In es, this message translates to:
-  /// **'Delete Schedule'**
-  String get deleteSchedule;
-
-  /// No description provided for @maxSchedulesReached.
-  ///
-  /// In es, this message translates to:
-  /// **'Maximum 10 schedules allowed'**
-  String get maxSchedulesReached;
-
-  /// No description provided for @monday.
-  ///
-  /// In es, this message translates to:
-  /// **'Monday'**
-  String get monday;
-
-  /// No description provided for @tuesday.
-  ///
-  /// In es, this message translates to:
-  /// **'Tuesday'**
-  String get tuesday;
-
-  /// No description provided for @wednesday.
-  ///
-  /// In es, this message translates to:
-  /// **'Wednesday'**
-  String get wednesday;
-
-  /// No description provided for @thursday.
-  ///
-  /// In es, this message translates to:
-  /// **'Thursday'**
-  String get thursday;
-
-  /// No description provided for @friday.
-  ///
-  /// In es, this message translates to:
-  /// **'Friday'**
-  String get friday;
-
-  /// No description provided for @saturday.
-  ///
-  /// In es, this message translates to:
-  /// **'Saturday'**
-  String get saturday;
-
-  /// No description provided for @sunday.
-  ///
-  /// In es, this message translates to:
-  /// **'Sunday'**
-  String get sunday;
-
-  /// No description provided for @exportData.
-  ///
-  /// In es, this message translates to:
-  /// **'Export Data'**
-  String get exportData;
-
-  /// No description provided for @startDate.
-  ///
-  /// In es, this message translates to:
-  /// **'Start Date'**
-  String get startDate;
-
-  /// No description provided for @endDate.
-  ///
-  /// In es, this message translates to:
-  /// **'End Date'**
-  String get endDate;
-
-  /// No description provided for @startTime.
-  ///
-  /// In es, this message translates to:
-  /// **'Start Time'**
-  String get startTime;
-
-  /// No description provided for @endTime.
-  ///
-  /// In es, this message translates to:
-  /// **'End Time'**
-  String get endTime;
-
-  /// No description provided for @fileName.
-  ///
-  /// In es, this message translates to:
-  /// **'File Name'**
-  String get fileName;
-
-  /// No description provided for @selectDirectory.
-  ///
-  /// In es, this message translates to:
-  /// **'Select Directory'**
-  String get selectDirectory;
-
-  /// No description provided for @exportFormat.
-  ///
-  /// In es, this message translates to:
-  /// **'Export Format'**
-  String get exportFormat;
-
-  /// No description provided for @alarmTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Blood Pressure Measurement'**
-  String get alarmTitle;
-
-  /// No description provided for @alarmBody.
-  ///
-  /// In es, this message translates to:
-  /// **'Time to take your blood pressure measurement'**
-  String get alarmBody;
-
-  /// No description provided for @postpone.
-  ///
-  /// In es, this message translates to:
-  /// **'Postpone 10 min'**
-  String get postpone;
-
-  /// No description provided for @takeMeasurement.
-  ///
-  /// In es, this message translates to:
-  /// **'Take Measurement'**
-  String get takeMeasurement;
-
-  /// No description provided for @validationRequired.
-  ///
-  /// In es, this message translates to:
-  /// **'This field is required'**
-  String get validationRequired;
-
-  /// No description provided for @validationInvalidNumber.
-  ///
-  /// In es, this message translates to:
-  /// **'Invalid number'**
-  String get validationInvalidNumber;
-
-  /// No description provided for @validationStartBeforeEnd.
-  ///
-  /// In es, this message translates to:
-  /// **'Start must be before end'**
-  String get validationStartBeforeEnd;
-
-  /// No description provided for @validationEndNotFuture.
-  ///
-  /// In es, this message translates to:
-  /// **'End cannot be in the future'**
-  String get validationEndNotFuture;
-
-  /// No description provided for @deleteConfirmTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Confirm Deletion'**
-  String get deleteConfirmTitle;
 
   /// No description provided for @deleteConfirmMessage.
   ///
   /// In es, this message translates to:
-  /// **'Are you sure you want to delete this item?'**
+  /// **'¿Estás seguro de que deseas eliminar este elemento?'**
   String get deleteConfirmMessage;
+
+  /// No description provided for @deleteConfirmTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmar Eliminación'**
+  String get deleteConfirmTitle;
+
+  /// No description provided for @deleteMeasurement.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar Medición'**
+  String get deleteMeasurement;
+
+  /// No description provided for @deleteSchedule.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar Horario'**
+  String get deleteSchedule;
+
+  /// No description provided for @deleteUser.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar Usuario'**
+  String get deleteUser;
+
+  /// No description provided for @diastolic.
+  ///
+  /// In es, this message translates to:
+  /// **'Diastól.'**
+  String get diastolic;
+
+  /// No description provided for @edit.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar'**
+  String get edit;
+
+  /// No description provided for @editMeasurement.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar Medición'**
+  String get editMeasurement;
+
+  /// No description provided for @editSchedule.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar Horario'**
+  String get editSchedule;
+
+  /// No description provided for @editUser.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar Usuario'**
+  String get editUser;
+
+  /// No description provided for @enableNotifications.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Activar notificaciones?'**
+  String get enableNotifications;
+
+  /// No description provided for @endDate.
+  ///
+  /// In es, this message translates to:
+  /// **'Fecha Fin'**
+  String get endDate;
+
+  /// No description provided for @endTime.
+  ///
+  /// In es, this message translates to:
+  /// **'Hora de Fin'**
+  String get endTime;
 
   /// No description provided for @errorGeneric.
   ///
   /// In es, this message translates to:
-  /// **'An error occurred'**
+  /// **'Se produjo un error'**
   String get errorGeneric;
+
+  /// No description provided for @errorLoadFailed.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al cargar los datos'**
+  String get errorLoadFailed;
 
   /// No description provided for @errorNoUser.
   ///
   /// In es, this message translates to:
-  /// **'No user selected'**
+  /// **'No se ha seleccionado un usuario'**
   String get errorNoUser;
 
   /// No description provided for @errorSaveFailed.
   ///
   /// In es, this message translates to:
-  /// **'Failed to save'**
+  /// **'Error al guardar'**
   String get errorSaveFailed;
 
-  /// No description provided for @errorLoadFailed.
+  /// No description provided for @export.
   ///
   /// In es, this message translates to:
-  /// **'Failed to load data'**
-  String get errorLoadFailed;
+  /// **'Exportar'**
+  String get export;
+
+  /// No description provided for @exportButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Exportar'**
+  String get exportButton;
+
+  /// No description provided for @exportData.
+  ///
+  /// In es, this message translates to:
+  /// **'Exportar Datos'**
+  String get exportData;
+
+  /// No description provided for @exportError.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al exportar'**
+  String get exportError;
+
+  /// No description provided for @exportFormat.
+  ///
+  /// In es, this message translates to:
+  /// **'Formato de Exportación'**
+  String get exportFormat;
+
+  /// No description provided for @exportSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Archivo exportado exitosamente'**
+  String get exportSuccess;
+
+  /// No description provided for @fileLocation.
+  ///
+  /// In es, this message translates to:
+  /// **'Ubicación del archivo'**
+  String get fileLocation;
+
+  /// No description provided for @fileName.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre de Archivo'**
+  String get fileName;
+
+  /// No description provided for @finish.
+  ///
+  /// In es, this message translates to:
+  /// **'Finalizar'**
+  String get finish;
+
+  /// No description provided for @friday.
+  ///
+  /// In es, this message translates to:
+  /// **'Viernes'**
+  String get friday;
+
+  /// No description provided for @hasMedication.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Toma medicación?'**
+  String get hasMedication;
+
+  /// No description provided for @maxSchedulesReached.
+  ///
+  /// In es, this message translates to:
+  /// **'Se permiten un máximo de 10 horarios'**
+  String get maxSchedulesReached;
+
+  /// No description provided for @measurementDetails.
+  ///
+  /// In es, this message translates to:
+  /// **'Detalles de la Medición'**
+  String get measurementDetails;
+
+  /// No description provided for @measurementNumber.
+  ///
+  /// In es, this message translates to:
+  /// **'Medición #'**
+  String get measurementNumber;
+
+  /// No description provided for @measurements.
+  ///
+  /// In es, this message translates to:
+  /// **'Mediciones'**
+  String get measurements;
+
+  /// No description provided for @measurementTime.
+  ///
+  /// In es, this message translates to:
+  /// **'Hora'**
+  String get measurementTime;
+
+  /// No description provided for @medicationName.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre de la Medicación'**
+  String get medicationName;
+
+  /// No description provided for @monday.
+  ///
+  /// In es, this message translates to:
+  /// **'Lunes'**
+  String get monday;
+
+  /// No description provided for @newUser.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo Usuario'**
+  String get newUser;
+
+  /// No description provided for @noMeasurementsInRange.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay mediciones en el rango seleccionado'**
+  String get noMeasurementsInRange;
+
+  /// No description provided for @note.
+  ///
+  /// In es, this message translates to:
+  /// **'Nota'**
+  String get note;
+
+  /// No description provided for @postpone.
+  ///
+  /// In es, this message translates to:
+  /// **'Posponer 10 min'**
+  String get postpone;
+
+  /// No description provided for @pulse.
+  ///
+  /// In es, this message translates to:
+  /// **'Pulso'**
+  String get pulse;
+
+  /// No description provided for @saturday.
+  ///
+  /// In es, this message translates to:
+  /// **'Sábado'**
+  String get saturday;
+
+  /// No description provided for @save.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar'**
+  String get save;
+
+  /// No description provided for @schedules.
+  ///
+  /// In es, this message translates to:
+  /// **'Horarios'**
+  String get schedules;
+
+  /// No description provided for @scheduleTime.
+  ///
+  /// In es, this message translates to:
+  /// **'Hora del Horario'**
+  String get scheduleTime;
+
+  /// No description provided for @selectDateRange.
+  ///
+  /// In es, this message translates to:
+  /// **'Seleccionar Rango de Fechas'**
+  String get selectDateRange;
+
+  /// No description provided for @selectDirectory.
+  ///
+  /// In es, this message translates to:
+  /// **'Seleccionar Directorio'**
+  String get selectDirectory;
+
+  /// No description provided for @settings.
+  ///
+  /// In es, this message translates to:
+  /// **'Configuración'**
+  String get settings;
+
+  /// No description provided for @startDate.
+  ///
+  /// In es, this message translates to:
+  /// **'Fecha Inicio'**
+  String get startDate;
+
+  /// No description provided for @startTime.
+  ///
+  /// In es, this message translates to:
+  /// **'Hora de Inicio'**
+  String get startTime;
 
   /// No description provided for @success.
   ///
   /// In es, this message translates to:
-  /// **'Success'**
+  /// **'Éxito'**
   String get success;
-
-  /// No description provided for @successSaved.
-  ///
-  /// In es, this message translates to:
-  /// **'Saved successfully'**
-  String get successSaved;
 
   /// No description provided for @successDeleted.
   ///
   /// In es, this message translates to:
-  /// **'Deleted successfully'**
+  /// **'Eliminado correctamente'**
   String get successDeleted;
 
   /// No description provided for @successExported.
   ///
   /// In es, this message translates to:
-  /// **'Exported successfully'**
+  /// **'Exportado correctamente'**
   String get successExported;
+
+  /// No description provided for @successSaved.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardado correctamente'**
+  String get successSaved;
+
+  /// No description provided for @sunday.
+  ///
+  /// In es, this message translates to:
+  /// **'Domingo'**
+  String get sunday;
+
+  /// No description provided for @systolic.
+  ///
+  /// In es, this message translates to:
+  /// **'Sistól.'**
+  String get systolic;
+
+  /// No description provided for @takeMeasurement.
+  ///
+  /// In es, this message translates to:
+  /// **'Realizar Medición'**
+  String get takeMeasurement;
+
+  /// No description provided for @thursday.
+  ///
+  /// In es, this message translates to:
+  /// **'Jueves'**
+  String get thursday;
+
+  /// No description provided for @tuesday.
+  ///
+  /// In es, this message translates to:
+  /// **'Martes'**
+  String get tuesday;
+
+  /// No description provided for @userAge.
+  ///
+  /// In es, this message translates to:
+  /// **'Edad'**
+  String get userAge;
+
+  /// No description provided for @userName.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre'**
+  String get userName;
+
+  /// No description provided for @users.
+  ///
+  /// In es, this message translates to:
+  /// **'Usuarios'**
+  String get users;
+
+  /// No description provided for @validationEndNotFuture.
+  ///
+  /// In es, this message translates to:
+  /// **'La fecha de fin no puede ser posterior a hoy'**
+  String get validationEndNotFuture;
+
+  /// No description provided for @validationInvalidNumber.
+  ///
+  /// In es, this message translates to:
+  /// **'Número inválido'**
+  String get validationInvalidNumber;
+
+  /// No description provided for @validationRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Este campo es obligatorio'**
+  String get validationRequired;
+
+  /// No description provided for @validationStartBeforeEnd.
+  ///
+  /// In es, this message translates to:
+  /// **'La fecha de inicio debe ser anterior a la fecha de fin'**
+  String get validationStartBeforeEnd;
+
+  /// No description provided for @wednesday.
+  ///
+  /// In es, this message translates to:
+  /// **'Miércoles'**
+  String get wednesday;
 }
 
 class _AppLocalizationsDelegate
