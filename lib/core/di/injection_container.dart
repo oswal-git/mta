@@ -1,6 +1,14 @@
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mta/core/database/database.dart';
 import 'package:mta/core/database/database_helper.dart';
+import 'package:mta/features/alarms/data/datasources/alarm_native_data_source.dart';
+import 'package:mta/features/alarms/data/repositories/alarm_repository_impl.dart';
+import 'package:mta/features/alarms/domain/repositories/alarm_repository.dart';
+import 'package:mta/features/alarms/domain/usecases/set_native_alarm.dart';
+import 'package:mta/features/alarms/domain/usecases/snooze_native_alarm.dart';
+import 'package:mta/features/alarms/domain/usecases/stop_native_alarm.dart';
+import 'package:mta/features/alarms/presentation/bloc/alarm_bloc.dart';
 import 'package:mta/features/export/data/datasources/export_data_source.dart';
 import 'package:mta/features/export/data/repositories/export_repository_impl.dart';
 import 'package:mta/features/export/domain/repositories/export_repository.dart';
@@ -49,6 +57,14 @@ Future<void> init() async {
   // ===== Core - Database =====
   final database = DatabaseHelper.database;
   sl.registerLazySingleton<AppDatabase>(() => database);
+
+  // ===== External =====
+  final sharedPreferences = await SharedPreferences.getInstance();
+  sl.registerLazySingleton(() => sharedPreferences);
+
+  // ===== External - Flutter Local Notifications =====
+  // ✅ USAR EL PLUGIN INICIALIZADO (no crear uno nuevo)
+  sl.registerLazySingleton(() => FlutterLocalNotificationsPlugin());
 
   // ===== Features - Users =====
 
@@ -157,18 +173,38 @@ Future<void> init() async {
 
   // ===== External =====
 
-  final sharedPreferences = await SharedPreferences.getInstance();
-  sl.registerLazySingleton(() => sharedPreferences);
+  // ===== Features - Alarms =====
 
-  // // Initialize notifications
-  // final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  // const initializationSettingsAndroid =
-  //     AndroidInitializationSettings('@mipmap/ic_launcher');
-  // const initializationSettingsIOS = DarwinInitializationSettings();
-  // const initializationSettings = InitializationSettings(
-  //   android: initializationSettingsAndroid,
-  //   iOS: initializationSettingsIOS,
-  // );
-  // await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-  // sl.registerLazySingleton(() => flutterLocalNotificationsPlugin);
+  // BLoC
+  sl.registerFactory(
+    () => AlarmBloc(
+      setNativeAlarm: sl(),
+      stopNativeAlarm: sl(),
+      snoozeNativeAlarm: sl(),
+      repository: sl(),
+    ),
+  );
+
+  // Use cases
+  sl.registerLazySingleton(() => SetNativeAlarm(sl()));
+  sl.registerLazySingleton(() => StopNativeAlarm(sl()));
+  sl.registerLazySingleton(() => SnoozeNativeAlarm(sl()));
+
+  // Repository
+  sl.registerLazySingleton<AlarmRepository>(
+    () => AlarmRepositoryImpl(
+      dataSource: sl(),
+      userRepository: sl(),
+      scheduleRepository: sl(),
+    ),
+  );
+
+  // Data sources
+  sl.registerLazySingleton<AlarmNativeDataSource>(
+    () => AlarmNativeDataSourceImpl(
+      notificationsPlugin: sl(),
+    ),
+  );
+
+  // ===== External =====
 }

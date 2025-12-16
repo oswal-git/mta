@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#FFFFFF</color>
+    <color name="splash_color">#6787A6</color>
+    <color name="launch_gradient_start">#6787A6</color>
+    <color name="launch_gradient_end">#A0C4E7FF</color>
+</resources>

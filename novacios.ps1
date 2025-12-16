@@ -6,6 +6,14 @@ function Show-Tree {
     )
     # Capturar la salida en una lista
     $output = @()
+
+    # Solo al nivel raíz listamos los ficheros no vacíos en la raíz
+    if ($Level -eq 0) {
+        $rootFiles = Get-ChildItem -Path $Path -File | Where-Object { $_.Length -gt 3 }
+        foreach ($file in $rootFiles) {
+            $output += "├── " + $file.Name
+        }
+    }    
     
     # Obtener elementos, aplicando exclusión solo en el primer nivel
     if ($Level -eq 0) {
@@ -15,8 +23,10 @@ function Show-Tree {
     }
     
     foreach ($item in $items) {
-        $line = "  " + "  " * $Level + "├── " + $item.Name
-        $output += $line
+        if ($Level -ne 0) { # Evitar duplicar los ficheros del nivel raíz
+            $line = "  " + "  " * $Level + "├── " + $item.Name
+            $output += $line
+        }
     }
     
     # Obtener subdirectorios para continuar la recursión

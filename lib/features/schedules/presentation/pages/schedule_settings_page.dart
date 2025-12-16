@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mta/core/l10n/app_localizations.dart';
 import 'package:mta/core/utils/constants.dart';
+import 'package:mta/features/alarms/presentation/bloc/alarm_bloc.dart';
+import 'package:mta/features/alarms/presentation/bloc/alarm_event.dart';
+import 'package:mta/features/alarms/presentation/widgets/alarm_status_widget.dart';
 import 'package:mta/features/schedules/domain/entities/schedule_entity.dart';
 import 'package:mta/features/schedules/presentation/bloc/schedule_bloc.dart';
 import 'package:mta/features/schedules/presentation/bloc/schedule_event.dart';
@@ -32,6 +35,13 @@ class _ScheduleSettingsPageState extends State<ScheduleSettingsPage> {
     if (userState is UsersLoaded && userState.activeUser != null) {
       _userId = userState.activeUser!.id;
       context.read<ScheduleBloc>().add(LoadSchedulesEvent(_userId!));
+    }
+  }
+
+  // ✅ Método para reprogramar alarmas automáticamente
+  void _reprogramAlarmsAutomatically() {
+    if (_userId != null) {
+      context.read<AlarmBloc>().add(SetAlarmsForUser(_userId!));
     }
   }
 
@@ -102,6 +112,8 @@ class _ScheduleSettingsPageState extends State<ScheduleSettingsPage> {
 
       if (mounted) {
         context.read<ScheduleBloc>().add(CreateScheduleEvent(schedule));
+        // ✅ Reprogramar alarmas automáticamente después de crear
+        _reprogramAlarmsAutomatically();
       }
     }
   }
@@ -169,36 +181,10 @@ class _ScheduleSettingsPageState extends State<ScheduleSettingsPage> {
 
       if (mounted) {
         context.read<ScheduleBloc>().add(UpdateScheduleEvent(updatedSchedule));
+        // ✅ Reprogramar alarmas automáticamente después de editar
+        _reprogramAlarmsAutomatically();
       }
     }
-  }
-
-  void _deleteSchedule(ScheduleEntity schedule) {
-    final l10n = AppLocalizations.of(context);
-
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.deleteConfirmTitle),
-        content: Text(l10n.deleteConfirmMessage),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () {
-              context.read<ScheduleBloc>().add(
-                    DeleteScheduleEvent(schedule.id, schedule.userId),
-                  );
-              Navigator.of(dialogContext).pop();
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: Text(l10n.delete),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
@@ -244,48 +230,12 @@ class _ScheduleSettingsPageState extends State<ScheduleSettingsPage> {
               }
 
               if (state is SchedulesLoaded) {
-                if (state.schedules.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.schedule,
-                          size: 100,
-                          color: Colors.grey[300],
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No schedules yet',
-                          style:
-                              Theme.of(context).textTheme.titleLarge?.copyWith(
-                                    color: Colors.grey,
-                                  ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Tap the + button to add your first schedule',
-                          style:
-                              Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Colors.grey,
-                                  ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 24),
-                        Text(
-                          'Maximum ${AppConstants.maxSchedules} schedules allowed',
-                          style:
-                              Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Colors.grey[600],
-                                  ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
                 return Column(
                   children: [
+                    // ✅ WIDGET DE ALARMAS AQUÍ (arriba de todo)
+                    if (_userId != null) AlarmStatusWidget(userId: _userId!),
+
+                    // Banner de límite máximo
                     if (state.schedules.length >= AppConstants.maxSchedules)
                       Container(
                         width: double.infinity,
@@ -295,7 +245,7 @@ class _ScheduleSettingsPageState extends State<ScheduleSettingsPage> {
                           children: [
                             Icon(Icons.info, color: Colors.orange[900]),
                             const SizedBox(width: 12),
-                            Expanded(
+                            Flexible(
                               child: Text(
                                 l10n.maxSchedulesReached,
                                 style: TextStyle(
@@ -308,23 +258,77 @@ class _ScheduleSettingsPageState extends State<ScheduleSettingsPage> {
                         ),
                       ),
                     Expanded(
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: state.schedules.length,
-                        itemBuilder: (context, index) {
-                          final schedule = state.schedules[index];
-                          return ScheduleItemWidget(
-                            schedule: schedule,
-                            onToggle: () {
-                              context.read<ScheduleBloc>().add(
-                                    ToggleScheduleEvent(schedule),
-                                  );
-                            },
-                            onEdit: () => _showEditScheduleDialog(schedule),
-                            onDelete: () => _deleteSchedule(schedule),
-                          );
-                        },
-                      ),
+                      child: state.schedules.isEmpty
+                          ? Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.schedule,
+                                    size: 100,
+                                    color: Colors.grey[300],
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'No schedules yet',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.copyWith(
+                                          color: Colors.grey,
+                                        ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Tap the + button to add your first schedule',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          color: Colors.grey,
+                                        ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 24),
+                                  Text(
+                                    'Maximum ${AppConstants.maxSchedules} schedules allowed',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(
+                                          color: Colors.grey[600],
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : ListView.builder(
+                              padding: const EdgeInsets.all(16),
+                              itemCount: state.schedules.length,
+                              itemBuilder: (context, index) {
+                                final schedule = state.schedules[index];
+                                return ScheduleItemWidget(
+                                  schedule: schedule,
+                                  onToggle: () {
+                                    context.read<ScheduleBloc>().add(
+                                          ToggleScheduleEvent(schedule),
+                                        );
+                                    // ✅ Reprogramar alarmas al activar/desactivar
+                                    _reprogramAlarmsAutomatically();
+                                  },
+                                  onEdit: () =>
+                                      _showEditScheduleDialog(schedule),
+                                  onDelete: () {
+                                    context.read<ScheduleBloc>().add(
+                                          DeleteScheduleEvent(
+                                              schedule.id, schedule.userId),
+                                        );
+                                    // ✅ Reprogramar alarmas al eliminar
+                                    _reprogramAlarmsAutomatically();
+                                  },
+                                );
+                              },
+                            ),
                     ),
                   ],
                 );

@@ -44,10 +44,17 @@ class _ExportPageState extends State<ExportPage> {
   }
 
   void _updateFileName() {
+    final userState = context.read<UserBloc>().state;
+    String username = 'usuario';
+    
+    if (userState is UsersLoaded && userState.activeUser != null) {
+      username = userState.activeUser!.name;
+    }
+
     final dateFormat = DateFormat('yyyy-MM-dd');
     final start = dateFormat.format(_startDate!);
     final end = dateFormat.format(_endDate!);
-    _fileNameController.text = 'listado_toma_tension_${start}_$end';
+    _fileNameController.text = 'listado_mta_${username}_${start}_$end';
   }
 
   Future<void> _selectDate(BuildContext context, bool isStartDate) async {
@@ -134,6 +141,9 @@ class _ExportPageState extends State<ExportPage> {
         fileName: _fileNameController.text,
         format: _selectedFormat,
         userId: userState.activeUser!.id,
+        username: userState.activeUser!.name,
+        userAge: userState.activeUser!.age,
+        medication: userState.activeUser!.medicationName,
       );
 
       // Ejecutar exportación
@@ -164,7 +174,7 @@ class _ExportPageState extends State<ExportPage> {
                 children: [
                   Icon(Icons.check_circle, color: Colors.green),
                   const SizedBox(width: 8),
-                  Text(l10n.exportSuccess),
+                  Expanded(child: Text(l10n.exportSuccess)),
                 ],
               ),
               content: Column(

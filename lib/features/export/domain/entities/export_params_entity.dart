@@ -7,6 +7,9 @@ class ExportParamsEntity extends Equatable {
   final String fileName;
   final ExportFormat format;
   final String userId;
+  final String username;
+   final int? userAge;
+  final String? medication;
 
   const ExportParamsEntity({
     required this.startDate,
@@ -14,6 +17,9 @@ class ExportParamsEntity extends Equatable {
     required this.fileName,
     required this.format,
     required this.userId,
+    required this.username,
+      this.userAge,
+    this.medication,
   });
 
   @override
@@ -23,6 +29,9 @@ class ExportParamsEntity extends Equatable {
         fileName,
         format,
         userId,
+        username,
+          userAge,
+        medication,
       ];
 }
 
@@ -30,6 +39,7 @@ class ExportParamsEntity extends Equatable {
 enum ExportFormat {
   excel,
   csv,
+  pdf,
 }
 
 extension ExportFormatExtension on ExportFormat {
@@ -39,6 +49,8 @@ extension ExportFormatExtension on ExportFormat {
         return 'xlsx';
       case ExportFormat.csv:
         return 'csv';
+      case ExportFormat.pdf:
+        return 'pdf';
     }
   }
 
@@ -48,6 +60,8 @@ extension ExportFormatExtension on ExportFormat {
         return 'Excel (XLSX)';
       case ExportFormat.csv:
         return 'CSV';
+      case ExportFormat.pdf:
+        return 'PDF';
     }
   }
 }

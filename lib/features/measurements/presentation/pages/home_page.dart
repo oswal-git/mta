@@ -51,265 +51,276 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: BlocBuilder<UserBloc, UserState>(
-          builder: (context, state) {
-            if (state is UsersLoaded && state.users.isNotEmpty) {
-              return UserSelectorWidget(
-                users: state.users,
-                activeUser: state.activeUser,
-                onUserChanged: _onUserChanged,
+    return BlocListener<UserBloc, UserState>(
+      listener: (context, state) {
+        if (state is UsersLoaded && state.activeUser != null) {
+          debugPrint(
+              '${DateFormat('HH:mm:ss').format(DateTime.now())} -🎧 HomePage - UserBloc changed, reloading measurements');
+          context.read<MeasurementBloc>().add(
+                LoadMeasurementsEvent(state.activeUser!.id),
               );
-            }
-            return Text(l10n.appTitle);
-          },
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            tooltip: l10n.addMeasurement,
-            onPressed: () {
-              final userState = context.read<UserBloc>().state;
-              if (userState is UsersLoaded && userState.activeUser != null) {
-                context.push(Routes.measurementForm);
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l10n.errorNoUser)),
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: BlocBuilder<UserBloc, UserState>(
+            builder: (context, state) {
+              if (state is UsersLoaded && state.users.isNotEmpty) {
+                return UserSelectorWidget(
+                  users: state.users,
+                  activeUser: state.activeUser,
+                  onUserChanged: _onUserChanged,
                 );
               }
+              return Text(l10n.appTitle);
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.file_download),
-            tooltip: l10n.export,
-            onPressed: () => context.push(Routes.export),
-          ),
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert),
-            onSelected: (value) {
-              switch (value) {
-                case 'schedules':
-                  context.push(Routes.scheduleSettings);
-                  break;
-                case 'new_user':
-                  context.push(Routes.userForm);
-                  break;
-                case 'edit_user':
-                  final userState = context.read<UserBloc>().state;
-                  if (userState is UsersLoaded &&
-                      userState.activeUser != null) {
-                    context.push(
-                      '${Routes.userForm}?userId=${userState.activeUser!.id}',
-                    );
-                  }
-                  break;
-                case 'delete_user':
-                  _showDeleteUserDialog(context);
-                  break;
-              }
-            },
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'schedules',
-                child: Row(
-                  children: [
-                    const Icon(Icons.schedule),
-                    const SizedBox(width: 8),
-                    Text(l10n.schedules),
-                  ],
-                ),
-              ),
-              PopupMenuItem(
-                value: 'new_user',
-                child: Row(
-                  children: [
-                    const Icon(Icons.person_add),
-                    const SizedBox(width: 8),
-                    Text(l10n.addUser),
-                  ],
-                ),
-              ),
-              PopupMenuItem(
-                value: 'edit_user',
-                child: Row(
-                  children: [
-                    const Icon(Icons.edit),
-                    const SizedBox(width: 8),
-                    Text(l10n.editUser),
-                  ],
-                ),
-              ),
-              PopupMenuItem(
-                value: 'delete_user',
-                child: Row(
-                  children: [
-                    const Icon(Icons.delete, color: Colors.red),
-                    const SizedBox(width: 8),
-                    Text(l10n.deleteUser,
-                        style: const TextStyle(color: Colors.red)),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-      body: BlocConsumer<MeasurementBloc, MeasurementState>(
-        listener: (context, state) {
-          if (state is MeasurementOperationSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
-            if (state.userId != null) {
-              context.read<MeasurementBloc>().add(
-                    LoadMeasurementsEvent(state.userId!),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.add),
+              tooltip: l10n.addMeasurement,
+              onPressed: () {
+                final userState = context.read<UserBloc>().state;
+                if (userState is UsersLoaded && userState.activeUser != null) {
+                  context.push(Routes.measurementForm);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(l10n.errorNoUser)),
                   );
-            }
-          } else if (state is MeasurementError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-        },
-        builder: (context, state) {
-          if (state is MeasurementLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (state is MeasurementsLoaded) {
-            if (state.measurements.isEmpty) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.favorite_border,
-                      size: 100,
-                      color: Colors.grey[300],
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'No measurements yet',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: Colors.grey,
-                          ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Tap the + button to add your first measurement',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey,
-                          ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              );
-            }
-
-            return Column(
-              children: [
-                // Header
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
+                }
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.file_download),
+              tooltip: l10n.export,
+              onPressed: () => context.push(Routes.export),
+            ),
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert),
+              onSelected: (value) {
+                switch (value) {
+                  case 'schedules':
+                    context.push(Routes.scheduleSettings);
+                    break;
+                  case 'new_user':
+                    context.push(Routes.userForm);
+                    break;
+                  case 'edit_user':
+                    final userState = context.read<UserBloc>().state;
+                    if (userState is UsersLoaded &&
+                        userState.activeUser != null) {
+                      context.push(
+                        '${Routes.userForm}?userId=${userState.activeUser!.id}',
+                      );
+                    }
+                    break;
+                  case 'delete_user':
+                    _showDeleteUserDialog(context);
+                    break;
+                }
+              },
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  value: 'schedules',
                   child: Row(
                     children: [
-                      Expanded(
-                        flex: 5,
-                        child: Text(
-                          l10n.date,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 4,
-                        child: Text(
-                          l10n.day,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 3,
-                        child: Text(
-                          l10n.measurementTime,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 3,
-                        child: Text(
-                          l10n.systolic,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      Expanded(
-                        flex: 3,
-                        child: Text(
-                          l10n.diastolic,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      Expanded(
-                        flex: 3,
-                        child: Text(
-                          l10n.pulse,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
+                      const Icon(Icons.schedule),
+                      const SizedBox(width: 8),
+                      Text(l10n.schedules),
                     ],
                   ),
                 ),
-                // List
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: state.measurements.length,
-                    itemBuilder: (context, index) {
-                      final measurement = state.measurements[index];
-                      return MeasurementListItem(
-                        measurement: measurement,
-                        onTap: () {
-                          context.push(
-                            '${Routes.measurementDetail}?measurementId=${measurement.id}',
-                          );
-                        },
-                      );
-                    },
+                PopupMenuItem(
+                  value: 'new_user',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.person_add),
+                      const SizedBox(width: 8),
+                      Text(l10n.addUser),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 'edit_user',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.edit),
+                      const SizedBox(width: 8),
+                      Text(l10n.editUser),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 'delete_user',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.delete, color: Colors.red),
+                      const SizedBox(width: 8),
+                      Text(l10n.deleteUser,
+                          style: const TextStyle(color: Colors.red)),
+                    ],
                   ),
                 ),
               ],
-            );
-          }
-
-          // Initial state or error
-          return Center(
-            child: Text(
-              'Select a user to view measurements',
-              style: Theme.of(context).textTheme.titleMedium,
             ),
-          );
-        },
+          ],
+        ),
+        body: BlocConsumer<MeasurementBloc, MeasurementState>(
+          listener: (context, state) {
+            if (state is MeasurementOperationSuccess) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.message)),
+              );
+              if (state.userId != null) {
+                context.read<MeasurementBloc>().add(
+                      LoadMeasurementsEvent(state.userId!),
+                    );
+              }
+            } else if (state is MeasurementError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            if (state is MeasurementLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (state is MeasurementsLoaded) {
+              if (state.measurements.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.favorite_border,
+                        size: 100,
+                        color: Colors.grey[300],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'No measurements yet',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              color: Colors.grey,
+                            ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Tap the + button to add your first measurement',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Colors.grey,
+                            ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              return Column(
+                children: [
+                  // Header
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.1),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 5,
+                          child: Text(
+                            l10n.date,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 4,
+                          child: Text(
+                            l10n.day,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            l10n.measurementTime,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            l10n.systolic,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            l10n.diastolic,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            l10n.pulse,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // List
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: state.measurements.length,
+                      itemBuilder: (context, index) {
+                        final measurement = state.measurements[index];
+                        return MeasurementListItem(
+                          measurement: measurement,
+                          onTap: () {
+                            context.push(
+                              '${Routes.measurementDetail}?measurementId=${measurement.id}',
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            // Initial state or error
+            return Center(
+              child: Text(
+                'Select a user to view measurements',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            );
+          },
+        ),
       ),
-    );
+    ); // Scaffold
   }
 
   void _showDeleteUserDialog(BuildContext context) {

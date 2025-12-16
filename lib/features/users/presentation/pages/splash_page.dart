@@ -27,6 +27,7 @@ class _SplashPageState extends State<SplashPage> {
     super.initState();
     debugPrint(
         '${DateFormat('HH:mm:ss').format(DateTime.now())} -⏳ SplashPage - initState');
+
     // Cargar usuarios explícitamente
     context.read<UserBloc>().add(LoadUsersEvent());
 
@@ -110,52 +111,65 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Theme.of(context).colorScheme.primary,
-              Theme.of(context).colorScheme.secondary,
-            ],
+    return BlocListener<UserBloc, UserState>(
+      listener: (context, state) {
+        if (state is UsersLoaded) {
+          debugPrint(
+              '🔄 SplashPage - UsersLoaded state received. Checking navigation.');
+          // Intentamos navegar tan pronto como el estado sea UsersLoaded,
+          // pero respetando el tiempo mínimo de splash.
+          if (_minTimeElapsed) {
+            _navigateBasedOnUserState(state);
+          }
+        }
+      },
+      child: Scaffold(
+          body: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Theme.of(context).colorScheme.primary,
+                  Theme.of(context).colorScheme.secondary,
+                ],
+              ),
+            ),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.favorite,
+                    size: 100,
+                    color: Colors.white,
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'MTA',
+                    style: TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Blood Pressure Manager',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white.withValues(alpha: 0.9),
+                    ),
+                  ),
+                  const SizedBox(height: 48),
+                  CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.favorite,
-                size: 100,
-                color: Colors.white,
-              ),
-              const SizedBox(height: 24),
-              Text(
-                'MTA',
-                style: TextStyle(
-                  fontSize: 48,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Blood Pressure Manager',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.white.withValues(alpha: 0.9),
-                ),
-              ),
-              const SizedBox(height: 48),
-              CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

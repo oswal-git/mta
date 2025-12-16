@@ -37,6 +37,20 @@ class ExportRepositoryImpl implements ExportRepository {
             'No measurements found in the selected date range'));
       }
 
+// 🎯 NUEVO: Ordenar por fecha/hora y luego por número de medición (Ascendente)
+      filteredMeasurements.sort((a, b) {
+        // 1. Comparar por measurementTime (fecha y hora)
+        final timeComparison = a.measurementTime.compareTo(b.measurementTime);
+
+        if (timeComparison != 0) {
+          // Si las horas son diferentes, devuelve la comparación de tiempo
+          return timeComparison;
+        }
+
+        // 2. Si las horas son iguales, compara por measurementNumber (Ascendente)
+        return a.measurementNumber.compareTo(b.measurementNumber);
+      });
+
       // Exportar según formato
       final String filePath;
       switch (params.format) {
@@ -44,12 +58,25 @@ class ExportRepositoryImpl implements ExportRepository {
           filePath = await dataSource.exportToExcel(
             measurements: filteredMeasurements,
             fileName: params.fileName,
+            username: params.username,
           );
           break;
         case ExportFormat.csv:
           filePath = await dataSource.exportToCSV(
             measurements: filteredMeasurements,
             fileName: params.fileName,
+            username: params.username,
+          );
+          break;
+        case ExportFormat.pdf:
+          filePath = await dataSource.exportToPDF(
+            measurements: filteredMeasurements,
+            fileName: params.fileName,
+            username: params.username,
+            startDate: params.startDate,
+            endDate: params.endDate,
+            userAge: params.userAge,
+            medication: params.medication,
           );
           break;
       }

@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mta/features/measurements/domain/entities/measurement_entity.dart';
 import 'package:mta/features/measurements/domain/usecases/create_measurement.dart';
 import 'package:mta/features/measurements/domain/usecases/delete_measurement.dart';
 import 'package:mta/features/measurements/domain/usecases/get_measurement_by_id.dart';
@@ -30,6 +32,7 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
     on<UpdateMeasurementEvent>(_onUpdateMeasurement);
     on<DeleteMeasurementEvent>(_onDeleteMeasurement);
     on<GetNextMeasurementNumberEvent>(_onGetNextMeasurementNumber);
+    on<ResetMeasurementStateEvent>(_onResetState);
   }
 
   Future<void> _onLoadMeasurements(
@@ -79,10 +82,14 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
 
     result.fold(
       (failure) => emit(MeasurementError(failure.message)),
-      (measurement) => emit(MeasurementOperationSuccess(
-        'Measurement saved successfully',
-        userId: measurement.userId,
-      )),
+      (measurement) {
+        emit(MeasurementOperationSuccess(
+          'Measurement saved successfully',
+          userId: measurement.userId,
+        ));
+        // ✅ NUEVO: Cancelar notificaciones del horario de esta medición
+        _cancelNotificationsForMeasurementTime(measurement);
+      },
     );
   }
 
@@ -141,5 +148,40 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
       (failure) => emit(MeasurementError(failure.message)),
       (number) => emit(MeasurementNumberLoaded(number)),
     );
+  }
+
+  /// Resetea el estado del BLoC a inicial
+  void _onResetState(
+    ResetMeasurementStateEvent event,
+    Emitter<MeasurementState> emit,
+  ) {
+    debugPrint('🔄 Resetting MeasurementBloc state');
+    emit(MeasurementInitial());
+  }
+
+  /// Cancela notificaciones activas que correspondan al horario de esta medición
+  Future<void> _cancelNotificationsForMeasurementTime(
+    MeasurementEntity measurement,
+  ) async {
+    try {
+      // final alarmBloc = sl<AlarmBloc>(); // Obtener desde DI
+
+      // Obtener la hora de la medición (redondear a la hora más cercana)
+      final measurementTime = measurement.measurementTime;
+      final roundedHour = measurementTime.hour;
+      final roundedMinute = (measurementTime.minute / 15).round() * 15;
+
+      debugPrint('🔍 Buscando notificaciones para cancelar...');
+      debugPrint('   Medición registrada a las: $roundedHour:$roundedMinute');
+
+      // Aquí deberías tener acceso a las alarmas activas
+      // y cancelar la que corresponda a este horario
+
+      // Por ahora, esta lógica se puede implementar en el AlarmRepository
+      // alarmBloc.add(CancelAlarmForTime(roundedHour, roundedMinute));
+    } catch (e) {
+      debugPrint('⚠️ Error al cancelar notificaciones: $e');
+      // No lanzar error, solo registrar
+    }
   }
 }

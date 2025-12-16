@@ -63,3 +63,7 @@ class GetNextMeasurementNumberEvent extends MeasurementEvent {
   @override
   List<Object> get props => [userId, date];
 }
+
+class ResetMeasurementStateEvent extends MeasurementEvent {
+  const ResetMeasurementStateEvent();
+}
