@@ -8,7 +8,7 @@ class AppConstants {
 
   // Limits
   static const int maxSchedules = 10;
-  static const int alarmAdvanceMinutes = 5;
+  static const int notificationAdvanceMinutes = 5;
   static const int postponeMinutes = 10;
 
   // Blood pressure thresholds

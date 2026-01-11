@@ -4,9 +4,9 @@ class UsersDao extends Table {
   TextColumn get id => text()();
   TextColumn get name => text()();
   IntColumn get age => integer().nullable()();
-  BoolColumn get hasMedication =>
+  BoolColumn get hasMeasuring =>
       boolean().withDefault(const Constant(false))();
-  TextColumn get medicationName => text().nullable()();
+  TextColumn get measuringName => text().nullable()();
   BoolColumn get enableNotifications =>
       boolean().withDefault(const Constant(true))();
   DateTimeColumn get createdAt => dateTime()();

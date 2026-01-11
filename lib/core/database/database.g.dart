@@ -24,21 +24,21 @@ class $UsersDaoTable extends UsersDao
   late final GeneratedColumn<int> age = GeneratedColumn<int>(
       'age', aliasedName, true,
       type: DriftSqlType.int, requiredDuringInsert: false);
-  static const VerificationMeta _hasMedicationMeta =
-      const VerificationMeta('hasMedication');
+  static const VerificationMeta _hasMeasuringMeta =
+      const VerificationMeta('hasMeasuring');
   @override
-  late final GeneratedColumn<bool> hasMedication = GeneratedColumn<bool>(
-      'has_medication', aliasedName, false,
+  late final GeneratedColumn<bool> hasMeasuring = GeneratedColumn<bool>(
+      'has_measuring', aliasedName, false,
       type: DriftSqlType.bool,
       requiredDuringInsert: false,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'CHECK ("has_medication" IN (0, 1))'),
+          'CHECK ("has_measuring" IN (0, 1))'),
       defaultValue: const Constant(false));
-  static const VerificationMeta _medicationNameMeta =
-      const VerificationMeta('medicationName');
+  static const VerificationMeta _measuringNameMeta =
+      const VerificationMeta('measuringName');
   @override
-  late final GeneratedColumn<String> medicationName = GeneratedColumn<String>(
-      'medication_name', aliasedName, true,
+  late final GeneratedColumn<String> measuringName = GeneratedColumn<String>(
+      'measuring_name', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _enableNotificationsMeta =
       const VerificationMeta('enableNotifications');
@@ -67,8 +67,8 @@ class $UsersDaoTable extends UsersDao
         id,
         name,
         age,
-        hasMedication,
-        medicationName,
+        hasMeasuring,
+        measuringName,
         enableNotifications,
         createdAt,
         updatedAt
@@ -98,17 +98,17 @@ class $UsersDaoTable extends UsersDao
       context.handle(
           _ageMeta, age.isAcceptableOrUnknown(data['age']!, _ageMeta));
     }
-    if (data.containsKey('has_medication')) {
+    if (data.containsKey('has_measuring')) {
       context.handle(
-          _hasMedicationMeta,
-          hasMedication.isAcceptableOrUnknown(
-              data['has_medication']!, _hasMedicationMeta));
+          _hasMeasuringMeta,
+          hasMeasuring.isAcceptableOrUnknown(
+              data['has_measuring']!, _hasMeasuringMeta));
     }
-    if (data.containsKey('medication_name')) {
+    if (data.containsKey('measuring_name')) {
       context.handle(
-          _medicationNameMeta,
-          medicationName.isAcceptableOrUnknown(
-              data['medication_name']!, _medicationNameMeta));
+          _measuringNameMeta,
+          measuringName.isAcceptableOrUnknown(
+              data['measuring_name']!, _measuringNameMeta));
     }
     if (data.containsKey('enable_notifications')) {
       context.handle(
@@ -143,10 +143,10 @@ class $UsersDaoTable extends UsersDao
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       age: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}age']),
-      hasMedication: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}has_medication'])!,
-      medicationName: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}medication_name']),
+      hasMeasuring: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}has_measuring'])!,
+      measuringName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}measuring_name']),
       enableNotifications: attachedDatabase.typeMapping.read(
           DriftSqlType.bool, data['${effectivePrefix}enable_notifications'])!,
       createdAt: attachedDatabase.typeMapping
@@ -166,8 +166,8 @@ class UsersDaoData extends DataClass implements Insertable<UsersDaoData> {
   final String id;
   final String name;
   final int? age;
-  final bool hasMedication;
-  final String? medicationName;
+  final bool hasMeasuring;
+  final String? measuringName;
   final bool enableNotifications;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -175,8 +175,8 @@ class UsersDaoData extends DataClass implements Insertable<UsersDaoData> {
       {required this.id,
       required this.name,
       this.age,
-      required this.hasMedication,
-      this.medicationName,
+      required this.hasMeasuring,
+      this.measuringName,
       required this.enableNotifications,
       required this.createdAt,
       required this.updatedAt});
@@ -188,9 +188,9 @@ class UsersDaoData extends DataClass implements Insertable<UsersDaoData> {
     if (!nullToAbsent || age != null) {
       map['age'] = Variable<int>(age);
     }
-    map['has_medication'] = Variable<bool>(hasMedication);
-    if (!nullToAbsent || medicationName != null) {
-      map['medication_name'] = Variable<String>(medicationName);
+    map['has_measuring'] = Variable<bool>(hasMeasuring);
+    if (!nullToAbsent || measuringName != null) {
+      map['measuring_name'] = Variable<String>(measuringName);
     }
     map['enable_notifications'] = Variable<bool>(enableNotifications);
     map['created_at'] = Variable<DateTime>(createdAt);
@@ -203,10 +203,10 @@ class UsersDaoData extends DataClass implements Insertable<UsersDaoData> {
       id: Value(id),
       name: Value(name),
       age: age == null && nullToAbsent ? const Value.absent() : Value(age),
-      hasMedication: Value(hasMedication),
-      medicationName: medicationName == null && nullToAbsent
+      hasMeasuring: Value(hasMeasuring),
+      measuringName: measuringName == null && nullToAbsent
           ? const Value.absent()
-          : Value(medicationName),
+          : Value(measuringName),
       enableNotifications: Value(enableNotifications),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
@@ -220,8 +220,8 @@ class UsersDaoData extends DataClass implements Insertable<UsersDaoData> {
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       age: serializer.fromJson<int?>(json['age']),
-      hasMedication: serializer.fromJson<bool>(json['hasMedication']),
-      medicationName: serializer.fromJson<String?>(json['medicationName']),
+      hasMeasuring: serializer.fromJson<bool>(json['hasMeasuring']),
+      measuringName: serializer.fromJson<String?>(json['measuringName']),
       enableNotifications:
           serializer.fromJson<bool>(json['enableNotifications']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -235,8 +235,8 @@ class UsersDaoData extends DataClass implements Insertable<UsersDaoData> {
       'id': serializer.toJson<String>(id),
       'name': serializer.toJson<String>(name),
       'age': serializer.toJson<int?>(age),
-      'hasMedication': serializer.toJson<bool>(hasMedication),
-      'medicationName': serializer.toJson<String?>(medicationName),
+      'hasMeasuring': serializer.toJson<bool>(hasMeasuring),
+      'measuringName': serializer.toJson<String?>(measuringName),
       'enableNotifications': serializer.toJson<bool>(enableNotifications),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
@@ -247,8 +247,8 @@ class UsersDaoData extends DataClass implements Insertable<UsersDaoData> {
           {String? id,
           String? name,
           Value<int?> age = const Value.absent(),
-          bool? hasMedication,
-          Value<String?> medicationName = const Value.absent(),
+          bool? hasMeasuring,
+          Value<String?> measuringName = const Value.absent(),
           bool? enableNotifications,
           DateTime? createdAt,
           DateTime? updatedAt}) =>
@@ -256,9 +256,9 @@ class UsersDaoData extends DataClass implements Insertable<UsersDaoData> {
         id: id ?? this.id,
         name: name ?? this.name,
         age: age.present ? age.value : this.age,
-        hasMedication: hasMedication ?? this.hasMedication,
-        medicationName:
-            medicationName.present ? medicationName.value : this.medicationName,
+        hasMeasuring: hasMeasuring ?? this.hasMeasuring,
+        measuringName:
+            measuringName.present ? measuringName.value : this.measuringName,
         enableNotifications: enableNotifications ?? this.enableNotifications,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
@@ -268,12 +268,12 @@ class UsersDaoData extends DataClass implements Insertable<UsersDaoData> {
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
       age: data.age.present ? data.age.value : this.age,
-      hasMedication: data.hasMedication.present
-          ? data.hasMedication.value
-          : this.hasMedication,
-      medicationName: data.medicationName.present
-          ? data.medicationName.value
-          : this.medicationName,
+      hasMeasuring: data.hasMeasuring.present
+          ? data.hasMeasuring.value
+          : this.hasMeasuring,
+      measuringName: data.measuringName.present
+          ? data.measuringName.value
+          : this.measuringName,
       enableNotifications: data.enableNotifications.present
           ? data.enableNotifications.value
           : this.enableNotifications,
@@ -288,8 +288,8 @@ class UsersDaoData extends DataClass implements Insertable<UsersDaoData> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('age: $age, ')
-          ..write('hasMedication: $hasMedication, ')
-          ..write('medicationName: $medicationName, ')
+          ..write('hasMeasuring: $hasMeasuring, ')
+          ..write('measuringName: $measuringName, ')
           ..write('enableNotifications: $enableNotifications, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
@@ -298,7 +298,7 @@ class UsersDaoData extends DataClass implements Insertable<UsersDaoData> {
   }
 
   @override
-  int get hashCode => Object.hash(id, name, age, hasMedication, medicationName,
+  int get hashCode => Object.hash(id, name, age, hasMeasuring, measuringName,
       enableNotifications, createdAt, updatedAt);
   @override
   bool operator ==(Object other) =>
@@ -307,8 +307,8 @@ class UsersDaoData extends DataClass implements Insertable<UsersDaoData> {
           other.id == this.id &&
           other.name == this.name &&
           other.age == this.age &&
-          other.hasMedication == this.hasMedication &&
-          other.medicationName == this.medicationName &&
+          other.hasMeasuring == this.hasMeasuring &&
+          other.measuringName == this.measuringName &&
           other.enableNotifications == this.enableNotifications &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
@@ -318,8 +318,8 @@ class UsersDaoCompanion extends UpdateCompanion<UsersDaoData> {
   final Value<String> id;
   final Value<String> name;
   final Value<int?> age;
-  final Value<bool> hasMedication;
-  final Value<String?> medicationName;
+  final Value<bool> hasMeasuring;
+  final Value<String?> measuringName;
   final Value<bool> enableNotifications;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
@@ -328,8 +328,8 @@ class UsersDaoCompanion extends UpdateCompanion<UsersDaoData> {
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.age = const Value.absent(),
-    this.hasMedication = const Value.absent(),
-    this.medicationName = const Value.absent(),
+    this.hasMeasuring = const Value.absent(),
+    this.measuringName = const Value.absent(),
     this.enableNotifications = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
@@ -339,8 +339,8 @@ class UsersDaoCompanion extends UpdateCompanion<UsersDaoData> {
     required String id,
     required String name,
     this.age = const Value.absent(),
-    this.hasMedication = const Value.absent(),
-    this.medicationName = const Value.absent(),
+    this.hasMeasuring = const Value.absent(),
+    this.measuringName = const Value.absent(),
     this.enableNotifications = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
@@ -353,8 +353,8 @@ class UsersDaoCompanion extends UpdateCompanion<UsersDaoData> {
     Expression<String>? id,
     Expression<String>? name,
     Expression<int>? age,
-    Expression<bool>? hasMedication,
-    Expression<String>? medicationName,
+    Expression<bool>? hasMeasuring,
+    Expression<String>? measuringName,
     Expression<bool>? enableNotifications,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
@@ -364,8 +364,8 @@ class UsersDaoCompanion extends UpdateCompanion<UsersDaoData> {
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (age != null) 'age': age,
-      if (hasMedication != null) 'has_medication': hasMedication,
-      if (medicationName != null) 'medication_name': medicationName,
+      if (hasMeasuring != null) 'has_measuring': hasMeasuring,
+      if (measuringName != null) 'measuring_name': measuringName,
       if (enableNotifications != null)
         'enable_notifications': enableNotifications,
       if (createdAt != null) 'created_at': createdAt,
@@ -378,8 +378,8 @@ class UsersDaoCompanion extends UpdateCompanion<UsersDaoData> {
       {Value<String>? id,
       Value<String>? name,
       Value<int?>? age,
-      Value<bool>? hasMedication,
-      Value<String?>? medicationName,
+      Value<bool>? hasMeasuring,
+      Value<String?>? measuringName,
       Value<bool>? enableNotifications,
       Value<DateTime>? createdAt,
       Value<DateTime>? updatedAt,
@@ -388,8 +388,8 @@ class UsersDaoCompanion extends UpdateCompanion<UsersDaoData> {
       id: id ?? this.id,
       name: name ?? this.name,
       age: age ?? this.age,
-      hasMedication: hasMedication ?? this.hasMedication,
-      medicationName: medicationName ?? this.medicationName,
+      hasMeasuring: hasMeasuring ?? this.hasMeasuring,
+      measuringName: measuringName ?? this.measuringName,
       enableNotifications: enableNotifications ?? this.enableNotifications,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -409,11 +409,11 @@ class UsersDaoCompanion extends UpdateCompanion<UsersDaoData> {
     if (age.present) {
       map['age'] = Variable<int>(age.value);
     }
-    if (hasMedication.present) {
-      map['has_medication'] = Variable<bool>(hasMedication.value);
+    if (hasMeasuring.present) {
+      map['has_measuring'] = Variable<bool>(hasMeasuring.value);
     }
-    if (medicationName.present) {
-      map['medication_name'] = Variable<String>(medicationName.value);
+    if (measuringName.present) {
+      map['measuring_name'] = Variable<String>(measuringName.value);
     }
     if (enableNotifications.present) {
       map['enable_notifications'] = Variable<bool>(enableNotifications.value);
@@ -436,8 +436,8 @@ class UsersDaoCompanion extends UpdateCompanion<UsersDaoData> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('age: $age, ')
-          ..write('hasMedication: $hasMedication, ')
-          ..write('medicationName: $medicationName, ')
+          ..write('hasMeasuring: $hasMeasuring, ')
+          ..write('measuringName: $measuringName, ')
           ..write('enableNotifications: $enableNotifications, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
@@ -1394,8 +1394,8 @@ typedef $$UsersDaoTableCreateCompanionBuilder = UsersDaoCompanion Function({
   required String id,
   required String name,
   Value<int?> age,
-  Value<bool> hasMedication,
-  Value<String?> medicationName,
+  Value<bool> hasMeasuring,
+  Value<String?> measuringName,
   Value<bool> enableNotifications,
   required DateTime createdAt,
   required DateTime updatedAt,
@@ -1405,8 +1405,8 @@ typedef $$UsersDaoTableUpdateCompanionBuilder = UsersDaoCompanion Function({
   Value<String> id,
   Value<String> name,
   Value<int?> age,
-  Value<bool> hasMedication,
-  Value<String?> medicationName,
+  Value<bool> hasMeasuring,
+  Value<String?> measuringName,
   Value<bool> enableNotifications,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
@@ -1468,12 +1468,11 @@ class $$UsersDaoTableFilterComposer
   ColumnFilters<int> get age => $composableBuilder(
       column: $table.age, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<bool> get hasMedication => $composableBuilder(
-      column: $table.hasMedication, builder: (column) => ColumnFilters(column));
+  ColumnFilters<bool> get hasMeasuring => $composableBuilder(
+      column: $table.hasMeasuring, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get medicationName => $composableBuilder(
-      column: $table.medicationName,
-      builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get measuringName => $composableBuilder(
+      column: $table.measuringName, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<bool> get enableNotifications => $composableBuilder(
       column: $table.enableNotifications,
@@ -1546,12 +1545,12 @@ class $$UsersDaoTableOrderingComposer
   ColumnOrderings<int> get age => $composableBuilder(
       column: $table.age, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<bool> get hasMedication => $composableBuilder(
-      column: $table.hasMedication,
+  ColumnOrderings<bool> get hasMeasuring => $composableBuilder(
+      column: $table.hasMeasuring,
       builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get medicationName => $composableBuilder(
-      column: $table.medicationName,
+  ColumnOrderings<String> get measuringName => $composableBuilder(
+      column: $table.measuringName,
       builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<bool> get enableNotifications => $composableBuilder(
@@ -1583,11 +1582,11 @@ class $$UsersDaoTableAnnotationComposer
   GeneratedColumn<int> get age =>
       $composableBuilder(column: $table.age, builder: (column) => column);
 
-  GeneratedColumn<bool> get hasMedication => $composableBuilder(
-      column: $table.hasMedication, builder: (column) => column);
+  GeneratedColumn<bool> get hasMeasuring => $composableBuilder(
+      column: $table.hasMeasuring, builder: (column) => column);
 
-  GeneratedColumn<String> get medicationName => $composableBuilder(
-      column: $table.medicationName, builder: (column) => column);
+  GeneratedColumn<String> get measuringName => $composableBuilder(
+      column: $table.measuringName, builder: (column) => column);
 
   GeneratedColumn<bool> get enableNotifications => $composableBuilder(
       column: $table.enableNotifications, builder: (column) => column);
@@ -1667,8 +1666,8 @@ class $$UsersDaoTableTableManager extends RootTableManager<
             Value<String> id = const Value.absent(),
             Value<String> name = const Value.absent(),
             Value<int?> age = const Value.absent(),
-            Value<bool> hasMedication = const Value.absent(),
-            Value<String?> medicationName = const Value.absent(),
+            Value<bool> hasMeasuring = const Value.absent(),
+            Value<String?> measuringName = const Value.absent(),
             Value<bool> enableNotifications = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
@@ -1678,8 +1677,8 @@ class $$UsersDaoTableTableManager extends RootTableManager<
             id: id,
             name: name,
             age: age,
-            hasMedication: hasMedication,
-            medicationName: medicationName,
+            hasMeasuring: hasMeasuring,
+            measuringName: measuringName,
             enableNotifications: enableNotifications,
             createdAt: createdAt,
             updatedAt: updatedAt,
@@ -1689,8 +1688,8 @@ class $$UsersDaoTableTableManager extends RootTableManager<
             required String id,
             required String name,
             Value<int?> age = const Value.absent(),
-            Value<bool> hasMedication = const Value.absent(),
-            Value<String?> medicationName = const Value.absent(),
+            Value<bool> hasMeasuring = const Value.absent(),
+            Value<String?> measuringName = const Value.absent(),
             Value<bool> enableNotifications = const Value.absent(),
             required DateTime createdAt,
             required DateTime updatedAt,
@@ -1700,8 +1699,8 @@ class $$UsersDaoTableTableManager extends RootTableManager<
             id: id,
             name: name,
             age: age,
-            hasMedication: hasMedication,
-            medicationName: medicationName,
+            hasMeasuring: hasMeasuring,
+            measuringName: measuringName,
             enableNotifications: enableNotifications,
             createdAt: createdAt,
             updatedAt: updatedAt,

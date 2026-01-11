@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mta/core/l10n/app_localizations.dart';
 import 'package:mta/core/utils/constants.dart';
-import 'package:mta/features/alarms/presentation/bloc/alarm_bloc.dart';
-import 'package:mta/features/alarms/presentation/bloc/alarm_event.dart';
-import 'package:mta/features/alarms/presentation/widgets/alarm_status_widget.dart';
+import 'package:mta/features/notifications/presentation/bloc/notification_bloc.dart';
+import 'package:mta/features/notifications/presentation/bloc/notification_event.dart';
+import 'package:mta/features/notifications/presentation/widgets/notification_status_widget.dart';
 import 'package:mta/features/schedules/domain/entities/schedule_entity.dart';
 import 'package:mta/features/schedules/presentation/bloc/schedule_bloc.dart';
 import 'package:mta/features/schedules/presentation/bloc/schedule_event.dart';
@@ -38,10 +38,12 @@ class _ScheduleSettingsPageState extends State<ScheduleSettingsPage> {
     }
   }
 
-  // ✅ Método para reprogramar alarmas automáticamente
-  void _reprogramAlarmsAutomatically() {
+  // ✅ Método para reprogramar notificaciones automáticamente
+  void _reprogramNotificationsAutomatically() {
     if (_userId != null) {
-      context.read<AlarmBloc>().add(SetAlarmsForUser(_userId!));
+      context
+          .read<NotificationBloc>()
+          .add(ScheduleNotificationsForUser(_userId!));
     }
   }
 
@@ -112,8 +114,8 @@ class _ScheduleSettingsPageState extends State<ScheduleSettingsPage> {
 
       if (mounted) {
         context.read<ScheduleBloc>().add(CreateScheduleEvent(schedule));
-        // ✅ Reprogramar alarmas automáticamente después de crear
-        _reprogramAlarmsAutomatically();
+        // ✅ Reprogramar notificaciones automáticamente después de crear
+        _reprogramNotificationsAutomatically();
       }
     }
   }
@@ -181,8 +183,8 @@ class _ScheduleSettingsPageState extends State<ScheduleSettingsPage> {
 
       if (mounted) {
         context.read<ScheduleBloc>().add(UpdateScheduleEvent(updatedSchedule));
-        // ✅ Reprogramar alarmas automáticamente después de editar
-        _reprogramAlarmsAutomatically();
+        // ✅ Reprogramar notificaciones automáticamente después de editar
+        _reprogramNotificationsAutomatically();
       }
     }
   }
@@ -232,8 +234,9 @@ class _ScheduleSettingsPageState extends State<ScheduleSettingsPage> {
               if (state is SchedulesLoaded) {
                 return Column(
                   children: [
-                    // ✅ WIDGET DE ALARMAS AQUÍ (arriba de todo)
-                    if (_userId != null) AlarmStatusWidget(userId: _userId!),
+                    // ✅ WIDGET DE NOTIFICATIONES AQUÍ (arriba de todo)
+                    if (_userId != null)
+                      NotificationStatusWidget(userId: _userId!),
 
                     // Banner de límite máximo
                     if (state.schedules.length >= AppConstants.maxSchedules)
@@ -313,8 +316,8 @@ class _ScheduleSettingsPageState extends State<ScheduleSettingsPage> {
                                     context.read<ScheduleBloc>().add(
                                           ToggleScheduleEvent(schedule),
                                         );
-                                    // ✅ Reprogramar alarmas al activar/desactivar
-                                    _reprogramAlarmsAutomatically();
+                                    // ✅ Reprogramar notificaciones al activar/desactivar
+                                    _reprogramNotificationsAutomatically();
                                   },
                                   onEdit: () =>
                                       _showEditScheduleDialog(schedule),
@@ -323,8 +326,8 @@ class _ScheduleSettingsPageState extends State<ScheduleSettingsPage> {
                                           DeleteScheduleEvent(
                                               schedule.id, schedule.userId),
                                         );
-                                    // ✅ Reprogramar alarmas al eliminar
-                                    _reprogramAlarmsAutomatically();
+                                    // ✅ Reprogramar notificaciones al eliminar
+                                    _reprogramNotificationsAutomatically();
                                   },
                                 );
                               },

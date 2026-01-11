@@ -43,6 +43,15 @@ class MeasurementNumberLoaded extends MeasurementState {
   List<Object> get props => [nextNumber];
 }
 
+class NextMeasurementNumberLoaded extends MeasurementState {
+  final int number;
+
+  const NextMeasurementNumberLoaded({required this.number});
+
+  @override
+  List<Object> get props => [number];
+}
+
 class MeasurementOperationSuccess extends MeasurementState {
   final String message;
   final String? userId;

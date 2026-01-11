@@ -24,7 +24,7 @@ class _UserFormPageState extends State<UserFormPage> {
   final _ageController = TextEditingController();
   final _medicationNameController = TextEditingController();
 
-  bool _hasMedication = false;
+  bool _hasMeasuring = false;
   bool _enableNotifications = true;
   UserEntity? _existingUser;
   bool _isFirstUser = false;
@@ -54,7 +54,7 @@ class _UserFormPageState extends State<UserFormPage> {
 
           _nameController.text = _existingUser!.name;
           _ageController.text = _existingUser!.age?.toString() ?? '';
-          _hasMedication = _existingUser!.hasMedication;
+          _hasMeasuring = _existingUser!.hasMeasuring;
           _medicationNameController.text = _existingUser!.medicationName ?? '';
           _enableNotifications = _existingUser!.enableNotifications;
           setState(() {});
@@ -82,9 +82,9 @@ class _UserFormPageState extends State<UserFormPage> {
         name: _nameController.text.trim(),
         age:
             _ageController.text.isEmpty ? null : int.parse(_ageController.text),
-        hasMedication: _hasMedication,
+        hasMeasuring: _hasMeasuring,
         medicationName:
-            _hasMedication ? _medicationNameController.text.trim() : null,
+            _hasMeasuring ? _medicationNameController.text.trim() : null,
         enableNotifications: _enableNotifications,
         createdAt: _existingUser?.createdAt ?? now,
         updatedAt: now,
@@ -159,18 +159,18 @@ class _UserFormPageState extends State<UserFormPage> {
                     ),
                     const SizedBox(height: 24),
                     SwitchListTile(
-                      title: Text(l10n.hasMedication),
-                      value: _hasMedication,
+                      title: Text(l10n.hasMeasuring),
+                      value: _hasMeasuring,
                       onChanged: (value) {
                         setState(() {
-                          _hasMedication = value;
+                          _hasMeasuring = value;
                           if (!value) {
                             _medicationNameController.clear();
                           }
                         });
                       },
                     ),
-                    if (_hasMedication) ...[
+                    if (_hasMeasuring) ...[
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _medicationNameController,

@@ -8,7 +8,7 @@ class ExportParamsEntity extends Equatable {
   final ExportFormat format;
   final String userId;
   final String username;
-   final int? userAge;
+  final int? userAge;
   final String? medication;
 
   const ExportParamsEntity({
@@ -18,7 +18,7 @@ class ExportParamsEntity extends Equatable {
     required this.format,
     required this.userId,
     required this.username,
-      this.userAge,
+    this.userAge,
     this.medication,
   });
 
@@ -30,7 +30,7 @@ class ExportParamsEntity extends Equatable {
         format,
         userId,
         username,
-          userAge,
+        userAge,
         medication,
       ];
 }

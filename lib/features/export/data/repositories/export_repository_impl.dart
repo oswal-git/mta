@@ -76,7 +76,7 @@ class ExportRepositoryImpl implements ExportRepository {
             startDate: params.startDate,
             endDate: params.endDate,
             userAge: params.userAge,
-            medication: params.medication,
+            medicacion: params.medication,
           );
           break;
       }

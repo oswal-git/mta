@@ -1,18 +1,17 @@
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+// Core
 import 'package:mta/core/database/database.dart';
 import 'package:mta/core/database/database_helper.dart';
-import 'package:mta/features/alarms/data/datasources/alarm_native_data_source.dart';
-import 'package:mta/features/alarms/data/repositories/alarm_repository_impl.dart';
-import 'package:mta/features/alarms/domain/repositories/alarm_repository.dart';
-import 'package:mta/features/alarms/domain/usecases/set_native_alarm.dart';
-import 'package:mta/features/alarms/domain/usecases/snooze_native_alarm.dart';
-import 'package:mta/features/alarms/domain/usecases/stop_native_alarm.dart';
-import 'package:mta/features/alarms/presentation/bloc/alarm_bloc.dart';
+
+// Features - Export
 import 'package:mta/features/export/data/datasources/export_data_source.dart';
 import 'package:mta/features/export/data/repositories/export_repository_impl.dart';
 import 'package:mta/features/export/domain/repositories/export_repository.dart';
 import 'package:mta/features/export/domain/usecases/export_measurements.dart';
+
+// Features - Mesurements
 import 'package:mta/features/measurements/data/datasources/measurement_local_data_source.dart';
 import 'package:mta/features/measurements/data/repostoris/measurement_repository_impl.dart';
 import 'package:mta/features/measurements/domain/repositories/measurement_repository.dart';
@@ -23,6 +22,18 @@ import 'package:mta/features/measurements/domain/usecases/get_measurements.dart'
 import 'package:mta/features/measurements/domain/usecases/get_next_measurement_number.dart';
 import 'package:mta/features/measurements/domain/usecases/update_measurement.dart';
 import 'package:mta/features/measurements/presentation/bloc/measurement_bloc.dart';
+
+// Features - Notifications
+import 'package:mta/features/notifications/data/datasources/notification_native_data_source.dart';
+import 'package:mta/features/notifications/data/repositories/notification_repository_impl.dart';
+import 'package:mta/features/notifications/domain/repositories/notification_repository.dart';
+import 'package:mta/features/notifications/domain/usecases/cancel_notification.dart';
+import 'package:mta/features/notifications/domain/usecases/schedule_notification.dart';
+import 'package:mta/features/notifications/domain/usecases/snooze_notification.dart';
+import 'package:mta/features/notifications/presentation/bloc/notification_bloc.dart';
+import 'package:mta/features/notifications/utils/notification_action_handler.dart';
+
+// Features - Schedules
 import 'package:mta/features/schedules/data/datasources/schedule_local_data_source.dart';
 import 'package:mta/features/schedules/data/repositories/schedule_repository_impl.dart';
 import 'package:mta/features/schedules/domain/repositories/schedule_repository.dart';
@@ -43,13 +54,9 @@ import 'package:mta/features/users/domain/usecases/update_user.dart';
 import 'package:mta/features/users/domain/usecases/delete_user.dart';
 import 'package:mta/features/users/domain/usecases/set_active_user.dart';
 import 'package:mta/features/users/presentation/bloc/user_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-// Features - Measurements
-
-// Features - Schedules
-
-// Features - Export
+// ✅ IMPORTAR LA INSTANCIA GLOBAL desde main.dart
+import 'package:mta/main.dart' show flutterLocalNotificationsPlugin;
 
 final sl = GetIt.instance;
 
@@ -63,8 +70,9 @@ Future<void> init() async {
   sl.registerLazySingleton(() => sharedPreferences);
 
   // ===== External - Flutter Local Notifications =====
-  // ✅ USAR EL PLUGIN INICIALIZADO (no crear uno nuevo)
-  sl.registerLazySingleton(() => FlutterLocalNotificationsPlugin());
+  // ✅ USAR LA INSTANCIA GLOBAL YA INICIALIZADA desde main.dart
+  // NO crear una nueva instancia, usar la que ya fue inicializada
+  sl.registerLazySingleton(() => flutterLocalNotificationsPlugin);
 
   // ===== Features - Users =====
 
@@ -109,6 +117,8 @@ Future<void> init() async {
         updateMeasurement: sl(),
         deleteMeasurement: sl(),
         getNextMeasurementNumber: sl(),
+        notificationRepository: sl(),
+        scheduleRepository: sl(),
       ));
 
   // Use cases
@@ -137,7 +147,7 @@ Future<void> init() async {
         createSchedule: sl(),
         updateSchedule: sl(),
         deleteSchedule: sl(),
-        // notificationPlugin: sl(),
+        notificationRepository: sl(),
       ));
 
   // Use cases
@@ -173,26 +183,26 @@ Future<void> init() async {
 
   // ===== External =====
 
-  // ===== Features - Alarms =====
+  // ===== Features - Notifications =====
 
   // BLoC
   sl.registerFactory(
-    () => AlarmBloc(
-      setNativeAlarm: sl(),
-      stopNativeAlarm: sl(),
-      snoozeNativeAlarm: sl(),
+    () => NotificationBloc(
+      scheduleNotification: sl(),
+      cancelNotification: sl(),
+      snoozeNotification: sl(),
       repository: sl(),
     ),
   );
 
   // Use cases
-  sl.registerLazySingleton(() => SetNativeAlarm(sl()));
-  sl.registerLazySingleton(() => StopNativeAlarm(sl()));
-  sl.registerLazySingleton(() => SnoozeNativeAlarm(sl()));
+  sl.registerLazySingleton(() => ScheduleNotificationUseCase(sl()));
+  sl.registerLazySingleton(() => CancelNotificationUseCase(sl()));
+  sl.registerLazySingleton(() => SnoozeNotificationUseCase(sl()));
 
   // Repository
-  sl.registerLazySingleton<AlarmRepository>(
-    () => AlarmRepositoryImpl(
+  sl.registerLazySingleton<NotificationRepository>(
+    () => NotificationRepositoryImpl(
       dataSource: sl(),
       userRepository: sl(),
       scheduleRepository: sl(),
@@ -200,11 +210,17 @@ Future<void> init() async {
   );
 
   // Data sources
-  sl.registerLazySingleton<AlarmNativeDataSource>(
-    () => AlarmNativeDataSourceImpl(
+  sl.registerLazySingleton<NotificationNativeDataSource>(
+    () => NotificationNativeDataSourceImpl(
       notificationsPlugin: sl(),
     ),
   );
 
-  // ===== External =====
+  // Utils
+  sl.registerLazySingleton<NotificationActionHandler>(
+    () => NotificationActionHandler(
+      notificationBloc: sl(),
+      measurementBloc: sl(),
+    ),
+  );
 }

@@ -54,8 +54,8 @@ class ScheduleEntity extends Equatable {
     return DateTime(now.year, now.month, now.day, hour, minute);
   }
 
-  /// Returns the DateTime for the alarm (5 minutes before)
-  DateTime get alarmDateTime {
+  /// Returns the DateTime for the notification (5 minutes before)
+  DateTime get notificationDateTime {
     return todayDateTime.subtract(const Duration(minutes: 5));
   }
 

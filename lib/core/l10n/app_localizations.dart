@@ -124,17 +124,17 @@ abstract class AppLocalizations {
   /// **'Agregar Usuario'**
   String get addUser;
 
-  /// No description provided for @alarmBody.
+  /// No description provided for @notificationBody.
   ///
   /// In es, this message translates to:
   /// **'Es hora de realizar tu medición de presión arterial'**
-  String get alarmBody;
+  String get notificationBody;
 
-  /// No description provided for @alarmTitle.
+  /// No description provided for @notificationTitle.
   ///
   /// In es, this message translates to:
   /// **'Medición de Presión Arterial'**
-  String get alarmTitle;
+  String get notificationTitle;
 
   /// No description provided for @appTitle.
   ///
@@ -334,11 +334,11 @@ abstract class AppLocalizations {
   /// **'Viernes'**
   String get friday;
 
-  /// No description provided for @hasMedication.
+  /// No description provided for @hasMeasuring.
   ///
   /// In es, this message translates to:
-  /// **'¿Toma medicación?'**
-  String get hasMedication;
+  /// **'¿Toma medición?'**
+  String get hasMeasuring;
 
   /// No description provided for @maxSchedulesReached.
   ///

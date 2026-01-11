@@ -21,10 +21,11 @@ class AppLocalizationsCa extends AppLocalizations {
   String get addUser => 'Afegir Usuari';
 
   @override
-  String get alarmBody => 'És hora de fer la mesura de la pressió arterial';
+  String get notificationBody =>
+      'És hora de fer la mesura de la pressió arterial';
 
   @override
-  String get alarmTitle => 'Mesura de Pressió Arterial';
+  String get notificationTitle => 'Mesura de Pressió Arterial';
 
   @override
   String get appTitle => 'MTA - Gestor de Pressió Arterial';
@@ -127,7 +128,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get friday => 'Divendres';
 
   @override
-  String get hasMedication => 'Pren medicació?';
+  String get hasMeasuring => 'Hi ha mesurament?';
 
   @override
   String get maxSchedulesReached => 'S\'han arribat al màxim de 10 horaris';

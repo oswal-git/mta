@@ -29,7 +29,7 @@ abstract class ExportDataSource {
     required DateTime startDate,
     required DateTime endDate,
     int? userAge,
-    String? medication,
+    String? medicacion,
   });
 }
 
@@ -124,8 +124,6 @@ class ExportDataSourceImpl implements ExportDataSource {
       // Crear Excel
       final excel = Excel.createExcel();
 
-      // Eliminar la hoja por defecto 'Sheet1'
-      excel.delete('Sheet1');
       final sheet = excel['Measurements'];
 
       // Headers
@@ -171,6 +169,9 @@ class ExportDataSourceImpl implements ExportDataSource {
       for (int col = 0; col < 8; col++) {
         sheet.setColumnWidth(col, 15);
       }
+
+      // Eliminar la hoja por defecto 'Sheet1'
+      excel.delete('Sheet1');
 
       // Guardar archivo
       final directory = await _getPublicDirectory(username);
@@ -259,7 +260,7 @@ class ExportDataSourceImpl implements ExportDataSource {
     required DateTime startDate,
     required DateTime endDate,
     int? userAge,
-    String? medication,
+    String? medicacion,
   }) async {
     try {
       debugPrint(
@@ -310,7 +311,7 @@ class ExportDataSourceImpl implements ExportDataSource {
                                   'Edad:', userAge?.toString() ?? 'N/A'),
                               pw.SizedBox(height: 8),
                               _buildHeaderRow(
-                                  'Medicación:', medication ?? 'N/A'),
+                                  'Medicación:', medicacion ?? 'N/A'),
                               pw.SizedBox(height: 8),
                               _buildHeaderRow(
                                   'Período:', '$startDateStr - $endDateStr'),

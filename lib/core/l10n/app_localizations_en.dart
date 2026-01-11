@@ -21,10 +21,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addUser => 'Add User';
 
   @override
-  String get alarmBody => 'Time to take your blood pressure measurement';
+  String get notificationBody => 'Time to take your blood pressure measurement';
 
   @override
-  String get alarmTitle => 'Blood Pressure Measurement';
+  String get notificationTitle => 'Blood Pressure Measurement';
 
   @override
   String get appTitle => 'MTA - Blood Pressure Manager';
@@ -127,7 +127,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friday => 'Friday';
 
   @override
-  String get hasMedication => 'Taking Medication?';
+  String get hasMeasuring => 'Taking Measuring?';
 
   @override
   String get maxSchedulesReached => 'Maximum 10 schedules allowed';

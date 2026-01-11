@@ -42,6 +42,12 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
   @override
   Future<String?> getActiveUserId() async {
     final id = sharedPreferences.getString(AppConstants.keyActiveUserId);
+
+    if (id == null) {
+      debugPrint('📖 UserLocalDataSource - No active user set');
+      return null;
+    }
+
     debugPrint(
         '${DateFormat('HH:mm:ss').format(DateTime.now())} -📖 UserLocalDataSource - getActiveUserId: $id');
     return id;
@@ -57,8 +63,8 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
               id: drift.Value(user.id),
               name: drift.Value(user.name),
               age: drift.Value(user.age),
-              hasMedication: drift.Value(user.hasMedication),
-              medicationName: drift.Value(user.medicationName),
+              hasMeasuring: drift.Value(user.hasMeasuring),
+              measuringName: drift.Value(user.medicationName),
               enableNotifications: drift.Value(user.enableNotifications),
               createdAt: drift.Value(user.createdAt),
               updatedAt: drift.Value(user.updatedAt),

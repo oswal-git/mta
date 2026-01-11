@@ -8,7 +8,7 @@
 PRODUCT_NAME = testapp
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.testapp
+PRODUCT_BUNDLE_IDENTIFIER = es.eglos.testapp
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2025 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2025 es.eglos. All rights reserved.

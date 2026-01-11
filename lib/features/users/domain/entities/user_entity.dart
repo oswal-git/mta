@@ -5,7 +5,7 @@ class UserEntity extends Equatable {
   final String id;
   final String name;
   final int? age;
-  final bool hasMedication;
+  final bool hasMeasuring;
   final String? medicationName;
   final bool enableNotifications;
   final DateTime createdAt;
@@ -15,7 +15,7 @@ class UserEntity extends Equatable {
     required this.id,
     required this.name,
     this.age,
-    this.hasMedication = false,
+    this.hasMeasuring = false,
     this.medicationName,
     this.enableNotifications = true,
     required this.createdAt,
@@ -27,7 +27,7 @@ class UserEntity extends Equatable {
     String? id,
     String? name,
     int? age,
-    bool? hasMedication,
+    bool? hasMeasuring,
     String? medicationName,
     bool? enableNotifications,
     DateTime? createdAt,
@@ -37,7 +37,7 @@ class UserEntity extends Equatable {
       id: id ?? this.id,
       name: name ?? this.name,
       age: age ?? this.age,
-      hasMedication: hasMedication ?? this.hasMedication,
+      hasMeasuring: hasMeasuring ?? this.hasMeasuring,
       medicationName: medicationName ?? this.medicationName,
       enableNotifications: enableNotifications ?? this.enableNotifications,
       createdAt: createdAt ?? this.createdAt,
@@ -50,7 +50,7 @@ class UserEntity extends Equatable {
         id,
         name,
         age,
-        hasMedication,
+        hasMeasuring,
         medicationName,
         enableNotifications,
         createdAt,

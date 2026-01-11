@@ -24,6 +24,7 @@
     <!-- Para alarmas exactas en Android 12+ -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <!-- Notificaciones de pantalla completa (opcional pero recomendado) -->
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
     <application

@@ -78,7 +78,7 @@ class ScheduleItemWidget extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                // Icono de alarma
+                // Icono de notificacion
                 Container(
                   width: 48,
                   height: 48,
@@ -89,7 +89,8 @@ class ScheduleItemWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
-                    Icons.alarm,
+                    Icons.notifications_active,
+                    size: 32,
                     color: schedule.isEnabled
                         ? Theme.of(context).colorScheme.primary
                         : Colors.grey[600],
@@ -114,10 +115,10 @@ class ScheduleItemWidget extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
 
-                      // Alarma
+                      // Notificación
                       Text(
                         schedule.isEnabled
-                            ? 'Alarm 5 min before (${_getAlarmTime(schedule)})'
+                            ? 'Notification 5 min before (${_getNotificationTime(schedule)})'
                             : 'Disabled',
                         style: TextStyle(
                           fontSize: 12,
@@ -181,10 +182,10 @@ class ScheduleItemWidget extends StatelessWidget {
     );
   }
 
-  String _getAlarmTime(ScheduleEntity schedule) {
-    final alarmTime = schedule.alarmDateTime;
-    final hour = alarmTime.hour.toString().padLeft(2, '0');
-    final minute = alarmTime.minute.toString().padLeft(2, '0');
+  String _getNotificationTime(ScheduleEntity schedule) {
+    final notificationTime = schedule.notificationDateTime;
+    final hour = notificationTime.hour.toString().padLeft(2, '0');
+    final minute = notificationTime.minute.toString().padLeft(2, '0');
     return '$hour:$minute';
   }
 }
