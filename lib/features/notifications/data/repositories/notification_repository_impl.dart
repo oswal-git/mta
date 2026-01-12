@@ -172,4 +172,35 @@ class NotificationRepositoryImpl implements NotificationRepository {
       ));
     }
   }
+
+  @override
+  Future<Either<Failure, int>> rescheduleAllNotifications() async {
+    try {
+      // 1. Cancelar todas
+      await dataSource.cancelAllNotifications();
+
+      // 2. Obtener usuarios
+      final usersResult = await userRepository.getUsers();
+      if (usersResult.isLeft()) {
+        return Left(CacheFailure('Error al obtener usuarios para reprogramar'));
+      }
+
+      final users = usersResult.getOrElse(() => []);
+      int totalScheduled = 0;
+
+      // 3. Programar para cada usuario
+      for (final user in users) {
+        final result = await scheduleNotificationsForUserSchedules(user.id);
+        result.fold(
+          (_) => null,
+          (count) => totalScheduled += count,
+        );
+      }
+
+      return Right(totalScheduled);
+    } catch (e) {
+      return Left(
+          CacheFailure('Error en reprogramación general: ${e.toString()}'));
+    }
+  }
 }

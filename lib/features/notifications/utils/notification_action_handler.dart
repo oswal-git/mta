@@ -69,10 +69,13 @@ class NotificationActionHandler {
   void _handleMeasuringTaken(String scheduleId) {
     debugPrint('💊 Usuario marcó medicación como tomada');
 
-    // Detener las notificaciones del schedule
-    notificationBloc.add(CancelNotification(scheduleId));
+    // Detener las notificaciones del schedule para HOY y programar para MAÑANA
+    notificationBloc.add(MarkAsTaken(
+      scheduleId: scheduleId,
+      timestamp: DateTime.now(),
+    ));
 
-    debugPrint('   ✅ Notificaciones detenidas');
+    debugPrint('   ✅ Notificaciones reprogramadas para mañana');
     debugPrint('   ℹ️  TODO: Implementar creación automática de medición');
   }
 

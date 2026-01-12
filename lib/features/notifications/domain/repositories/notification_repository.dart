@@ -14,4 +14,5 @@ abstract class NotificationRepository {
       String userId);
   Future<Either<Failure, void>> stopNotificationsForScheduleTime(
       String scheduleId, DateTime scheduleTime);
+  Future<Either<Failure, int>> rescheduleAllNotifications();
 }

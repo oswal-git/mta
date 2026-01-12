@@ -26,6 +26,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     on<CheckNotificationStatus>(_onCheckNotificationStatus);
     on<ScheduleNotificationsForUser>(_onScheduleNotificationsForUser);
     on<RescheduleAllNotifications>(_onRescheduleAllNotifications);
+    on<MarkAsTaken>(_onMarkAsTaken);
   }
 
   Future<void> _onScheduleNotification(
@@ -140,14 +141,29 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
   ) async {
     emit(const NotificationLoading());
 
-    // Primero cancelar todas las notificaciones existentes
-    final cancelResult = await repository.cancelAllNotifications();
+    final result = await repository.rescheduleAllNotifications();
 
-    if (cancelResult.isLeft()) {
-      emit(NotificationError('Error al cancelar notificaciones existentes'));
-      return;
-    }
+    result.fold(
+      (failure) => emit(NotificationError(failure.message)),
+      (count) => emit(NotificationsRescheduled(count)),
+    );
+  }
 
-    emit(const NotificationsRescheduled(0));
+  Future<void> _onMarkAsTaken(
+    MarkAsTaken event,
+    Emitter<NotificationState> emit,
+  ) async {
+    emit(const NotificationLoading());
+
+    final result = await repository.stopNotificationsForScheduleTime(
+      event.scheduleId,
+      event.timestamp,
+    );
+
+    result.fold(
+      (failure) => emit(NotificationError(failure.message)),
+      (_) => emit(
+          const NotificationCancelled()), // Re-usamos este estado por ahora
+    );
   }
 }
