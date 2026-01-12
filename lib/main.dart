@@ -44,122 +44,76 @@ void main() async {
   //   debugPrint('🔧 App ready for debugging');
   // });
 
-  try {
-    // ✅ PASO 1: Initialize timezone data for notifications
-    tz.initializeTimeZones();
+  // ✅ INICIALIZACIÓN PARALELA
+  debugPrint(
+      '${DateFormat('HH:mm:ss').format(DateTime.now())} -🚀 Iniciando inicialización paralela...');
 
-    // ✅ PASO 2: PASO 2: Obtener la zona horaria del dispositivo
-    final timeZoneInfo = await FlutterTimezone.getLocalTimezone();
-    final String timeZoneName = timeZoneInfo.identifier;
+  await Future.wait([
+    // PASO 1 & 2: Timezone
+    (() async {
+      try {
+        tz.initializeTimeZones();
+        final timeZoneInfo = await FlutterTimezone.getLocalTimezone();
+        tz.setLocalLocation(tz.getLocation(timeZoneInfo.identifier));
+        debugPrint(
+            '${DateFormat('HH:mm:ss').format(DateTime.now())} -✅ Timezone initialized: ${timeZoneInfo.identifier}');
+      } catch (e) {
+        debugPrint(
+            '${DateFormat('HH:mm:ss').format(DateTime.now())} -⚠️ Timezone warning: $e');
+        try {
+          tz.setLocalLocation(tz.getLocation('Europe/Madrid'));
+        } catch (_) {}
+      }
+    })(),
 
-    debugPrint(
-        '${DateFormat('HH:mm:ss').format(DateTime.now())} -📍 timeZoneInfo.identifier: ${timeZoneInfo.identifier}');
-    debugPrint(
-        '${DateFormat('HH:mm:ss').format(DateTime.now())} -📍 Zona horaria del dispositivo: ${timeZoneInfo.localizedName?.name}');
-    debugPrint(
-        '${DateFormat('HH:mm:ss').format(DateTime.now())} -📍 Zona horaria del dispositivo - key: ${const ValueKey("timeZoneLabel")}');
-    debugPrint(
-        '${DateFormat('HH:mm:ss').format(DateTime.now())} -📍 Zona horaria del dispositivo: $timeZoneName');
+    // PASO 3 & 4: Notificaciones
+    (() async {
+      try {
+        const initializationSettings = InitializationSettings(
+          android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+          iOS: DarwinInitializationSettings(
+              requestAlertPermission: true,
+              requestBadgePermission: true,
+              requestSoundPermission: true),
+        );
+        await flutterLocalNotificationsPlugin.initialize(
+          initializationSettings,
+          onDidReceiveNotificationResponse: _onNotificationResponse,
+          onDidReceiveBackgroundNotificationResponse:
+              _onBackgroundNotificationResponse,
+        );
+        await _createNotificationChannels();
+        debugPrint(
+            '${DateFormat('HH:mm:ss').format(DateTime.now())} -✅ Notificaciones inicializadas');
+      } catch (e) {
+        debugPrint(
+            '${DateFormat('HH:mm:ss').format(DateTime.now())} -❌ Error notificaciones: $e');
+      }
+    })(),
 
-    // ✅ PASO 3: Configurar la zona horaria local
-    tz.setLocalLocation(tz.getLocation(timeZoneName));
+    // PASO 5: Database
+    (() async {
+      try {
+        await DatabaseHelper.init();
+        debugPrint(
+            '${DateFormat('HH:mm:ss').format(DateTime.now())} -✅ Database ready');
+      } catch (e) {
+        debugPrint(
+            '${DateFormat('HH:mm:ss').format(DateTime.now())} -❌ Error DB: $e');
+      }
+    })(),
+  ]);
 
-    final now = DateTime.now();
-
+  // Solicitar permisos puede ser asíncrono pero no queremos bloquear el arranque si no es crítico,
+  // aunque es mejor tenerlos antes de programar nada.
+  NotificationPermissionHandler.requestAllPermissions().then((granted) {
     debugPrint(
-        '${DateFormat('HH:mm:ss').format(DateTime.now())} -✅ Timezone initialized: $timeZoneName');
-    debugPrint(
-        '${DateFormat('HH:mm:ss').format(now)} - ⏰ Hora local actual: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(now)}');
-  } catch (e) {
-    debugPrint(
-        '${DateFormat('HH:mm:ss').format(DateTime.now())} -Timezone initialization warning: $e');
-    // Fallback a 'Europe/Madrid' si falla
-    try {
-      tz.setLocalLocation(tz.getLocation('Europe/Madrid'));
-      debugPrint(
-          '${DateFormat('HH:mm:ss').format(DateTime.now())} -✅ Fallback a Europe/Madrid');
-    } catch (e2) {
-      debugPrint(
-          '${DateFormat('HH:mm:ss').format(DateTime.now())} -❌ No se pudo configurar timezone: $e2');
-    }
-  }
+        '${DateFormat('HH:mm:ss').format(DateTime.now())} -🔐 Permisos: ${granted ? '✅' : '⚠️'}');
+  });
 
-  // ✅ PASO 3: Inicializar el plugin de notificaciones locales
-  try {
-    debugPrint(
-        '${DateFormat('HH:mm:ss').format(DateTime.now())} -🔔 Inicializando notificaciones...');
-
-    // Configuración para Android
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-
-    // Configuración para iOS/macOS
-    const DarwinInitializationSettings initializationSettingsDarwin =
-        DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
-
-    // Configuración combinada
-    const InitializationSettings initializationSettings =
-        InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsDarwin,
-      macOS: initializationSettingsDarwin,
-    );
-
-    // Inicializar el plugin con callback para acciones
-    await flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
-      onDidReceiveNotificationResponse: _onNotificationResponse,
-      onDidReceiveBackgroundNotificationResponse:
-          _onBackgroundNotificationResponse,
-    );
-
-    // ✅ PASO 4: Crear el canal de notificaciones para Android
-    await _createNotificationChannels();
-
-    debugPrint(
-        '${DateFormat('HH:mm:ss').format(DateTime.now())} -✅ Notificaciones inicializadas correctamente');
-  } catch (e, stackTrace) {
-    debugPrint(
-        '${DateFormat('HH:mm:ss').format(DateTime.now())} -❌ Error al inicializar notificaciones: $e');
-    debugPrint('Stack: $stackTrace');
-  }
-
-  // ✅ Solicitar permisos de notificaciones
-  try {
-    debugPrint(
-        '${DateFormat('HH:mm:ss').format(DateTime.now())} -🔐 Solicitando permisos...');
-    final permissionsGranted =
-        await NotificationPermissionHandler.requestAllPermissions();
-    if (permissionsGranted) {
-      debugPrint(
-          '${DateFormat('HH:mm:ss').format(DateTime.now())} -✅ Permisos concedidos');
-    } else {
-      debugPrint(
-          '${DateFormat('HH:mm:ss').format(DateTime.now())} -⚠️ Algunos permisos no fueron concedidos');
-    }
-  } catch (e) {
-    debugPrint(
-        '${DateFormat('HH:mm:ss').format(DateTime.now())} -⚠️ Error al solicitar permisos: $e');
-  }
-
-  try {
-    // Inicializar base de datos con timeout
-    await DatabaseHelper.init();
-    debugPrint(
-        '${DateFormat('HH:mm:ss').format(DateTime.now())} -✅ Database successfully');
-  } catch (e, stackTrace) {
-    debugPrint(
-        '${DateFormat('HH:mm:ss').format(DateTime.now())} -❌ Database initialization failed: $e');
-    debugPrint(
-        '${DateFormat('HH:mm:ss').format(DateTime.now())} -Stack trace: $stackTrace');
-    // Puedes mostrar un error al usuario o fallar gracefuly
-  }
-
-  // Initialize dependency injection
+  // DI depende de que la DB y SharedPreferences estén listas (o al menos que sus helpers lo estén)
+  // SharedPreferences se inicializa DENTRO de di.init() en muchos casos, pero aquí lo vemos en injection_container.dart
+  // Vamos a ejecutar di.init() al final de las paralelas.
   debugPrint(
       '${DateFormat('HH:mm:ss').format(DateTime.now())} -🔧 Initializing DI...');
   await di.init();
