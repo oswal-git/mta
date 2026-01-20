@@ -523,7 +523,7 @@ abstract class AppLocalizations {
   /// No description provided for @measurementLocation.
   ///
   /// In es, this message translates to:
-  /// **'Lugar de medición'**
+  /// **'Zona de medición'**
   String get measurementLocation;
 
   /// No description provided for @locationNotIndicated.

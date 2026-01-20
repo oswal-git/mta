@@ -222,7 +222,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get measurementLabel => 'Measurement';
 
   @override
-  String get measurementLocation => 'Measurement location';
+  String get measurementLocation => 'Measurement zone';
 
   @override
   String get locationNotIndicated => 'Not indicated';

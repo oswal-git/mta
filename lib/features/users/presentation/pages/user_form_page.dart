@@ -293,7 +293,7 @@ class _UserFormPageState extends State<UserFormPage> {
                           initialValue: _measurementLocation,
                           decoration: InputDecoration(
                             labelText: '${l10n.measurementLocation} (opcional)',
-                            prefixIcon: const Icon(Icons.location_on),
+                            prefixIcon: const Icon(Icons.accessibility_new),
                           ),
                           items: [
                             DropdownMenuItem(

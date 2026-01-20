@@ -222,7 +222,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get measurementLabel => 'Mesura (Medicament)';
 
   @override
-  String get measurementLocation => 'Lloc de mesura';
+  String get measurementLocation => 'Zona de mesura';
 
   @override
   String get locationNotIndicated => 'Sense indicar';

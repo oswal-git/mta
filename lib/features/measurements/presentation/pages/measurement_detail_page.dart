@@ -453,7 +453,7 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
                               initialValue: _measurementLocation,
                               decoration: InputDecoration(
                                 labelText: l10n.measurementLocation,
-                                prefixIcon: const Icon(Icons.location_on),
+                                prefixIcon: const Icon(Icons.accessibility_new),
                               ),
                               items: [
                                 DropdownMenuItem(
@@ -486,7 +486,7 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
                           else
                             Card(
                               child: ListTile(
-                                leading: const Icon(Icons.location_on),
+                                leading: const Icon(Icons.accessibility_new),
                                 title: Text(l10n.measurementLocation),
                                 subtitle: Text(_measurementLocation == null
                                     ? l10n.locationNotIndicated

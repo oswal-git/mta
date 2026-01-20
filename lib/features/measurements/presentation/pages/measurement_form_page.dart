@@ -545,8 +545,8 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                                         decoration: InputDecoration(
                                           labelText:
                                               '${l10n.measurementLocation} (opcional)',
-                                          prefixIcon:
-                                              const Icon(Icons.location_on),
+                                          prefixIcon: const Icon(
+                                              Icons.accessibility_new),
                                           isDense: true,
                                         ),
                                         items: [

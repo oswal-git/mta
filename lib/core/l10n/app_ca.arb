@@ -70,7 +70,7 @@
     "maxSchedulesReached": "S'han arribat al màxim de 10 horaris",
     "measurementDetails": "Detalls de la Mesura",
     "measurementLabel": "Mesura (Medicament)",
-    "measurementLocation": "Lloc de mesura",
+    "measurementLocation": "Zona de mesura",
     "locationNotIndicated": "Sense indicar",
     "locationLeftArm": "Braç esquerre",
     "locationLeftWrist": "Munyeca esquerra",
