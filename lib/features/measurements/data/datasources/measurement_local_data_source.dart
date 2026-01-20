@@ -59,6 +59,8 @@ class MeasurementLocalDataSourceImpl implements MeasurementLocalDataSource {
               diastolic: drift.Value(measurement.diastolic),
               pulse: drift.Value(measurement.pulse),
               note: drift.Value(measurement.note),
+              bpMonitorModel: drift.Value(measurement.bpMonitorModel),
+              measurementLocation: drift.Value(measurement.measurementLocation),
               createdAt: drift.Value(measurement.createdAt),
               updatedAt: drift.Value(measurement.updatedAt),
             ),
