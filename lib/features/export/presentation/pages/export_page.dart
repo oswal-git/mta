@@ -28,13 +28,23 @@ class _ExportPageState extends State<ExportPage> {
   ExportFormat _selectedFormat = ExportFormat.excel;
   bool _isExporting = false;
 
+  bool _initialized = false;
+
   @override
   void initState() {
     super.initState();
     // Valores por defecto: último mes
     _endDate = DateTime.now();
     _startDate = DateTime(_endDate!.year, _endDate!.month - 1, _endDate!.day);
-    _updateFileName();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized) {
+      _updateFileName();
+      _initialized = true;
+    }
   }
 
   @override
