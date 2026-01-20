@@ -538,7 +538,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                                         ),
                                         style: const TextStyle(fontSize: 14),
                                       ),
-                                      const SizedBox(height: 12),
+                                      const SizedBox(height: 24),
                                       DropdownButtonFormField<String?>(
                                         initialValue: _measurementLocation,
                                         isExpanded: true,
@@ -585,8 +585,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 16),
-
+                              const SizedBox(height: 24),
                               // Botones
                               Row(
                                 children: [
@@ -624,7 +623,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 40),
+                              const SizedBox(height: 1),
                             ],
                           ),
                         ),

@@ -131,6 +131,8 @@ class NotificationNativeDataSourceImpl implements NotificationNativeDataSource {
           sound: notification.soundEnabled && notification.soundUri != null
               ? UriAndroidNotificationSound(notification.soundUri!)
               : null,
+          groupKey: notification.scheduleId,
+          groupAlertBehavior: GroupAlertBehavior.children,
           actions: [
             const AndroidNotificationAction('taken', '✓ CANCELADA',
                 showsUserInterface: true),
@@ -165,7 +167,7 @@ class NotificationNativeDataSourceImpl implements NotificationNativeDataSource {
       id,
       '🧪 PRUEBA: ${_buildTitle(notification)}',
       'Si ves esto, el sistema de notificaciones funciona correctamente.',
-      const NotificationDetails(
+      NotificationDetails(
         android: AndroidNotificationDetails(
           'mta_notifications_v5',
           'MTA Alerta V5',
@@ -174,6 +176,7 @@ class NotificationNativeDataSourceImpl implements NotificationNativeDataSource {
           playSound: true,
           fullScreenIntent: true,
           category: AndroidNotificationCategory.alarm,
+          groupKey: notification.scheduleId,
         ),
       ),
       payload: '${notification.scheduleId}|0|${notification.userId}',
