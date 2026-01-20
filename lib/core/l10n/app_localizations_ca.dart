@@ -9,10 +9,16 @@ class AppLocalizationsCa extends AppLocalizations {
   AppLocalizationsCa([String locale = 'ca']) : super(locale);
 
   @override
+  String get accept => 'Acceptar';
+
+  @override
   String get activeUser => 'Usuari Actiu';
 
   @override
   String get addMeasurement => 'Afegir Mesura';
+
+  @override
+  String get addNoteHint => 'Afegeix una nota...';
 
   @override
   String get addSchedule => 'Afegir Horari';
@@ -21,26 +27,49 @@ class AppLocalizationsCa extends AppLocalizations {
   String get addUser => 'Afegir Usuari';
 
   @override
-  String get notificationBody =>
-      'És hora de fer la mesura de la pressió arterial';
-
-  @override
-  String get notificationTitle => 'Mesura de Pressió Arterial';
+  String get alertManagement => 'Gestió d\'Alertes';
 
   @override
   String get appTitle => 'MTA - Gestor de Pressió Arterial';
 
   @override
+  String get backToHome => 'Tornar a l\'Inici';
+
+  @override
+  String get bloodPressureMonitorModel => 'Marca i model del tensiòmetre';
+
+  @override
+  String get bloodPressureReference => 'Referència de Pressió Arterial';
+
+  @override
   String get cancel => 'Cancel·lar';
 
   @override
+  String get cancelNotification => 'Cancel·lar notificació';
+
+  @override
+  String get close => 'Tancar';
+
+  @override
   String get confirm => 'Confirmar';
+
+  @override
+  String get customSound => 'So personalitzat';
 
   @override
   String get date => 'Data';
 
   @override
   String get day => 'Dia';
+
+  @override
+  String get defaultOption => 'Predeterminat';
+
+  @override
+  String get defaultSound => 'So predeterminat';
+
+  @override
+  String get defaultUsername => 'usuari';
 
   @override
   String get delete => 'Eliminar';
@@ -62,7 +91,16 @@ class AppLocalizationsCa extends AppLocalizations {
   String get deleteUser => 'Eliminar Usuari';
 
   @override
+  String get diastole => 'Diàstole';
+
+  @override
+  String get diastoleValidation => 'La diàstole ha d\'estar entre 30 i 150';
+
+  @override
   String get diastolic => 'Diastòl.';
+
+  @override
+  String get discardChanges => 'Descartar canvis?';
 
   @override
   String get edit => 'Editar';
@@ -77,6 +115,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get editUser => 'Editar Usuari';
 
   @override
+  String get elevated => 'Elevada';
+
+  @override
   String get enableNotifications => 'Activar notificacions?';
 
   @override
@@ -84,6 +125,9 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get endTime => 'Hora de Fi';
+
+  @override
+  String get english => 'Anglès';
 
   @override
   String get errorGeneric => 'S\'ha produït un error';
@@ -96,6 +140,12 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get errorSaveFailed => 'No s\'ha pogut desar';
+
+  @override
+  String get exactAlarmsPermission => 'Alarmes Exactes';
+
+  @override
+  String get exit => 'Sortir';
 
   @override
   String get export => 'Exportar';
@@ -113,6 +163,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get exportFormat => 'Format d\'Exportació';
 
   @override
+  String get exporting => 'Exportant...';
+
+  @override
   String get exportSuccess => 'Arxiu exportat correctament';
 
   @override
@@ -125,10 +178,39 @@ class AppLocalizationsCa extends AppLocalizations {
   String get finish => 'Finalitzar';
 
   @override
+  String get fixPermissions => 'CORREGIR PERMISOS';
+
+  @override
+  String get formatCsv => 'CSV';
+
+  @override
+  String get formatExcel => 'Excel (XLSX)';
+
+  @override
+  String get formatPdf => 'PDF';
+
+  @override
   String get friday => 'Divendres';
 
   @override
   String get hasMeasuring => 'Hi ha mesurament?';
+
+  @override
+  String get high => 'Alta';
+
+  @override
+  String get language => 'Idioma';
+
+  @override
+  String get languageSelection => 'Selecció d\'Idioma';
+
+  @override
+  String get markAsTaken => 'Marcar com a presa';
+
+  @override
+  String maxSchedulesAllowed(Object count) {
+    return 'Màxim $count horaris permesos';
+  }
 
   @override
   String get maxSchedulesReached => 'S\'han arribat al màxim de 10 horaris';
@@ -137,7 +219,28 @@ class AppLocalizationsCa extends AppLocalizations {
   String get measurementDetails => 'Detalls de la Mesura';
 
   @override
-  String get measurementNumber => 'Mesura #';
+  String get measurementLabel => 'Mesura (Medicament)';
+
+  @override
+  String get measurementLocation => 'Lloc de mesura';
+
+  @override
+  String get locationNotIndicated => 'Sense indicar';
+
+  @override
+  String get locationLeftArm => 'Braç esquerre';
+
+  @override
+  String get locationLeftWrist => 'Munyeca esquerra';
+
+  @override
+  String get locationRightArm => 'Braç dret';
+
+  @override
+  String get locationRightWrist => 'Munyeca dreta';
+
+  @override
+  String get measurementNumber => 'Mesurament';
 
   @override
   String get measurements => 'Mesures';
@@ -146,7 +249,15 @@ class AppLocalizationsCa extends AppLocalizations {
   String get measurementTime => 'Hora';
 
   @override
+  String measurementTitle(Object number) {
+    return 'Mesurament $number';
+  }
+
+  @override
   String get medicationName => 'Nom de la Medicació';
+
+  @override
+  String get minutesShort => 'min';
 
   @override
   String get monday => 'Dilluns';
@@ -155,10 +266,58 @@ class AppLocalizationsCa extends AppLocalizations {
   String get newUser => 'Nou Usuari';
 
   @override
+  String get next => 'Següent';
+
+  @override
+  String get noMeasurementsAvailable => 'No hi ha mesuraments disponibles';
+
+  @override
   String get noMeasurementsInRange => 'No hi ha mesures en el rang seleccionat';
 
   @override
+  String get normal => 'Normal';
+
+  @override
+  String get noSchedulesYet => 'Encara no hi ha horaris';
+
+  @override
+  String get noSoundsFound => 'No s\'han trobat sons';
+
+  @override
   String get note => 'Nota';
+
+  @override
+  String get noteOptional => 'Nota (opcional)';
+
+  @override
+  String get notificationBody =>
+      'És hora de fer la mesura de la pressió arterial';
+
+  @override
+  String notificationSnoozedMessage(Object minutes) {
+    return 'Notificació posposada $minutes minuts';
+  }
+
+  @override
+  String get notificationSounds => 'So de notificacions';
+
+  @override
+  String get notificationSoundsSubtitle => 'Reproduir so en rebre alertes';
+
+  @override
+  String get notificationsPermission => 'Notificacions';
+
+  @override
+  String get notificationTitle => 'Mesura de Pressió Arterial';
+
+  @override
+  String get noUsers => 'Sense usuaris';
+
+  @override
+  String get noUserSelected => 'Cap usuari seleccionat';
+
+  @override
+  String get ok => 'D\'acord';
 
   @override
   String get postpone => 'Ajorna 10 min';
@@ -167,10 +326,19 @@ class AppLocalizationsCa extends AppLocalizations {
   String get pulse => 'Pols';
 
   @override
+  String get pulseValidation => 'El pols ha d\'estar entre 30 i 200';
+
+  @override
+  String get reminderLabel => 'Recordatori';
+
+  @override
   String get saturday => 'Dissabte';
 
   @override
   String get save => 'Desar';
+
+  @override
+  String get scheduledTimeLabel => 'Hora programada';
 
   @override
   String get schedules => 'Horaris';
@@ -185,13 +353,25 @@ class AppLocalizationsCa extends AppLocalizations {
   String get selectDirectory => 'Seleccionar Directori';
 
   @override
+  String get selectSound => 'Seleccionar so';
+
+  @override
+  String get selectSoundTitle => 'Seleccionar So';
+
+  @override
   String get settings => 'Configuració';
+
+  @override
+  String get spanish => 'Espanyol';
 
   @override
   String get startDate => 'Data Inici';
 
   @override
   String get startTime => 'Hora d\'Inici';
+
+  @override
+  String get stay => 'Quedar-se';
 
   @override
   String get success => 'Èxit';
@@ -209,16 +389,47 @@ class AppLocalizationsCa extends AppLocalizations {
   String get sunday => 'Diumenge';
 
   @override
+  String get syncAlertsToolip => 'Sincronitzar Alertes (Emergència)';
+
+  @override
+  String get systole => 'Sístole';
+
+  @override
+  String get systoleDiastoleElevated => 'Sístole 130-139\nDiàstole 85-89';
+
+  @override
+  String get systoleDiastoleHigh => 'Sístole ≥ 140\nDiàstole ≥ 90';
+
+  @override
+  String get systoleDiastoleNormal => 'Sístole < 130\nDiàstole < 85';
+
+  @override
+  String get systoleValidation => 'La sístole ha d\'estar entre 50 i 250';
+
+  @override
   String get systolic => 'Sistòl.';
 
   @override
   String get takeMeasurement => 'Fer Mesura';
 
   @override
+  String get tapPlusToAdd => 'Toca el botó + per afegir el teu primer horari';
+
+  @override
   String get thursday => 'Dijous';
 
   @override
+  String get timeOfMeasurement => 'Hora del mesurament';
+
+  @override
   String get tuesday => 'Dimarts';
+
+  @override
+  String get unknownOption => 'Desconegut';
+
+  @override
+  String get unsavedChangesMessage =>
+      'Tens canvis sense desar. Vols sortir sense desar?';
 
   @override
   String get userAge => 'Edat';
@@ -228,6 +439,9 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get users => 'Usuaris';
+
+  @override
+  String get valencian => 'Valencià';
 
   @override
   String get validationEndNotFuture =>

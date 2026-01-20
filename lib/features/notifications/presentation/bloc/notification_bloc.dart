@@ -3,6 +3,7 @@ import 'package:mta/features/notifications/domain/repositories/notification_repo
 import 'package:mta/features/notifications/domain/usecases/cancel_notification.dart';
 import 'package:mta/features/notifications/domain/usecases/schedule_notification.dart';
 import 'package:mta/features/notifications/domain/usecases/snooze_notification.dart';
+import 'package:mta/features/notifications/utils/notification_permission_handler.dart';
 import 'notification_event.dart';
 import 'notification_state.dart';
 
@@ -27,6 +28,10 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     on<ScheduleNotificationsForUser>(_onScheduleNotificationsForUser);
     on<RescheduleAllNotifications>(_onRescheduleAllNotifications);
     on<MarkAsTaken>(_onMarkAsTaken);
+    on<TestNotificationNow>(_onTestNotificationNow);
+    on<CheckPermissionsEvent>(_onCheckPermissions);
+    on<RequestPermissionsEvent>(_onRequestPermissions);
+    on<LogPendingNotifications>(_onLogPendingNotifications);
   }
 
   Future<void> _onScheduleNotification(
@@ -158,6 +163,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     final result = await repository.stopNotificationsForScheduleTime(
       event.scheduleId,
       event.timestamp,
+      event.userId,
     );
 
     result.fold(
@@ -165,5 +171,50 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       (_) => emit(
           const NotificationCancelled()), // Re-usamos este estado por ahora
     );
+  }
+
+  Future<void> _onTestNotificationNow(
+    TestNotificationNow event,
+    Emitter<NotificationState> emit,
+  ) async {
+    emit(const NotificationLoading());
+
+    final result = await repository.testInstantNotification(event.notification);
+
+    result.fold(
+      (failure) => emit(NotificationError(failure.message)),
+      (_) => emit(const NotificationScheduled()),
+    );
+  }
+
+  Future<void> _onCheckPermissions(
+    CheckPermissionsEvent event,
+    Emitter<NotificationState> emit,
+  ) async {
+    final hasNotification =
+        await NotificationPermissionHandler.hasNotificationPermission();
+    final hasExact =
+        await NotificationPermissionHandler.checkExactNotificationPermission();
+
+    emit(PermissionStatusChecked(
+      hasNotificationPermission: hasNotification,
+      hasExactAlarmPermission: hasExact,
+    ));
+  }
+
+  Future<void> _onRequestPermissions(
+    RequestPermissionsEvent event,
+    Emitter<NotificationState> emit,
+  ) async {
+    emit(const NotificationLoading());
+    await NotificationPermissionHandler.requestAllPermissions();
+    add(const CheckPermissionsEvent());
+  }
+
+  Future<void> _onLogPendingNotifications(
+    LogPendingNotifications event,
+    Emitter<NotificationState> emit,
+  ) async {
+    await repository.testLogPending();
   }
 }

@@ -69,7 +69,8 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
               '📅 Programando notificaciones para el schedule ${schedule.id}');
 
           final notificationResult = await notificationRepository
-              .scheduleNotificationsForUserSchedules(schedule.userId);
+              .scheduleNotificationsForUserSchedules(schedule.userId,
+                  targetScheduleId: schedule.id);
 
           notificationResult.fold(
             (failure) {
@@ -125,7 +126,8 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
         // Schedule new notification if enabled
         if (schedule.isEnabled) {
           final notificationResult = await notificationRepository
-              .scheduleNotificationsForUserSchedules(schedule.userId);
+              .scheduleNotificationsForUserSchedules(schedule.userId,
+                  targetScheduleId: schedule.id);
 
           notificationResult.fold(
             (failure) {

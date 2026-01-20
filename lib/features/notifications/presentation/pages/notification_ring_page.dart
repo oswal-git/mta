@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:mta/core/l10n/app_localizations.dart';
 import 'package:mta/features/notifications/domain/entities/notification_entity.dart';
 import 'package:mta/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:mta/features/notifications/presentation/bloc/notification_event.dart';
@@ -64,7 +65,17 @@ class _NotificationRingPageState extends State<NotificationRingPage>
     Navigator.of(context).pop();
   }
 
+  void _markAsTaken() {
+    context.read<NotificationBloc>().add(MarkAsTaken(
+          scheduleId: widget.notification.scheduleId,
+          timestamp: DateTime.now(),
+          userId: widget.notification.userId,
+        ));
+    Navigator.of(context).pop();
+  }
+
   void _snoozeNotification(Duration duration) {
+    final l10n = AppLocalizations.of(context);
     context.read<NotificationBloc>().add(
           SnoozeNotification(
             notificationId: widget.notification.id,
@@ -77,7 +88,7 @@ class _NotificationRingPageState extends State<NotificationRingPage>
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'Notificación pospuesta por ${duration.inMinutes} minutos',
+          l10n.notificationSnoozedMessage(duration.inMinutes),
         ),
         duration: const Duration(seconds: 2),
       ),
@@ -86,6 +97,7 @@ class _NotificationRingPageState extends State<NotificationRingPage>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final timeFormat = DateFormat.Hm();
     final scheduledTime =
         timeFormat.format(widget.notification.notificationTime);
@@ -146,7 +158,7 @@ class _NotificationRingPageState extends State<NotificationRingPage>
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Hora de tomar medición',
+                      l10n.timeOfMeasurement,
                       style: Theme.of(context).textTheme.titleLarge,
                       textAlign: TextAlign.center,
                     ),
@@ -156,7 +168,7 @@ class _NotificationRingPageState extends State<NotificationRingPage>
 
               const SizedBox(height: 24),
 
-              // Información de la toma
+              // Información de la medición
               Card(
                 elevation: 2,
                 child: Padding(
@@ -167,7 +179,7 @@ class _NotificationRingPageState extends State<NotificationRingPage>
                       _buildInfoRow(
                         context,
                         Icons.schedule,
-                        'Hora programada',
+                        l10n.scheduledTimeLabel,
                         scheduledTime,
                       ),
                       if (widget.notification.label != null &&
@@ -176,7 +188,7 @@ class _NotificationRingPageState extends State<NotificationRingPage>
                         _buildInfoRow(
                           context,
                           Icons.label,
-                          'Recordatorio',
+                          l10n.reminderLabel,
                           widget.notification.label!,
                         ),
                       ],
@@ -186,7 +198,7 @@ class _NotificationRingPageState extends State<NotificationRingPage>
                         _buildInfoRow(
                           context,
                           Icons.heat_pump_rounded,
-                          'Medición',
+                          l10n.measurementLabel,
                           widget.notification.medication!,
                         ),
                       ],
@@ -200,13 +212,12 @@ class _NotificationRingPageState extends State<NotificationRingPage>
               // Botón principal: Marcar como tomada
               ElevatedButton.icon(
                 onPressed: () {
-                  // Aquí se podría registrar automáticamente la medición
-                  _dismissNotification();
+                  _markAsTaken();
                 },
                 icon: const Icon(Icons.check_circle, size: 28),
-                label: const Text(
-                  'Marcar como tomada',
-                  style: TextStyle(fontSize: 18),
+                label: Text(
+                  l10n.markAsTaken,
+                  style: const TextStyle(fontSize: 18),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.primary,
@@ -228,7 +239,7 @@ class _NotificationRingPageState extends State<NotificationRingPage>
                       onPressed: () =>
                           _snoozeNotification(const Duration(minutes: 5)),
                       icon: const Icon(Icons.snooze),
-                      label: const Text('5 min'),
+                      label: Text('5 ${l10n.minutesShort}'),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
@@ -243,7 +254,7 @@ class _NotificationRingPageState extends State<NotificationRingPage>
                       onPressed: () =>
                           _snoozeNotification(const Duration(minutes: 10)),
                       icon: const Icon(Icons.snooze),
-                      label: const Text('10 min'),
+                      label: Text('10 ${l10n.minutesShort}'),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
@@ -258,7 +269,7 @@ class _NotificationRingPageState extends State<NotificationRingPage>
                       onPressed: () =>
                           _snoozeNotification(const Duration(minutes: 15)),
                       icon: const Icon(Icons.snooze),
-                      label: const Text('15 min'),
+                      label: Text('15 ${l10n.minutesShort}'),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
@@ -276,7 +287,7 @@ class _NotificationRingPageState extends State<NotificationRingPage>
               TextButton.icon(
                 onPressed: _dismissNotification,
                 icon: const Icon(Icons.close),
-                label: const Text('Cancelar notificación'),
+                label: Text(l10n.cancelNotification),
                 style: TextButton.styleFrom(
                   foregroundColor: Theme.of(context).colorScheme.error,
                   padding: const EdgeInsets.symmetric(vertical: 12),

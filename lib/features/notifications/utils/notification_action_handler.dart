@@ -3,6 +3,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:mta/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:mta/features/notifications/presentation/bloc/notification_event.dart';
 import 'package:mta/features/measurements/presentation/bloc/measurement_bloc.dart';
+import 'package:mta/core/routes/app_router.dart';
+import 'package:mta/core/utils/constants.dart';
 
 /// Manejador de acciones de notificaciones
 class NotificationActionHandler {
@@ -29,7 +31,7 @@ class NotificationActionHandler {
       return;
     }
 
-    // Parsear el payload: "scheduleId|repetitionNumber"
+    // Parsear el payload: "scheduleId|repetitionNumber|userId"
     final parts = payload.split('|');
     if (parts.isEmpty) {
       debugPrint('   ⚠️ Formato de payload inválido');
@@ -38,14 +40,21 @@ class NotificationActionHandler {
 
     final scheduleId = parts[0];
     final repetitionNumber = parts.length > 1 ? int.tryParse(parts[1]) ?? 0 : 0;
+    final userId = parts.length > 2 ? parts[2] : null;
 
     debugPrint('   Schedule ID: $scheduleId');
     debugPrint('   Repetición: $repetitionNumber');
+    debugPrint('   User ID: $userId');
 
     // Procesar la acción
     switch (actionId) {
       case 'taken':
-        _handleMeasuringTaken(scheduleId);
+        if (userId != null) {
+          _handleMeasuringTaken(scheduleId, userId);
+        } else {
+          debugPrint(
+              '   ⚠️ No se puede marcar como tomada: falta userId en payload (Versión antigua de notificación)');
+        }
         break;
 
       case 'snooze':
@@ -55,7 +64,7 @@ class NotificationActionHandler {
       case null:
       case '':
         // Usuario tocó la notificación (sin acción específica)
-        _handleNotificationTap(scheduleId);
+        _handleNotificationTap(scheduleId, userId);
         break;
 
       default:
@@ -66,13 +75,14 @@ class NotificationActionHandler {
   }
 
   /// Maneja cuando el usuario marca como "tomada"
-  void _handleMeasuringTaken(String scheduleId) {
+  void _handleMeasuringTaken(String scheduleId, String userId) {
     debugPrint('💊 Usuario marcó medicación como tomada');
 
     // Detener las notificaciones del schedule para HOY y programar para MAÑANA
     notificationBloc.add(MarkAsTaken(
       scheduleId: scheduleId,
       timestamp: DateTime.now(),
+      userId: userId,
     ));
 
     debugPrint('   ✅ Notificaciones reprogramadas para mañana');
@@ -87,7 +97,7 @@ class NotificationActionHandler {
     const snoozeDuration = Duration(minutes: 5);
 
     notificationBloc.add(SnoozeNotification(
-      notificationId: scheduleId,
+      notificationId: 'schedule_$scheduleId',
       snoozeDuration: snoozeDuration,
     ));
 
@@ -96,11 +106,19 @@ class NotificationActionHandler {
   }
 
   /// Maneja cuando el usuario simplemente toca la notificación
-  void _handleNotificationTap(String scheduleId) {
-    debugPrint('👆 Usuario tocó la notificación');
-    debugPrint('   ℹ️ Puedes navegar a una pantalla específica aquí');
+  void _handleNotificationTap(String scheduleId, String? userId) {
+    debugPrint('👆 Usuario tocó la notificación (Schedule: $scheduleId)');
+    debugPrint('   → Abriendo pantalla de nueva toma');
 
-    // TODO: Navegar a la pantalla de registro de medición
-    // navigatorKey.currentState?.pushNamed('/measurement/create', arguments: scheduleId);
+    if (userId != null) {
+      debugPrint('   → Navegando con userId: $userId');
+      // Navegar a la pantalla de nueva toma con el userId
+      appRouter.push('${Routes.measurementForm}?userId=$userId');
+    } else {
+      debugPrint(
+          '   ⚠️ No se pudo extraer userId del payload, navegando sin contexto');
+      // Navegar directamente a la pantalla de nueva toma
+      appRouter.push(Routes.measurementForm);
+    }
   }
 }

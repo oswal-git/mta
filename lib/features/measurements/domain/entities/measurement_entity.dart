@@ -10,6 +10,8 @@ class MeasurementEntity extends Equatable {
   final int diastolic;
   final int? pulse;
   final String? note;
+  final String? bpMonitorModel;
+  final String? measurementLocation;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -22,6 +24,8 @@ class MeasurementEntity extends Equatable {
     required this.diastolic,
     this.pulse,
     this.note,
+    this.bpMonitorModel,
+    this.measurementLocation,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -36,6 +40,8 @@ class MeasurementEntity extends Equatable {
     int? diastolic,
     int? pulse,
     String? note,
+    String? bpMonitorModel,
+    String? measurementLocation,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -48,6 +54,8 @@ class MeasurementEntity extends Equatable {
       diastolic: diastolic ?? this.diastolic,
       pulse: pulse ?? this.pulse,
       note: note ?? this.note,
+      bpMonitorModel: bpMonitorModel ?? this.bpMonitorModel,
+      measurementLocation: measurementLocation ?? this.measurementLocation,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -63,6 +71,8 @@ class MeasurementEntity extends Equatable {
         diastolic,
         pulse,
         note,
+        bpMonitorModel,
+        measurementLocation,
         createdAt,
         updatedAt,
       ];

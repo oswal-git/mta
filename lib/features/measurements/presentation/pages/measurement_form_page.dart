@@ -10,12 +10,14 @@ import 'package:mta/features/measurements/presentation/bloc/measurement_bloc.dar
 import 'package:mta/features/measurements/presentation/bloc/measurement_event.dart';
 import 'package:mta/features/measurements/presentation/bloc/measurement_state.dart';
 import 'package:mta/features/users/presentation/bloc/user_bloc.dart';
+import 'package:mta/features/users/presentation/bloc/user_event.dart';
 import 'package:mta/features/users/presentation/bloc/user_state.dart';
 
 class MeasurementFormPage extends StatefulWidget {
   final String? measurementId;
+  final String? userId;
 
-  const MeasurementFormPage({super.key, this.measurementId});
+  const MeasurementFormPage({super.key, this.measurementId, this.userId});
 
   @override
   State<MeasurementFormPage> createState() => _MeasurementFormPageState();
@@ -28,10 +30,12 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
   final _systolicController = TextEditingController();
   final _diastolicController = TextEditingController();
   final _pulseController = TextEditingController();
+  final _bpMonitorModelController = TextEditingController();
 
   DateTime _selectedDateTime = DateTime.now();
   int _currentMeasurementNumber = 1;
   String? _userId;
+  String? _measurementLocation;
   bool _isInitialized = false;
   bool _isDateTimeManuallyChanged = false;
 
@@ -50,34 +54,36 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
 
   void _initializeForm() {
     final userState = context.read<UserBloc>().state;
-    if (userState is UsersLoaded && userState.activeUser != null) {
+
+    // If a userId was passed in the route, set it as active user
+    if (widget.userId != null) {
+      debugPrint(
+          '📋 MeasurementForm - Setting active user from route: ${widget.userId}');
+      context.read<UserBloc>().add(SetActiveUserEvent(widget.userId!));
+      _userId = widget.userId;
+    } else if (userState is UsersLoaded && userState.activeUser != null) {
       _userId = userState.activeUser!.id;
-
-      setState(() {
-        _currentMeasurementNumber = 1; // <-- reiniciar al abrir
-        _selectedDateTime =
-            DateTime.now(); // <-- opcional, iniciar fecha actual
-        _isDateTimeManuallyChanged = false; // resetear la bandera
-      });
-
-      context.read<MeasurementBloc>().add(
-            GetNextMeasurementNumberEvent(_userId!, _selectedDateTime),
-          );
+      // Heredar valores del usuario por defecto
+      _bpMonitorModelController.text =
+          userState.activeUser!.bpMonitorModel ?? '';
+      _measurementLocation = userState.activeUser!.measurementLocation;
     } else {
-      debugPrint('⚠️ MeasurementForm - No active user found');
-      // Si no hay usuario activo, volver al home
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('No hay usuario activo'),
-              backgroundColor: Colors.red,
-            ),
-          );
-          context.go(Routes.home);
-        }
-      });
+      debugPrint(
+          '⚠️ MeasurementForm - No active user found, attempting to load users');
+      // Intentar cargar usuarios si no están cargados aún
+      context.read<UserBloc>().add(LoadUsersEvent());
+      return;
     }
+
+    setState(() {
+      _currentMeasurementNumber = 1; // <-- reiniciar al abrir
+      _selectedDateTime = DateTime.now(); // <-- opcional, iniciar fecha actual
+      _isDateTimeManuallyChanged = false; // resetear la bandera
+    });
+
+    context.read<MeasurementBloc>().add(
+          GetNextMeasurementNumberEvent(_userId!, _selectedDateTime),
+        );
   }
 
   @override
@@ -87,6 +93,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
     _systolicController.dispose();
     _diastolicController.dispose();
     _pulseController.dispose();
+    _bpMonitorModelController.dispose();
     super.dispose();
   }
 
@@ -99,6 +106,16 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
       _diastolicController.text = _diastolic.toString();
       _pulseController.text = _pulse.toString();
       _noteController.clear();
+      // Volver a heredar del usuario al limpiar
+      final userState = context.read<UserBloc>().state;
+      if (userState is UsersLoaded && userState.activeUser != null) {
+        _bpMonitorModelController.text =
+            userState.activeUser!.bpMonitorModel ?? '';
+        _measurementLocation = userState.activeUser!.measurementLocation;
+      } else {
+        _bpMonitorModelController.clear();
+        _measurementLocation = null;
+      }
     });
 
     if (_userId != null) {
@@ -118,8 +135,8 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
 
     if (systolicValue == null || systolicValue < 50 || systolicValue > 250) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Sístole debe estar entre 50 y 250'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context).systoleValidation),
           backgroundColor: Colors.red,
         ),
       );
@@ -128,8 +145,8 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
 
     if (diastolicValue == null || diastolicValue < 30 || diastolicValue > 150) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Diástole debe estar entre 30 y 150'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context).diastoleValidation),
           backgroundColor: Colors.red,
         ),
       );
@@ -138,8 +155,8 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
 
     if (pulseValue != null && (pulseValue < 30 || pulseValue > 200)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Pulso debe estar entre 30 y 200'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context).pulseValidation),
           backgroundColor: Colors.red,
         ),
       );
@@ -162,6 +179,10 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
       diastolic: diastolicValue,
       pulse: pulseValue,
       note: _noteController.text.isEmpty ? null : _noteController.text,
+      bpMonitorModel: _bpMonitorModelController.text.trim().isEmpty
+          ? null
+          : _bpMonitorModelController.text.trim(),
+      measurementLocation: _measurementLocation,
       createdAt: now,
       updatedAt: now,
     );
@@ -178,11 +199,13 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
         ),
       );
     } else {
-      // Al terminar, cargar las mediciones antes de volver
-      if (_userId != null) {
-        context.read<MeasurementBloc>().add(LoadMeasurementsEvent(_userId!));
+      // Al terminar, simplemente volvemos. La HomePage se actualizará
+      // al recibir el estado de MeasurementOperationSuccess.
+      if (context.canPop()) {
+        context.pop();
+      } else {
+        context.go(Routes.home); // Fallback por si no se puede hacer pop
       }
-      context.go(Routes.home);
     }
   }
 
@@ -252,22 +275,44 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
           context.read<MeasurementBloc>().add(LoadMeasurementsEvent(_userId!));
         }
       },
-      child: BlocListener<MeasurementBloc, MeasurementState>(
-        listener: (context, state) {
-          if (state is MeasurementNumberLoaded) {
-            setState(() {
-              _currentMeasurementNumber = state.nextNumber;
-              _isInitialized = true;
-            });
-          } else if (state is MeasurementError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-        },
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<MeasurementBloc, MeasurementState>(
+            listener: (context, state) {
+              if (state is NextMeasurementNumberLoaded) {
+                setState(() {
+                  _currentMeasurementNumber = state.number;
+                  _isInitialized = true;
+                });
+              } else if (state is MeasurementNumberLoaded) {
+                // Fallback por si acaso se usa el otro estado en alguna parte
+                setState(() {
+                  _currentMeasurementNumber = state.nextNumber;
+                  _isInitialized = true;
+                });
+              } else if (state is MeasurementError) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.message),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+          ),
+          BlocListener<UserBloc, UserState>(
+            listener: (context, state) {
+              // Cuando se cargan los usuarios, intentar inicializar de nuevo
+              if (state is UsersLoaded &&
+                  state.activeUser != null &&
+                  !_isInitialized) {
+                debugPrint(
+                    '✅ MeasurementForm - Users loaded, initializing form');
+                _initializeForm();
+              }
+            },
+          ),
+        ],
         child: Scaffold(
           appBar: AppBar(
             title: Text(l10n.addMeasurement),
@@ -278,7 +323,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: const Text('Referencia de Presión Arterial'),
+                      title: Text(l10n.bloodPressureReference),
                       content: SingleChildScrollView(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
@@ -287,22 +332,22 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                             _buildColorLegendDialog(
                               context,
                               AppConstants.colorNormal,
-                              'Normal',
-                              'Sístole < 130\nDiástole < 85',
+                              l10n.normal,
+                              l10n.systoleDiastoleNormal,
                             ),
                             const SizedBox(height: 12),
                             _buildColorLegendDialog(
                               context,
                               AppConstants.colorElevated,
-                              'Elevada',
-                              'Sístole 130-139\nDiástole 85-89',
+                              l10n.elevated,
+                              l10n.systoleDiastoleElevated,
                             ),
                             const SizedBox(height: 12),
                             _buildColorLegendDialog(
                               context,
                               AppConstants.colorHigh,
-                              'Alta',
-                              'Sístole ≥ 140\nDiástole ≥ 90',
+                              l10n.high,
+                              l10n.systoleDiastoleHigh,
                             ),
                           ],
                         ),
@@ -310,7 +355,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: const Text('Cerrar'),
+                          child: Text(l10n.close),
                         ),
                       ],
                     ),
@@ -337,7 +382,8 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                                 children: [
                                   // Número de medición (sin card)
                                   Text(
-                                    'Medición $_currentMeasurementNumber',
+                                    l10n.measurementTitle(
+                                        _currentMeasurementNumber),
                                     style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -386,7 +432,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                                 children: [
                                   Expanded(
                                     child: _buildCompactIncrementField(
-                                      label: 'Sístole',
+                                      label: l10n.systole,
                                       controller: _systolicController,
                                       unit: 'mmHg',
                                       icon: Icons.arrow_upward,
@@ -397,7 +443,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: _buildCompactIncrementField(
-                                      label: 'Pulso',
+                                      label: l10n.pulse,
                                       controller: _pulseController,
                                       unit: 'bpm',
                                       icon: Icons.favorite,
@@ -414,7 +460,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                                 children: [
                                   Expanded(
                                     child: _buildCompactIncrementField(
-                                      label: 'Diástole',
+                                      label: l10n.diastole,
                                       controller: _diastolicController,
                                       unit: 'mmHg',
                                       icon: Icons.arrow_downward,
@@ -442,7 +488,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                                           const Icon(Icons.note, size: 16),
                                           const SizedBox(width: 6),
                                           Text(
-                                            'Nota (opcional)',
+                                            l10n.noteOptional,
                                             style: TextStyle(
                                               fontSize: 12,
                                               color: Colors.grey[600],
@@ -454,9 +500,9 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                                       TextFormField(
                                         controller: _noteController,
                                         focusNode: _noteFocusNode,
-                                        decoration: const InputDecoration(
-                                          hintText: 'Añade una nota...',
-                                          border: OutlineInputBorder(),
+                                        decoration: InputDecoration(
+                                          hintText: l10n.addNoteHint,
+                                          border: const OutlineInputBorder(),
                                           contentPadding: EdgeInsets.symmetric(
                                             horizontal: 10,
                                             vertical: 8,
@@ -466,6 +512,74 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                                         maxLines: 3,
                                         maxLength: 200,
                                         style: const TextStyle(fontSize: 14),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              // LÍNEA 5: Tensiómetro y Ubicación
+                              Card(
+                                margin: EdgeInsets.zero,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      TextFormField(
+                                        controller: _bpMonitorModelController,
+                                        decoration: InputDecoration(
+                                          labelText:
+                                              '${l10n.bloodPressureMonitorModel} (opcional)',
+                                          prefixIcon:
+                                              const Icon(Icons.monitor_heart),
+                                          isDense: true,
+                                        ),
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      DropdownButtonFormField<String?>(
+                                        initialValue: _measurementLocation,
+                                        isExpanded: true,
+                                        decoration: InputDecoration(
+                                          labelText:
+                                              '${l10n.measurementLocation} (opcional)',
+                                          prefixIcon:
+                                              const Icon(Icons.location_on),
+                                          isDense: true,
+                                        ),
+                                        items: [
+                                          DropdownMenuItem(
+                                            value: null,
+                                            child:
+                                                Text(l10n.locationNotIndicated),
+                                          ),
+                                          DropdownMenuItem(
+                                            value: 'left_arm',
+                                            child: Text(l10n.locationLeftArm),
+                                          ),
+                                          DropdownMenuItem(
+                                            value: 'left_wrist',
+                                            child: Text(l10n.locationLeftWrist),
+                                          ),
+                                          DropdownMenuItem(
+                                            value: 'right_arm',
+                                            child: Text(l10n.locationRightArm),
+                                          ),
+                                          DropdownMenuItem(
+                                            value: 'right_wrist',
+                                            child:
+                                                Text(l10n.locationRightWrist),
+                                          ),
+                                        ],
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _measurementLocation = value;
+                                          });
+                                        },
+                                        style: const TextStyle(
+                                            fontSize: 14, color: Colors.black),
                                       ),
                                     ],
                                   ),
@@ -482,7 +596,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                                           _saveMeasurement(andContinue: true),
                                       icon: const Icon(Icons.arrow_forward,
                                           size: 20),
-                                      label: const Text('Siguiente'),
+                                      label: Text(l10n.next),
                                       style: ElevatedButton.styleFrom(
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 14),
@@ -499,7 +613,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                                       onPressed: () =>
                                           _saveMeasurement(andContinue: false),
                                       icon: const Icon(Icons.check, size: 20),
-                                      label: const Text('Terminar'),
+                                      label: Text(l10n.finish),
                                       style: ElevatedButton.styleFrom(
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 14),

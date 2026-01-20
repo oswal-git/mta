@@ -5,9 +5,14 @@ class UserEntity extends Equatable {
   final String id;
   final String name;
   final int? age;
-  final bool hasMeasuring;
+  final bool takeMedication;
   final String? medicationName;
   final bool enableNotifications;
+  final bool notificationSoundEnabled;
+  final String? notificationSoundUri;
+  final String languageCode;
+  final String? bpMonitorModel;
+  final String? measurementLocation;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -15,9 +20,14 @@ class UserEntity extends Equatable {
     required this.id,
     required this.name,
     this.age,
-    this.hasMeasuring = false,
+    this.takeMedication = false,
     this.medicationName,
     this.enableNotifications = true,
+    this.notificationSoundEnabled = true,
+    this.notificationSoundUri,
+    this.languageCode = 'es',
+    this.bpMonitorModel,
+    this.measurementLocation,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -27,9 +37,14 @@ class UserEntity extends Equatable {
     String? id,
     String? name,
     int? age,
-    bool? hasMeasuring,
+    bool? takeMedication,
     String? medicationName,
     bool? enableNotifications,
+    bool? notificationSoundEnabled,
+    String? notificationSoundUri,
+    String? languageCode,
+    String? bpMonitorModel,
+    String? measurementLocation,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -37,9 +52,15 @@ class UserEntity extends Equatable {
       id: id ?? this.id,
       name: name ?? this.name,
       age: age ?? this.age,
-      hasMeasuring: hasMeasuring ?? this.hasMeasuring,
+      takeMedication: takeMedication ?? this.takeMedication,
       medicationName: medicationName ?? this.medicationName,
       enableNotifications: enableNotifications ?? this.enableNotifications,
+      notificationSoundEnabled:
+          notificationSoundEnabled ?? this.notificationSoundEnabled,
+      notificationSoundUri: notificationSoundUri ?? this.notificationSoundUri,
+      languageCode: languageCode ?? this.languageCode,
+      bpMonitorModel: bpMonitorModel ?? this.bpMonitorModel,
+      measurementLocation: measurementLocation ?? this.measurementLocation,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -50,9 +71,14 @@ class UserEntity extends Equatable {
         id,
         name,
         age,
-        hasMeasuring,
+        takeMedication,
         medicationName,
         enableNotifications,
+        notificationSoundEnabled,
+        notificationSoundUri,
+        languageCode,
+        bpMonitorModel,
+        measurementLocation,
         createdAt,
         updatedAt,
       ];

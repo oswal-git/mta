@@ -45,7 +45,7 @@ class _ExportPageState extends State<ExportPage> {
 
   void _updateFileName() {
     final userState = context.read<UserBloc>().state;
-    String username = 'usuario';
+    String username = AppLocalizations.of(context).defaultUsername;
 
     if (userState is UsersLoaded && userState.activeUser != null) {
       username = userState.activeUser!.name;
@@ -131,7 +131,7 @@ class _ExportPageState extends State<ExportPage> {
       final measurements = measurementState.measurements;
 
       if (measurements.isEmpty) {
-        throw Exception('No measurements available');
+        throw Exception(l10n.noMeasurementsAvailable);
       }
 
       // Crear parámetros de exportación
@@ -202,7 +202,7 @@ class _ExportPageState extends State<ExportPage> {
                     Navigator.of(context).pop();
                     context.go(Routes.home);
                   },
-                  child: const Text('OK'),
+                  child: Text(l10n.ok),
                 ),
               ],
             ),
@@ -313,7 +313,7 @@ class _ExportPageState extends State<ExportPage> {
                 child: Column(
                     children: ExportFormat.values.map((format) {
                   return RadioListTile<ExportFormat>(
-                    title: Text(format.displayName),
+                    title: Text(_getFormatDisplayName(format, l10n)),
                     subtitle: Text('.${format.extension}'),
                     value: format,
                   );
@@ -349,7 +349,7 @@ class _ExportPageState extends State<ExportPage> {
                       )
                     : const Icon(Icons.file_download),
                 label: Text(
-                  _isExporting ? 'Exportando...' : l10n.exportButton,
+                  _isExporting ? l10n.exporting : l10n.exportButton,
                 ),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.all(16),
@@ -373,5 +373,16 @@ class _ExportPageState extends State<ExportPage> {
         ),
       ),
     );
+  }
+
+  String _getFormatDisplayName(ExportFormat format, AppLocalizations l10n) {
+    switch (format) {
+      case ExportFormat.excel:
+        return l10n.formatExcel;
+      case ExportFormat.csv:
+        return l10n.formatCsv;
+      case ExportFormat.pdf:
+        return l10n.formatPdf;
+    }
   }
 }

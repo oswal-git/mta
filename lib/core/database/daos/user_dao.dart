@@ -4,11 +4,17 @@ class UsersDao extends Table {
   TextColumn get id => text()();
   TextColumn get name => text()();
   IntColumn get age => integer().nullable()();
-  BoolColumn get hasMeasuring =>
+  BoolColumn get takeMedication =>
       boolean().withDefault(const Constant(false))();
-  TextColumn get measuringName => text().nullable()();
+  TextColumn get medicationName => text().nullable()();
   BoolColumn get enableNotifications =>
       boolean().withDefault(const Constant(true))();
+  BoolColumn get notificationSoundEnabled =>
+      boolean().withDefault(const Constant(true))();
+  TextColumn get notificationSoundUri => text().nullable()();
+  TextColumn get languageCode => text().withDefault(const Constant('es'))();
+  TextColumn get bpMonitorModel => text().nullable()();
+  TextColumn get measurementLocation => text().nullable()();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
 

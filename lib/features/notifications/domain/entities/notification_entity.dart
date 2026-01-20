@@ -29,6 +29,12 @@ class NotificationEntity extends Equatable {
   /// Medicación del usuario (si existe)
   final String? medication;
 
+  /// Indica si el sonido está habilitado para esta notificación
+  final bool soundEnabled;
+
+  /// URI del sonido personalizado (si existe)
+  final String? soundUri;
+
   /// Indica si la notificacion está activa
   final bool isActive;
 
@@ -42,6 +48,8 @@ class NotificationEntity extends Equatable {
     required this.body,
     this.label,
     this.medication,
+    this.soundEnabled = true,
+    this.soundUri,
     this.isActive = true,
   });
 
@@ -56,6 +64,8 @@ class NotificationEntity extends Equatable {
         body,
         label,
         medication,
+        soundEnabled,
+        soundUri,
         isActive,
       ];
 
@@ -70,6 +80,8 @@ class NotificationEntity extends Equatable {
     String? body,
     String? label,
     String? medication,
+    bool? soundEnabled,
+    String? soundUri,
     bool? isActive,
   }) {
     return NotificationEntity(
@@ -82,6 +94,8 @@ class NotificationEntity extends Equatable {
       body: body ?? this.body,
       label: label ?? this.label,
       medication: medication ?? this.medication,
+      soundEnabled: soundEnabled ?? this.soundEnabled,
+      soundUri: soundUri ?? this.soundUri,
       isActive: isActive ?? this.isActive,
     );
   }

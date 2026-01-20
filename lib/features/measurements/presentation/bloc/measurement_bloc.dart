@@ -92,7 +92,8 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
         // 🔔 Detener notificaciones relacionadas con esta medición
         await _stopNotificationsForMeasurement(measurement);
 
-        emit(MeasurementOperationSuccess('Medición creada exitosamente'));
+        emit(MeasurementOperationSuccess('Medición creada exitosamente',
+            userId: measurement.userId));
       },
     );
   }
@@ -115,7 +116,8 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
         // 🔔 Detener notificaciones relacionadas con esta medición
         await _stopNotificationsForMeasurement(measurement);
 
-        emit(MeasurementOperationSuccess('Medición actualizada exitosamente'));
+        emit(MeasurementOperationSuccess('Medición actualizada exitosamente',
+            userId: measurement.userId));
       },
     );
   }
@@ -155,7 +157,7 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
     try {
       debugPrint('');
       debugPrint('🔍 Verificando notificaciones para detener...');
-      debugPrint('   Medición creada a las: ${measurement.measurementDate}');
+      debugPrint('   Medición creada a las: ${measurement.measurementTime}');
 
       // Obtener todos los schedules del usuario
       final schedulesResult =
@@ -166,7 +168,7 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
           debugPrint('❌ Error al obtener schedules: ${failure.message}');
         },
         (schedules) async {
-          final measurementDate = measurement.measurementDate as DateTime;
+          final measurementDate = measurement.measurementTime as DateTime;
           final measurementTime = DateTime(
             measurementDate.year,
             measurementDate.month,
@@ -178,7 +180,7 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
           debugPrint(
               '   Hora de la medición: ${measurementTime.hour}:${measurementTime.minute}');
 
-          // Buscar schedules que correspondan a esta hora
+          // Buscar schedules que correspondan a esta toma
           for (final schedule in schedules) {
             final scheduleTime = DateTime(
               measurementDate.year,
@@ -188,13 +190,29 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
               schedule.minute,
             );
 
-            // Verificar si esta medición corresponde a este schedule
-            // (dentro de ±30 minutos del horario programado)
-            final difference = measurementTime.difference(scheduleTime).abs();
+            // Condición 1: La toma es posterior al horario (hasta 2 horas después)
+            // Esto cubre las repeticiones (que duran 60 min)
+            final isAfter = measurementTime.isAfter(scheduleTime) ||
+                measurementTime.isAtSameMomentAs(scheduleTime);
+            final differenceAfter = measurementTime.difference(scheduleTime);
 
-            if (difference.inMinutes <= 30) {
+            // Condición 2: La toma es poco antes del horario (hasta 30 min antes)
+            // Para evitar que suene si se adelantó un poco
+            final isBefore = measurementTime.isBefore(scheduleTime);
+            final differenceBefore = scheduleTime.difference(measurementTime);
+
+            bool shouldCancel = false;
+            if (isAfter && differenceAfter.inHours < 2) {
               debugPrint(
-                  '   ✅ Medición corresponde al schedule ${schedule.id} (${schedule.formattedTime})');
+                  '   ✅ Toma posterior al schedule ${schedule.id} (${schedule.formattedTime})');
+              shouldCancel = true;
+            } else if (isBefore && differenceBefore.inMinutes <= 30) {
+              debugPrint(
+                  '   ✅ Toma anticipada para el schedule ${schedule.id} (${schedule.formattedTime})');
+              shouldCancel = true;
+            }
+
+            if (shouldCancel) {
               debugPrint(
                   '   🛑 Deteniendo notificaciones para este horario...');
 
@@ -203,6 +221,7 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
                   await notificationRepository.stopNotificationsForScheduleTime(
                 schedule.id,
                 scheduleTime,
+                measurement.userId,
               );
 
               result.fold(
@@ -217,7 +236,6 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
             } else {
               debugPrint(
                   '   ℹ️  Medición NO corresponde al schedule ${schedule.id}');
-              debugPrint('      Diferencia: ${difference.inMinutes} minutos');
             }
           }
         },

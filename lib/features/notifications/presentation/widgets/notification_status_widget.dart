@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mta/features/notifications/domain/entities/notification_entity.dart';
 import 'package:mta/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:mta/features/notifications/presentation/bloc/notification_event.dart';
 import 'package:mta/features/notifications/presentation/bloc/notification_state.dart';
 
 /// Widget que muestra el estado de las notificaciones y permite reprogramarlas
-class NotificationStatusWidget extends StatelessWidget {
-  final String userId; // Cambiado a String
+class NotificationStatusWidget extends StatefulWidget {
+  final String userId;
 
   const NotificationStatusWidget({
     super.key,
@@ -15,9 +14,33 @@ class NotificationStatusWidget extends StatelessWidget {
   });
 
   @override
+  State<NotificationStatusWidget> createState() =>
+      _NotificationStatusWidgetState();
+}
+
+class _NotificationStatusWidgetState extends State<NotificationStatusWidget> {
+  bool? _hasNotif;
+  bool? _hasExact;
+
+  @override
+  void initState() {
+    super.initState();
+    // Iniciar verificación de permisos al cargar
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<NotificationBloc>().add(const CheckPermissionsEvent());
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocConsumer<NotificationBloc, NotificationState>(
+    return BlocListener<NotificationBloc, NotificationState>(
       listener: (context, state) {
+        if (state is PermissionStatusChecked) {
+          setState(() {
+            _hasNotif = state.hasNotificationPermission;
+            _hasExact = state.hasExactAlarmPermission;
+          });
+        }
         if (state is UserNotificationsSet) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -34,140 +57,167 @@ class NotificationStatusWidget extends StatelessWidget {
           );
         }
       },
-      builder: (context, state) {
-        return Card(
-          margin: const EdgeInsets.all(16),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.notifications,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Notificaciones de Medición',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 12),
-
-                Text(
-                  'Las notificaciones sonarán 5 minutos antes de cada toma programada.',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-
-                const SizedBox(height: 16),
-
-                if (state is NotificationLoading)
-                  const Center(child: CircularProgressIndicator())
-                else
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      context
-                          .read<NotificationBloc>()
-                          .add(ScheduleNotificationsForUser(userId));
-                    },
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Reprogramar Notificaciones'),
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 48),
-                    ),
-                  ),
-
-                const SizedBox(height: 8),
-
-                // 🧪 BOTÓN DE PRUEBA TEMPORAL
-                OutlinedButton.icon(
-                  onPressed: () {
-                    // Crear una notificación de prueba que aparezca en 10 segundos
-                    // y se regenere automáticamente cada 30 segundos
-                    final testNotification = NotificationEntity(
-                      id: 'test_${DateTime.now().millisecondsSinceEpoch}',
-                      scheduleId: 'test',
-                      userId: userId,
-                      userName: 'PRUEBA',
-                      notificationTime: DateTime.now()
-                          .add(const Duration(minutes: 5, seconds: 15)),
-                      title: '🧪 NOTIFICACIÓN DE PRUEBA',
-                      body: 'Esta notificación se repetirá cada 30 segundos',
-                      label: 'Prueba',
-                      medication: 'Test',
-                      isActive: true,
-                    );
-
-                    context
-                        .read<NotificationBloc>()
-                        .add(ScheduleNotification(testNotification));
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('🔔 Notificación de prueba programada\n'
-                            'Aparecerá en 10 segundos y se repetirá cada 30 segundos\n'
-                            'hasta que la canceles o pase 1 hora'),
-                        backgroundColor: Colors.blue,
-                        duration: Duration(seconds: 5),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.science),
-                  label: const Text('Probar Notificación Persistente'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.blue,
-                    minimumSize: const Size(double.infinity, 48),
-                  ),
-                ),
-
-                const SizedBox(height: 8),
-
-                TextButton.icon(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (dialogContext) => AlertDialog(
-                        title: const Text('Cancelar todas las notificaciones'),
-                        content: const Text(
-                          '¿Estás seguro de que quieres cancelar todas las notificaciones programadas?',
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.of(dialogContext).pop(),
-                            child: const Text('Cancelar'),
+      child: BlocBuilder<NotificationBloc, NotificationState>(
+        builder: (context, state) {
+          return Card(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            elevation: 2,
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.notifications_active,
+                            color: Theme.of(context).colorScheme.primary,
+                            size: 20,
                           ),
-                          TextButton(
-                            onPressed: () {
-                              context
-                                  .read<NotificationBloc>()
-                                  .add(const CancelAllNotifications());
-                              Navigator.of(dialogContext).pop();
-                            },
-                            child: const Text(
-                              'Confirmar',
-                              style: TextStyle(color: Colors.red),
-                            ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Gestión de Alertas',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                         ],
                       ),
-                    );
-                  },
-                  icon: const Icon(Icons.cancel),
-                  label: const Text('Cancelar Todas las Notificaciones'),
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.red,
-                    minimumSize: const Size(double.infinity, 48),
+                      IconButton(
+                        icon: const Icon(Icons.refresh, size: 18),
+                        onPressed: () => context
+                            .read<NotificationBloc>()
+                            .add(const CheckPermissionsEvent()),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ],
                   ),
-                ),
-              ],
+
+                  const Divider(height: 16),
+
+                  // 🛡️ INDICADORES DE PERMISOS (Compactos)
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _CompactPermissionBadge(
+                          label: 'Notificaciones',
+                          isGranted: _hasNotif,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _CompactPermissionBadge(
+                          label: 'Alarmas Exactas',
+                          isGranted: _hasExact,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  if (_hasNotif == false || _hasExact == false)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 34,
+                        child: ElevatedButton.icon(
+                          onPressed: () => context
+                              .read<NotificationBloc>()
+                              .add(const RequestPermissionsEvent()),
+                          icon: const Icon(Icons.settings, size: 16),
+                          label: const Text('CORREGIR PERMISOS',
+                              style: TextStyle(
+                                  fontSize: 11, fontWeight: FontWeight.bold)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.orange[800],
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.zero,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                  const SizedBox(height: 4),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _CompactPermissionBadge extends StatelessWidget {
+  final String label;
+  final bool? isGranted;
+
+  const _CompactPermissionBadge({required this.label, required this.isGranted});
+
+  @override
+  Widget build(BuildContext context) {
+    final bool granted = isGranted ?? false;
+    final bool loading = isGranted == null;
+
+    final Color bgColor = loading
+        ? Colors.grey[100]!
+        : granted
+            ? Colors.green[50]!
+            : Colors.red[50]!;
+    final Color borderColor = loading
+        ? Colors.grey[300]!
+        : granted
+            ? Colors.green[200]!
+            : Colors.red[200]!;
+    final Color textColor = loading
+        ? Colors.grey[600]!
+        : granted
+            ? Colors.green[800]!
+            : Colors.red[800]!;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: borderColor),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (loading)
+            const SizedBox(
+              width: 12,
+              height: 12,
+              child:
+                  CircularProgressIndicator(strokeWidth: 2, color: Colors.grey),
+            )
+          else
+            Icon(
+              granted ? Icons.check_circle : Icons.cancel,
+              color: granted ? Colors.green : Colors.red,
+              size: 12,
+            ),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              color: textColor,
             ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }

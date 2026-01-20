@@ -69,13 +69,38 @@ class ScheduleNotificationsForUser extends NotificationEvent {
 class MarkAsTaken extends NotificationEvent {
   final String scheduleId;
   final DateTime timestamp;
+  final String userId;
 
-  const MarkAsTaken({required this.scheduleId, required this.timestamp});
+  const MarkAsTaken({
+    required this.scheduleId,
+    required this.timestamp,
+    required this.userId,
+  });
 
   @override
-  List<Object?> get props => [scheduleId, timestamp];
+  List<Object?> get props => [scheduleId, timestamp, userId];
 }
 
 class RescheduleAllNotifications extends NotificationEvent {
   const RescheduleAllNotifications();
+}
+
+class TestNotificationNow extends NotificationEvent {
+  final NotificationEntity notification;
+  const TestNotificationNow(this.notification);
+
+  @override
+  List<Object?> get props => [notification];
+}
+
+class CheckPermissionsEvent extends NotificationEvent {
+  const CheckPermissionsEvent();
+}
+
+class RequestPermissionsEvent extends NotificationEvent {
+  const RequestPermissionsEvent();
+}
+
+class LogPendingNotifications extends NotificationEvent {
+  const LogPendingNotifications();
 }

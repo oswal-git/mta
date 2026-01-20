@@ -100,6 +100,12 @@ abstract class AppLocalizations {
     Locale('es')
   ];
 
+  /// No description provided for @accept.
+  ///
+  /// In es, this message translates to:
+  /// **'Aceptar'**
+  String get accept;
+
   /// No description provided for @activeUser.
   ///
   /// In es, this message translates to:
@@ -111,6 +117,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Agregar Medición'**
   String get addMeasurement;
+
+  /// No description provided for @addNoteHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Añade una nota...'**
+  String get addNoteHint;
 
   /// No description provided for @addSchedule.
   ///
@@ -124,17 +136,11 @@ abstract class AppLocalizations {
   /// **'Agregar Usuario'**
   String get addUser;
 
-  /// No description provided for @notificationBody.
+  /// No description provided for @alertManagement.
   ///
   /// In es, this message translates to:
-  /// **'Es hora de realizar tu medición de presión arterial'**
-  String get notificationBody;
-
-  /// No description provided for @notificationTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Medición de Presión Arterial'**
-  String get notificationTitle;
+  /// **'Gestión de Alertas'**
+  String get alertManagement;
 
   /// No description provided for @appTitle.
   ///
@@ -142,17 +148,53 @@ abstract class AppLocalizations {
   /// **'MTA - Gestor de Presión Arterial'**
   String get appTitle;
 
+  /// No description provided for @backToHome.
+  ///
+  /// In es, this message translates to:
+  /// **'Volver al inicio'**
+  String get backToHome;
+
+  /// No description provided for @bloodPressureMonitorModel.
+  ///
+  /// In es, this message translates to:
+  /// **'Marca y modelo del tensiómetro'**
+  String get bloodPressureMonitorModel;
+
+  /// No description provided for @bloodPressureReference.
+  ///
+  /// In es, this message translates to:
+  /// **'Referencia de Presión Arterial'**
+  String get bloodPressureReference;
+
   /// No description provided for @cancel.
   ///
   /// In es, this message translates to:
   /// **'Cancelar'**
   String get cancel;
 
+  /// No description provided for @cancelNotification.
+  ///
+  /// In es, this message translates to:
+  /// **'Cancelar notificación'**
+  String get cancelNotification;
+
+  /// No description provided for @close.
+  ///
+  /// In es, this message translates to:
+  /// **'Cerrar'**
+  String get close;
+
   /// No description provided for @confirm.
   ///
   /// In es, this message translates to:
   /// **'Confirmar'**
   String get confirm;
+
+  /// No description provided for @customSound.
+  ///
+  /// In es, this message translates to:
+  /// **'Sonido personalizado'**
+  String get customSound;
 
   /// No description provided for @date.
   ///
@@ -165,6 +207,24 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Día'**
   String get day;
+
+  /// No description provided for @defaultOption.
+  ///
+  /// In es, this message translates to:
+  /// **'Predeterminado'**
+  String get defaultOption;
+
+  /// No description provided for @defaultSound.
+  ///
+  /// In es, this message translates to:
+  /// **'Sonido predeterminado'**
+  String get defaultSound;
+
+  /// No description provided for @defaultUsername.
+  ///
+  /// In es, this message translates to:
+  /// **'usuario'**
+  String get defaultUsername;
 
   /// No description provided for @delete.
   ///
@@ -202,11 +262,29 @@ abstract class AppLocalizations {
   /// **'Eliminar Usuario'**
   String get deleteUser;
 
+  /// No description provided for @diastole.
+  ///
+  /// In es, this message translates to:
+  /// **'Diástole'**
+  String get diastole;
+
+  /// No description provided for @diastoleValidation.
+  ///
+  /// In es, this message translates to:
+  /// **'Diástole debe estar entre 30 y 150'**
+  String get diastoleValidation;
+
   /// No description provided for @diastolic.
   ///
   /// In es, this message translates to:
   /// **'Diastól.'**
   String get diastolic;
+
+  /// No description provided for @discardChanges.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Descartar cambios?'**
+  String get discardChanges;
 
   /// No description provided for @edit.
   ///
@@ -232,6 +310,12 @@ abstract class AppLocalizations {
   /// **'Editar Usuario'**
   String get editUser;
 
+  /// No description provided for @elevated.
+  ///
+  /// In es, this message translates to:
+  /// **'Elevada'**
+  String get elevated;
+
   /// No description provided for @enableNotifications.
   ///
   /// In es, this message translates to:
@@ -249,6 +333,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Hora de Fin'**
   String get endTime;
+
+  /// No description provided for @english.
+  ///
+  /// In es, this message translates to:
+  /// **'Inglés'**
+  String get english;
 
   /// No description provided for @errorGeneric.
   ///
@@ -273,6 +363,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Error al guardar'**
   String get errorSaveFailed;
+
+  /// No description provided for @exactAlarmsPermission.
+  ///
+  /// In es, this message translates to:
+  /// **'Alarmas Exactas'**
+  String get exactAlarmsPermission;
+
+  /// No description provided for @exit.
+  ///
+  /// In es, this message translates to:
+  /// **'Salir'**
+  String get exit;
 
   /// No description provided for @export.
   ///
@@ -304,6 +406,12 @@ abstract class AppLocalizations {
   /// **'Formato de Exportación'**
   String get exportFormat;
 
+  /// No description provided for @exporting.
+  ///
+  /// In es, this message translates to:
+  /// **'Exportando...'**
+  String get exporting;
+
   /// No description provided for @exportSuccess.
   ///
   /// In es, this message translates to:
@@ -328,6 +436,30 @@ abstract class AppLocalizations {
   /// **'Finalizar'**
   String get finish;
 
+  /// No description provided for @fixPermissions.
+  ///
+  /// In es, this message translates to:
+  /// **'CORREGIR PERMISOS'**
+  String get fixPermissions;
+
+  /// No description provided for @formatCsv.
+  ///
+  /// In es, this message translates to:
+  /// **'CSV'**
+  String get formatCsv;
+
+  /// No description provided for @formatExcel.
+  ///
+  /// In es, this message translates to:
+  /// **'Excel (XLSX)'**
+  String get formatExcel;
+
+  /// No description provided for @formatPdf.
+  ///
+  /// In es, this message translates to:
+  /// **'PDF'**
+  String get formatPdf;
+
   /// No description provided for @friday.
   ///
   /// In es, this message translates to:
@@ -340,6 +472,36 @@ abstract class AppLocalizations {
   /// **'¿Toma medición?'**
   String get hasMeasuring;
 
+  /// No description provided for @high.
+  ///
+  /// In es, this message translates to:
+  /// **'Alta'**
+  String get high;
+
+  /// No description provided for @language.
+  ///
+  /// In es, this message translates to:
+  /// **'Idioma'**
+  String get language;
+
+  /// No description provided for @languageSelection.
+  ///
+  /// In es, this message translates to:
+  /// **'Selección de Idioma'**
+  String get languageSelection;
+
+  /// No description provided for @markAsTaken.
+  ///
+  /// In es, this message translates to:
+  /// **'Marcar como tomada'**
+  String get markAsTaken;
+
+  /// No description provided for @maxSchedulesAllowed.
+  ///
+  /// In es, this message translates to:
+  /// **'Máximo {count} horarios permitidos'**
+  String maxSchedulesAllowed(Object count);
+
   /// No description provided for @maxSchedulesReached.
   ///
   /// In es, this message translates to:
@@ -351,6 +513,48 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Detalles de la Medición'**
   String get measurementDetails;
+
+  /// No description provided for @measurementLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Medición'**
+  String get measurementLabel;
+
+  /// No description provided for @measurementLocation.
+  ///
+  /// In es, this message translates to:
+  /// **'Lugar de medición'**
+  String get measurementLocation;
+
+  /// No description provided for @locationNotIndicated.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin indicar'**
+  String get locationNotIndicated;
+
+  /// No description provided for @locationLeftArm.
+  ///
+  /// In es, this message translates to:
+  /// **'Brazo izquierdo'**
+  String get locationLeftArm;
+
+  /// No description provided for @locationLeftWrist.
+  ///
+  /// In es, this message translates to:
+  /// **'Muñeca izquierda'**
+  String get locationLeftWrist;
+
+  /// No description provided for @locationRightArm.
+  ///
+  /// In es, this message translates to:
+  /// **'Brazo derecho'**
+  String get locationRightArm;
+
+  /// No description provided for @locationRightWrist.
+  ///
+  /// In es, this message translates to:
+  /// **'Muñeca derecha'**
+  String get locationRightWrist;
 
   /// No description provided for @measurementNumber.
   ///
@@ -370,11 +574,23 @@ abstract class AppLocalizations {
   /// **'Hora'**
   String get measurementTime;
 
+  /// No description provided for @measurementTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Medición {number}'**
+  String measurementTitle(Object number);
+
   /// No description provided for @medicationName.
   ///
   /// In es, this message translates to:
   /// **'Nombre de la Medicación'**
   String get medicationName;
+
+  /// No description provided for @minutesShort.
+  ///
+  /// In es, this message translates to:
+  /// **'min'**
+  String get minutesShort;
 
   /// No description provided for @monday.
   ///
@@ -388,17 +604,107 @@ abstract class AppLocalizations {
   /// **'Nuevo Usuario'**
   String get newUser;
 
+  /// No description provided for @next.
+  ///
+  /// In es, this message translates to:
+  /// **'Siguiente'**
+  String get next;
+
+  /// No description provided for @noMeasurementsAvailable.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay mediciones disponibles'**
+  String get noMeasurementsAvailable;
+
   /// No description provided for @noMeasurementsInRange.
   ///
   /// In es, this message translates to:
   /// **'No hay mediciones en el rango seleccionado'**
   String get noMeasurementsInRange;
 
+  /// No description provided for @normal.
+  ///
+  /// In es, this message translates to:
+  /// **'Normal'**
+  String get normal;
+
+  /// No description provided for @noSchedulesYet.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no hay horarios'**
+  String get noSchedulesYet;
+
+  /// No description provided for @noSoundsFound.
+  ///
+  /// In es, this message translates to:
+  /// **'No se encontraron sonidos'**
+  String get noSoundsFound;
+
   /// No description provided for @note.
   ///
   /// In es, this message translates to:
   /// **'Nota'**
   String get note;
+
+  /// No description provided for @noteOptional.
+  ///
+  /// In es, this message translates to:
+  /// **'Nota (opcional)'**
+  String get noteOptional;
+
+  /// No description provided for @notificationBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Es hora de realizar tu medición de presión arterial'**
+  String get notificationBody;
+
+  /// No description provided for @notificationSnoozedMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Notificación pospuesta por {minutes} minutos'**
+  String notificationSnoozedMessage(Object minutes);
+
+  /// No description provided for @notificationSounds.
+  ///
+  /// In es, this message translates to:
+  /// **'Sonido en notificaciones'**
+  String get notificationSounds;
+
+  /// No description provided for @notificationSoundsSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Reproducir sonido al recibir alertas'**
+  String get notificationSoundsSubtitle;
+
+  /// No description provided for @notificationsPermission.
+  ///
+  /// In es, this message translates to:
+  /// **'Notificaciones'**
+  String get notificationsPermission;
+
+  /// No description provided for @notificationTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Medición de Presión Arterial'**
+  String get notificationTitle;
+
+  /// No description provided for @noUsers.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin usuarios'**
+  String get noUsers;
+
+  /// No description provided for @noUserSelected.
+  ///
+  /// In es, this message translates to:
+  /// **'Ningún usuario seleccionado'**
+  String get noUserSelected;
+
+  /// No description provided for @ok.
+  ///
+  /// In es, this message translates to:
+  /// **'OK'**
+  String get ok;
 
   /// No description provided for @postpone.
   ///
@@ -412,6 +718,18 @@ abstract class AppLocalizations {
   /// **'Pulso'**
   String get pulse;
 
+  /// No description provided for @pulseValidation.
+  ///
+  /// In es, this message translates to:
+  /// **'Pulso debe estar entre 30 y 200'**
+  String get pulseValidation;
+
+  /// No description provided for @reminderLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Recordatorio'**
+  String get reminderLabel;
+
   /// No description provided for @saturday.
   ///
   /// In es, this message translates to:
@@ -423,6 +741,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Guardar'**
   String get save;
+
+  /// No description provided for @scheduledTimeLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Hora programada'**
+  String get scheduledTimeLabel;
 
   /// No description provided for @schedules.
   ///
@@ -448,11 +772,29 @@ abstract class AppLocalizations {
   /// **'Seleccionar Directorio'**
   String get selectDirectory;
 
+  /// No description provided for @selectSound.
+  ///
+  /// In es, this message translates to:
+  /// **'Seleccionar sonido'**
+  String get selectSound;
+
+  /// No description provided for @selectSoundTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Seleccionar Sonido'**
+  String get selectSoundTitle;
+
   /// No description provided for @settings.
   ///
   /// In es, this message translates to:
   /// **'Configuración'**
   String get settings;
+
+  /// No description provided for @spanish.
+  ///
+  /// In es, this message translates to:
+  /// **'Español'**
+  String get spanish;
 
   /// No description provided for @startDate.
   ///
@@ -465,6 +807,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Hora de Inicio'**
   String get startTime;
+
+  /// No description provided for @stay.
+  ///
+  /// In es, this message translates to:
+  /// **'Quedarse'**
+  String get stay;
 
   /// No description provided for @success.
   ///
@@ -496,6 +844,42 @@ abstract class AppLocalizations {
   /// **'Domingo'**
   String get sunday;
 
+  /// No description provided for @syncAlertsToolip.
+  ///
+  /// In es, this message translates to:
+  /// **'Sincronizar Alertas (Emergencia)'**
+  String get syncAlertsToolip;
+
+  /// No description provided for @systole.
+  ///
+  /// In es, this message translates to:
+  /// **'Sístole'**
+  String get systole;
+
+  /// No description provided for @systoleDiastoleElevated.
+  ///
+  /// In es, this message translates to:
+  /// **'Sístole 130-139\nDiástole 85-89'**
+  String get systoleDiastoleElevated;
+
+  /// No description provided for @systoleDiastoleHigh.
+  ///
+  /// In es, this message translates to:
+  /// **'Sístole ≥ 140\nDiástole ≥ 90'**
+  String get systoleDiastoleHigh;
+
+  /// No description provided for @systoleDiastoleNormal.
+  ///
+  /// In es, this message translates to:
+  /// **'Sístole < 130\nDiástole < 85'**
+  String get systoleDiastoleNormal;
+
+  /// No description provided for @systoleValidation.
+  ///
+  /// In es, this message translates to:
+  /// **'Sístole debe estar entre 50 y 250'**
+  String get systoleValidation;
+
   /// No description provided for @systolic.
   ///
   /// In es, this message translates to:
@@ -508,17 +892,41 @@ abstract class AppLocalizations {
   /// **'Realizar Medición'**
   String get takeMeasurement;
 
+  /// No description provided for @tapPlusToAdd.
+  ///
+  /// In es, this message translates to:
+  /// **'Toca el botón + para agregar tu primer horario'**
+  String get tapPlusToAdd;
+
   /// No description provided for @thursday.
   ///
   /// In es, this message translates to:
   /// **'Jueves'**
   String get thursday;
 
+  /// No description provided for @timeOfMeasurement.
+  ///
+  /// In es, this message translates to:
+  /// **'Hora de la medición'**
+  String get timeOfMeasurement;
+
   /// No description provided for @tuesday.
   ///
   /// In es, this message translates to:
   /// **'Martes'**
   String get tuesday;
+
+  /// No description provided for @unknownOption.
+  ///
+  /// In es, this message translates to:
+  /// **'Desconocido'**
+  String get unknownOption;
+
+  /// No description provided for @unsavedChangesMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Tienes cambios sin guardar. ¿Deseas salir sin guardar?'**
+  String get unsavedChangesMessage;
 
   /// No description provided for @userAge.
   ///
@@ -537,6 +945,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Usuarios'**
   String get users;
+
+  /// No description provided for @valencian.
+  ///
+  /// In es, this message translates to:
+  /// **'Valenciano'**
+  String get valencian;
 
   /// No description provided for @validationEndNotFuture.
   ///

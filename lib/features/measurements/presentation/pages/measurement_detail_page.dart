@@ -27,8 +27,10 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
   final _diastolicController = TextEditingController();
   final _pulseController = TextEditingController();
   final _noteController = TextEditingController();
+  final _bpMonitorModelController = TextEditingController();
 
   DateTime? _selectedDateTime;
+  String? _measurementLocation;
   MeasurementEntity? _measurement;
   bool _isEditing = false;
   bool _hasLoadedInitialData = false;
@@ -52,6 +54,7 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
     _diastolicController.dispose();
     _pulseController.dispose();
     _noteController.dispose();
+    _bpMonitorModelController.dispose();
     super.dispose();
   }
 
@@ -63,6 +66,8 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
       _diastolicController.text = measurement.diastolic.toString();
       _pulseController.text = measurement.pulse?.toString() ?? '';
       _noteController.text = measurement.note ?? '';
+      _bpMonitorModelController.text = measurement.bpMonitorModel ?? '';
+      _measurementLocation = measurement.measurementLocation;
       _hasLoadedInitialData = true;
     });
     debugPrint('✅ Measurement data loaded: ${measurement.id}');
@@ -78,6 +83,10 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
             ? null
             : int.parse(_pulseController.text),
         note: _noteController.text.isEmpty ? null : _noteController.text,
+        bpMonitorModel: _bpMonitorModelController.text.trim().isEmpty
+            ? null
+            : _bpMonitorModelController.text.trim(),
+        measurementLocation: _measurementLocation,
         updatedAt: DateTime.now(),
       );
 
@@ -157,7 +166,8 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
       canPop: true,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop && _measurement != null) {
-          debugPrint('🔙 MeasurementDetail - User pressed back, reloading measurements');
+          debugPrint(
+              '🔙 MeasurementDetail - User pressed back, reloading measurements');
           // Recargar las mediciones del usuario antes de salir
           final userState = context.read<UserBloc>().state;
           if (userState is UsersLoaded && userState.activeUser != null) {
@@ -424,6 +434,72 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
                             maxLines: 3,
                             enabled: _isEditing,
                           ),
+                          const SizedBox(height: 16),
+
+                          // BP Monitor Model
+                          TextFormField(
+                            controller: _bpMonitorModelController,
+                            decoration: InputDecoration(
+                              labelText: l10n.bloodPressureMonitorModel,
+                              prefixIcon: const Icon(Icons.monitor_heart),
+                            ),
+                            enabled: _isEditing,
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Measurement Location
+                          if (_isEditing)
+                            DropdownButtonFormField<String?>(
+                              initialValue: _measurementLocation,
+                              decoration: InputDecoration(
+                                labelText: l10n.measurementLocation,
+                                prefixIcon: const Icon(Icons.location_on),
+                              ),
+                              items: [
+                                DropdownMenuItem(
+                                  value: null,
+                                  child: Text(l10n.locationNotIndicated),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'left_arm',
+                                  child: Text(l10n.locationLeftArm),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'left_wrist',
+                                  child: Text(l10n.locationLeftWrist),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'right_arm',
+                                  child: Text(l10n.locationRightArm),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'right_wrist',
+                                  child: Text(l10n.locationRightWrist),
+                                ),
+                              ],
+                              onChanged: (value) {
+                                setState(() {
+                                  _measurementLocation = value;
+                                });
+                              },
+                            )
+                          else
+                            Card(
+                              child: ListTile(
+                                leading: const Icon(Icons.location_on),
+                                title: Text(l10n.measurementLocation),
+                                subtitle: Text(_measurementLocation == null
+                                    ? l10n.locationNotIndicated
+                                    : (_measurementLocation == 'left_arm'
+                                        ? l10n.locationLeftArm
+                                        : (_measurementLocation == 'left_wrist'
+                                            ? l10n.locationLeftWrist
+                                            : (_measurementLocation ==
+                                                    'right_arm'
+                                                ? l10n.locationRightArm
+                                                : l10n.locationRightWrist)))),
+                              ),
+                            ),
                           const SizedBox(height: 32),
 
                           // Buttons

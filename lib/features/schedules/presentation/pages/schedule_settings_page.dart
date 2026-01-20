@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mta/core/l10n/app_localizations.dart';
 import 'package:mta/core/utils/constants.dart';
 import 'package:mta/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:mta/features/notifications/presentation/bloc/notification_event.dart';
-import 'package:mta/features/notifications/presentation/widgets/notification_status_widget.dart';
 import 'package:mta/features/schedules/domain/entities/schedule_entity.dart';
 import 'package:mta/features/schedules/presentation/bloc/schedule_bloc.dart';
 import 'package:mta/features/schedules/presentation/bloc/schedule_event.dart';
@@ -219,10 +217,21 @@ class _ScheduleSettingsPageState extends State<ScheduleSettingsPage> {
             title: Text(l10n.schedules),
             actions: [
               IconButton(
-                icon: const Icon(Icons.check),
-                tooltip: 'Done',
-                onPressed: () => context.go(Routes.home),
+                icon: const Icon(Icons.sync),
+                tooltip: l10n.syncAlertsToolip,
+                onPressed: () {
+                  if (_userId != null) {
+                    context
+                        .read<NotificationBloc>()
+                        .add(ScheduleNotificationsForUser(_userId!));
+                  }
+                },
               ),
+              // IconButton(
+              //   icon: const Icon(Icons.arrow_back),
+              //   tooltip: 'Done',
+              //   onPressed: () => context.go(Routes.home),
+              // ),
             ],
           ),
           body: Builder(
@@ -235,8 +244,8 @@ class _ScheduleSettingsPageState extends State<ScheduleSettingsPage> {
                 return Column(
                   children: [
                     // ✅ WIDGET DE NOTIFICATIONES AQUÍ (arriba de todo)
-                    if (_userId != null)
-                      NotificationStatusWidget(userId: _userId!),
+                    // if (_userId != null)
+                    //   NotificationStatusWidget(userId: _userId!),
 
                     // Banner de límite máximo
                     if (state.schedules.length >= AppConstants.maxSchedules)
@@ -273,7 +282,7 @@ class _ScheduleSettingsPageState extends State<ScheduleSettingsPage> {
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
-                                    'No schedules yet',
+                                    l10n.noSchedulesYet,
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleLarge
@@ -283,7 +292,7 @@ class _ScheduleSettingsPageState extends State<ScheduleSettingsPage> {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    'Tap the + button to add your first schedule',
+                                    l10n.tapPlusToAdd,
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyMedium
@@ -294,7 +303,8 @@ class _ScheduleSettingsPageState extends State<ScheduleSettingsPage> {
                                   ),
                                   const SizedBox(height: 24),
                                   Text(
-                                    'Maximum ${AppConstants.maxSchedules} schedules allowed',
+                                    l10n.maxSchedulesAllowed(
+                                        AppConstants.maxSchedules),
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodySmall
@@ -339,7 +349,7 @@ class _ScheduleSettingsPageState extends State<ScheduleSettingsPage> {
 
               return Center(
                 child: Text(
-                  'No user selected',
+                  l10n.noUserSelected,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               );

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:mta/core/utils/constants.dart';
+import 'package:mta/core/l10n/app_localizations.dart';
 import 'package:mta/features/schedules/presentation/bloc/schedule_bloc.dart';
 import 'package:mta/features/schedules/presentation/bloc/schedule_event.dart';
 import 'package:mta/features/schedules/presentation/bloc/schedule_state.dart';
@@ -27,7 +28,7 @@ class UserSelectorWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (users.isEmpty) {
-      return const Text('No users');
+      return Text(AppLocalizations.of(context).noUsers);
     }
 
     if (users.length == 1) {

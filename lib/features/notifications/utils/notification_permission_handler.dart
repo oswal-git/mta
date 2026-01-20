@@ -25,8 +25,12 @@ class NotificationPermissionHandler {
       // 2. Permiso de alarmas exactas (Android 12+) - necesario para notificaciones exactas
       final canScheduleExactNotifications =
           await checkExactNotificationPermission();
+      debugPrint(
+          '⏰ Permiso de alarmas exactas: $canScheduleExactNotifications');
+
       if (!canScheduleExactNotifications) {
-        debugPrint('⚠️ Permiso de notificaciones exactas no disponible');
+        debugPrint(
+            '⚠️ Notificación: Requisito de ALARMA EXACTA no concedido. Abriendo ajustes...');
         await openExactNotificationSettings();
         return false;
       }

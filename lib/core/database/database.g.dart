@@ -24,21 +24,21 @@ class $UsersDaoTable extends UsersDao
   late final GeneratedColumn<int> age = GeneratedColumn<int>(
       'age', aliasedName, true,
       type: DriftSqlType.int, requiredDuringInsert: false);
-  static const VerificationMeta _hasMeasuringMeta =
-      const VerificationMeta('hasMeasuring');
+  static const VerificationMeta _takeMedicationMeta =
+      const VerificationMeta('takeMedication');
   @override
-  late final GeneratedColumn<bool> hasMeasuring = GeneratedColumn<bool>(
-      'has_measuring', aliasedName, false,
+  late final GeneratedColumn<bool> takeMedication = GeneratedColumn<bool>(
+      'take_medication', aliasedName, false,
       type: DriftSqlType.bool,
       requiredDuringInsert: false,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'CHECK ("has_measuring" IN (0, 1))'),
+          'CHECK ("take_medication" IN (0, 1))'),
       defaultValue: const Constant(false));
-  static const VerificationMeta _measuringNameMeta =
-      const VerificationMeta('measuringName');
+  static const VerificationMeta _medicationNameMeta =
+      const VerificationMeta('medicationName');
   @override
-  late final GeneratedColumn<String> measuringName = GeneratedColumn<String>(
-      'measuring_name', aliasedName, true,
+  late final GeneratedColumn<String> medicationName = GeneratedColumn<String>(
+      'medication_name', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _enableNotificationsMeta =
       const VerificationMeta('enableNotifications');
@@ -50,6 +50,43 @@ class $UsersDaoTable extends UsersDao
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'CHECK ("enable_notifications" IN (0, 1))'),
       defaultValue: const Constant(true));
+  static const VerificationMeta _notificationSoundEnabledMeta =
+      const VerificationMeta('notificationSoundEnabled');
+  @override
+  late final GeneratedColumn<bool> notificationSoundEnabled =
+      GeneratedColumn<bool>(
+          'notification_sound_enabled', aliasedName, false,
+          type: DriftSqlType.bool,
+          requiredDuringInsert: false,
+          defaultConstraints: GeneratedColumn.constraintIsAlways(
+              'CHECK ("notification_sound_enabled" IN (0, 1))'),
+          defaultValue: const Constant(true));
+  static const VerificationMeta _notificationSoundUriMeta =
+      const VerificationMeta('notificationSoundUri');
+  @override
+  late final GeneratedColumn<String> notificationSoundUri =
+      GeneratedColumn<String>('notification_sound_uri', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _languageCodeMeta =
+      const VerificationMeta('languageCode');
+  @override
+  late final GeneratedColumn<String> languageCode = GeneratedColumn<String>(
+      'language_code', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('es'));
+  static const VerificationMeta _bpMonitorModelMeta =
+      const VerificationMeta('bpMonitorModel');
+  @override
+  late final GeneratedColumn<String> bpMonitorModel = GeneratedColumn<String>(
+      'bp_monitor_model', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _measurementLocationMeta =
+      const VerificationMeta('measurementLocation');
+  @override
+  late final GeneratedColumn<String> measurementLocation =
+      GeneratedColumn<String>('measurement_location', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
@@ -67,9 +104,14 @@ class $UsersDaoTable extends UsersDao
         id,
         name,
         age,
-        hasMeasuring,
-        measuringName,
+        takeMedication,
+        medicationName,
         enableNotifications,
+        notificationSoundEnabled,
+        notificationSoundUri,
+        languageCode,
+        bpMonitorModel,
+        measurementLocation,
         createdAt,
         updatedAt
       ];
@@ -98,23 +140,54 @@ class $UsersDaoTable extends UsersDao
       context.handle(
           _ageMeta, age.isAcceptableOrUnknown(data['age']!, _ageMeta));
     }
-    if (data.containsKey('has_measuring')) {
+    if (data.containsKey('take_medication')) {
       context.handle(
-          _hasMeasuringMeta,
-          hasMeasuring.isAcceptableOrUnknown(
-              data['has_measuring']!, _hasMeasuringMeta));
+          _takeMedicationMeta,
+          takeMedication.isAcceptableOrUnknown(
+              data['take_medication']!, _takeMedicationMeta));
     }
-    if (data.containsKey('measuring_name')) {
+    if (data.containsKey('medication_name')) {
       context.handle(
-          _measuringNameMeta,
-          measuringName.isAcceptableOrUnknown(
-              data['measuring_name']!, _measuringNameMeta));
+          _medicationNameMeta,
+          medicationName.isAcceptableOrUnknown(
+              data['medication_name']!, _medicationNameMeta));
     }
     if (data.containsKey('enable_notifications')) {
       context.handle(
           _enableNotificationsMeta,
           enableNotifications.isAcceptableOrUnknown(
               data['enable_notifications']!, _enableNotificationsMeta));
+    }
+    if (data.containsKey('notification_sound_enabled')) {
+      context.handle(
+          _notificationSoundEnabledMeta,
+          notificationSoundEnabled.isAcceptableOrUnknown(
+              data['notification_sound_enabled']!,
+              _notificationSoundEnabledMeta));
+    }
+    if (data.containsKey('notification_sound_uri')) {
+      context.handle(
+          _notificationSoundUriMeta,
+          notificationSoundUri.isAcceptableOrUnknown(
+              data['notification_sound_uri']!, _notificationSoundUriMeta));
+    }
+    if (data.containsKey('language_code')) {
+      context.handle(
+          _languageCodeMeta,
+          languageCode.isAcceptableOrUnknown(
+              data['language_code']!, _languageCodeMeta));
+    }
+    if (data.containsKey('bp_monitor_model')) {
+      context.handle(
+          _bpMonitorModelMeta,
+          bpMonitorModel.isAcceptableOrUnknown(
+              data['bp_monitor_model']!, _bpMonitorModelMeta));
+    }
+    if (data.containsKey('measurement_location')) {
+      context.handle(
+          _measurementLocationMeta,
+          measurementLocation.isAcceptableOrUnknown(
+              data['measurement_location']!, _measurementLocationMeta));
     }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
@@ -143,12 +216,24 @@ class $UsersDaoTable extends UsersDao
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       age: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}age']),
-      hasMeasuring: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}has_measuring'])!,
-      measuringName: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}measuring_name']),
+      takeMedication: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}take_medication'])!,
+      medicationName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}medication_name']),
       enableNotifications: attachedDatabase.typeMapping.read(
           DriftSqlType.bool, data['${effectivePrefix}enable_notifications'])!,
+      notificationSoundEnabled: attachedDatabase.typeMapping.read(
+          DriftSqlType.bool,
+          data['${effectivePrefix}notification_sound_enabled'])!,
+      notificationSoundUri: attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}notification_sound_uri']),
+      languageCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}language_code'])!,
+      bpMonitorModel: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}bp_monitor_model']),
+      measurementLocation: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}measurement_location']),
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
       updatedAt: attachedDatabase.typeMapping
@@ -166,18 +251,28 @@ class UsersDaoData extends DataClass implements Insertable<UsersDaoData> {
   final String id;
   final String name;
   final int? age;
-  final bool hasMeasuring;
-  final String? measuringName;
+  final bool takeMedication;
+  final String? medicationName;
   final bool enableNotifications;
+  final bool notificationSoundEnabled;
+  final String? notificationSoundUri;
+  final String languageCode;
+  final String? bpMonitorModel;
+  final String? measurementLocation;
   final DateTime createdAt;
   final DateTime updatedAt;
   const UsersDaoData(
       {required this.id,
       required this.name,
       this.age,
-      required this.hasMeasuring,
-      this.measuringName,
+      required this.takeMedication,
+      this.medicationName,
       required this.enableNotifications,
+      required this.notificationSoundEnabled,
+      this.notificationSoundUri,
+      required this.languageCode,
+      this.bpMonitorModel,
+      this.measurementLocation,
       required this.createdAt,
       required this.updatedAt});
   @override
@@ -188,11 +283,23 @@ class UsersDaoData extends DataClass implements Insertable<UsersDaoData> {
     if (!nullToAbsent || age != null) {
       map['age'] = Variable<int>(age);
     }
-    map['has_measuring'] = Variable<bool>(hasMeasuring);
-    if (!nullToAbsent || measuringName != null) {
-      map['measuring_name'] = Variable<String>(measuringName);
+    map['take_medication'] = Variable<bool>(takeMedication);
+    if (!nullToAbsent || medicationName != null) {
+      map['medication_name'] = Variable<String>(medicationName);
     }
     map['enable_notifications'] = Variable<bool>(enableNotifications);
+    map['notification_sound_enabled'] =
+        Variable<bool>(notificationSoundEnabled);
+    if (!nullToAbsent || notificationSoundUri != null) {
+      map['notification_sound_uri'] = Variable<String>(notificationSoundUri);
+    }
+    map['language_code'] = Variable<String>(languageCode);
+    if (!nullToAbsent || bpMonitorModel != null) {
+      map['bp_monitor_model'] = Variable<String>(bpMonitorModel);
+    }
+    if (!nullToAbsent || measurementLocation != null) {
+      map['measurement_location'] = Variable<String>(measurementLocation);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -203,11 +310,22 @@ class UsersDaoData extends DataClass implements Insertable<UsersDaoData> {
       id: Value(id),
       name: Value(name),
       age: age == null && nullToAbsent ? const Value.absent() : Value(age),
-      hasMeasuring: Value(hasMeasuring),
-      measuringName: measuringName == null && nullToAbsent
+      takeMedication: Value(takeMedication),
+      medicationName: medicationName == null && nullToAbsent
           ? const Value.absent()
-          : Value(measuringName),
+          : Value(medicationName),
       enableNotifications: Value(enableNotifications),
+      notificationSoundEnabled: Value(notificationSoundEnabled),
+      notificationSoundUri: notificationSoundUri == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notificationSoundUri),
+      languageCode: Value(languageCode),
+      bpMonitorModel: bpMonitorModel == null && nullToAbsent
+          ? const Value.absent()
+          : Value(bpMonitorModel),
+      measurementLocation: measurementLocation == null && nullToAbsent
+          ? const Value.absent()
+          : Value(measurementLocation),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -220,10 +338,18 @@ class UsersDaoData extends DataClass implements Insertable<UsersDaoData> {
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       age: serializer.fromJson<int?>(json['age']),
-      hasMeasuring: serializer.fromJson<bool>(json['hasMeasuring']),
-      measuringName: serializer.fromJson<String?>(json['measuringName']),
+      takeMedication: serializer.fromJson<bool>(json['takeMedication']),
+      medicationName: serializer.fromJson<String?>(json['medicationName']),
       enableNotifications:
           serializer.fromJson<bool>(json['enableNotifications']),
+      notificationSoundEnabled:
+          serializer.fromJson<bool>(json['notificationSoundEnabled']),
+      notificationSoundUri:
+          serializer.fromJson<String?>(json['notificationSoundUri']),
+      languageCode: serializer.fromJson<String>(json['languageCode']),
+      bpMonitorModel: serializer.fromJson<String?>(json['bpMonitorModel']),
+      measurementLocation:
+          serializer.fromJson<String?>(json['measurementLocation']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -235,9 +361,15 @@ class UsersDaoData extends DataClass implements Insertable<UsersDaoData> {
       'id': serializer.toJson<String>(id),
       'name': serializer.toJson<String>(name),
       'age': serializer.toJson<int?>(age),
-      'hasMeasuring': serializer.toJson<bool>(hasMeasuring),
-      'measuringName': serializer.toJson<String?>(measuringName),
+      'takeMedication': serializer.toJson<bool>(takeMedication),
+      'medicationName': serializer.toJson<String?>(medicationName),
       'enableNotifications': serializer.toJson<bool>(enableNotifications),
+      'notificationSoundEnabled':
+          serializer.toJson<bool>(notificationSoundEnabled),
+      'notificationSoundUri': serializer.toJson<String?>(notificationSoundUri),
+      'languageCode': serializer.toJson<String>(languageCode),
+      'bpMonitorModel': serializer.toJson<String?>(bpMonitorModel),
+      'measurementLocation': serializer.toJson<String?>(measurementLocation),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -247,19 +379,35 @@ class UsersDaoData extends DataClass implements Insertable<UsersDaoData> {
           {String? id,
           String? name,
           Value<int?> age = const Value.absent(),
-          bool? hasMeasuring,
-          Value<String?> measuringName = const Value.absent(),
+          bool? takeMedication,
+          Value<String?> medicationName = const Value.absent(),
           bool? enableNotifications,
+          bool? notificationSoundEnabled,
+          Value<String?> notificationSoundUri = const Value.absent(),
+          String? languageCode,
+          Value<String?> bpMonitorModel = const Value.absent(),
+          Value<String?> measurementLocation = const Value.absent(),
           DateTime? createdAt,
           DateTime? updatedAt}) =>
       UsersDaoData(
         id: id ?? this.id,
         name: name ?? this.name,
         age: age.present ? age.value : this.age,
-        hasMeasuring: hasMeasuring ?? this.hasMeasuring,
-        measuringName:
-            measuringName.present ? measuringName.value : this.measuringName,
+        takeMedication: takeMedication ?? this.takeMedication,
+        medicationName:
+            medicationName.present ? medicationName.value : this.medicationName,
         enableNotifications: enableNotifications ?? this.enableNotifications,
+        notificationSoundEnabled:
+            notificationSoundEnabled ?? this.notificationSoundEnabled,
+        notificationSoundUri: notificationSoundUri.present
+            ? notificationSoundUri.value
+            : this.notificationSoundUri,
+        languageCode: languageCode ?? this.languageCode,
+        bpMonitorModel:
+            bpMonitorModel.present ? bpMonitorModel.value : this.bpMonitorModel,
+        measurementLocation: measurementLocation.present
+            ? measurementLocation.value
+            : this.measurementLocation,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
       );
@@ -268,15 +416,30 @@ class UsersDaoData extends DataClass implements Insertable<UsersDaoData> {
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
       age: data.age.present ? data.age.value : this.age,
-      hasMeasuring: data.hasMeasuring.present
-          ? data.hasMeasuring.value
-          : this.hasMeasuring,
-      measuringName: data.measuringName.present
-          ? data.measuringName.value
-          : this.measuringName,
+      takeMedication: data.takeMedication.present
+          ? data.takeMedication.value
+          : this.takeMedication,
+      medicationName: data.medicationName.present
+          ? data.medicationName.value
+          : this.medicationName,
       enableNotifications: data.enableNotifications.present
           ? data.enableNotifications.value
           : this.enableNotifications,
+      notificationSoundEnabled: data.notificationSoundEnabled.present
+          ? data.notificationSoundEnabled.value
+          : this.notificationSoundEnabled,
+      notificationSoundUri: data.notificationSoundUri.present
+          ? data.notificationSoundUri.value
+          : this.notificationSoundUri,
+      languageCode: data.languageCode.present
+          ? data.languageCode.value
+          : this.languageCode,
+      bpMonitorModel: data.bpMonitorModel.present
+          ? data.bpMonitorModel.value
+          : this.bpMonitorModel,
+      measurementLocation: data.measurementLocation.present
+          ? data.measurementLocation.value
+          : this.measurementLocation,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -288,9 +451,14 @@ class UsersDaoData extends DataClass implements Insertable<UsersDaoData> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('age: $age, ')
-          ..write('hasMeasuring: $hasMeasuring, ')
-          ..write('measuringName: $measuringName, ')
+          ..write('takeMedication: $takeMedication, ')
+          ..write('medicationName: $medicationName, ')
           ..write('enableNotifications: $enableNotifications, ')
+          ..write('notificationSoundEnabled: $notificationSoundEnabled, ')
+          ..write('notificationSoundUri: $notificationSoundUri, ')
+          ..write('languageCode: $languageCode, ')
+          ..write('bpMonitorModel: $bpMonitorModel, ')
+          ..write('measurementLocation: $measurementLocation, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -298,8 +466,20 @@ class UsersDaoData extends DataClass implements Insertable<UsersDaoData> {
   }
 
   @override
-  int get hashCode => Object.hash(id, name, age, hasMeasuring, measuringName,
-      enableNotifications, createdAt, updatedAt);
+  int get hashCode => Object.hash(
+      id,
+      name,
+      age,
+      takeMedication,
+      medicationName,
+      enableNotifications,
+      notificationSoundEnabled,
+      notificationSoundUri,
+      languageCode,
+      bpMonitorModel,
+      measurementLocation,
+      createdAt,
+      updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -307,9 +487,14 @@ class UsersDaoData extends DataClass implements Insertable<UsersDaoData> {
           other.id == this.id &&
           other.name == this.name &&
           other.age == this.age &&
-          other.hasMeasuring == this.hasMeasuring &&
-          other.measuringName == this.measuringName &&
+          other.takeMedication == this.takeMedication &&
+          other.medicationName == this.medicationName &&
           other.enableNotifications == this.enableNotifications &&
+          other.notificationSoundEnabled == this.notificationSoundEnabled &&
+          other.notificationSoundUri == this.notificationSoundUri &&
+          other.languageCode == this.languageCode &&
+          other.bpMonitorModel == this.bpMonitorModel &&
+          other.measurementLocation == this.measurementLocation &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -318,9 +503,14 @@ class UsersDaoCompanion extends UpdateCompanion<UsersDaoData> {
   final Value<String> id;
   final Value<String> name;
   final Value<int?> age;
-  final Value<bool> hasMeasuring;
-  final Value<String?> measuringName;
+  final Value<bool> takeMedication;
+  final Value<String?> medicationName;
   final Value<bool> enableNotifications;
+  final Value<bool> notificationSoundEnabled;
+  final Value<String?> notificationSoundUri;
+  final Value<String> languageCode;
+  final Value<String?> bpMonitorModel;
+  final Value<String?> measurementLocation;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
@@ -328,9 +518,14 @@ class UsersDaoCompanion extends UpdateCompanion<UsersDaoData> {
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.age = const Value.absent(),
-    this.hasMeasuring = const Value.absent(),
-    this.measuringName = const Value.absent(),
+    this.takeMedication = const Value.absent(),
+    this.medicationName = const Value.absent(),
     this.enableNotifications = const Value.absent(),
+    this.notificationSoundEnabled = const Value.absent(),
+    this.notificationSoundUri = const Value.absent(),
+    this.languageCode = const Value.absent(),
+    this.bpMonitorModel = const Value.absent(),
+    this.measurementLocation = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -339,9 +534,14 @@ class UsersDaoCompanion extends UpdateCompanion<UsersDaoData> {
     required String id,
     required String name,
     this.age = const Value.absent(),
-    this.hasMeasuring = const Value.absent(),
-    this.measuringName = const Value.absent(),
+    this.takeMedication = const Value.absent(),
+    this.medicationName = const Value.absent(),
     this.enableNotifications = const Value.absent(),
+    this.notificationSoundEnabled = const Value.absent(),
+    this.notificationSoundUri = const Value.absent(),
+    this.languageCode = const Value.absent(),
+    this.bpMonitorModel = const Value.absent(),
+    this.measurementLocation = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
@@ -353,9 +553,14 @@ class UsersDaoCompanion extends UpdateCompanion<UsersDaoData> {
     Expression<String>? id,
     Expression<String>? name,
     Expression<int>? age,
-    Expression<bool>? hasMeasuring,
-    Expression<String>? measuringName,
+    Expression<bool>? takeMedication,
+    Expression<String>? medicationName,
     Expression<bool>? enableNotifications,
+    Expression<bool>? notificationSoundEnabled,
+    Expression<String>? notificationSoundUri,
+    Expression<String>? languageCode,
+    Expression<String>? bpMonitorModel,
+    Expression<String>? measurementLocation,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -364,10 +569,18 @@ class UsersDaoCompanion extends UpdateCompanion<UsersDaoData> {
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (age != null) 'age': age,
-      if (hasMeasuring != null) 'has_measuring': hasMeasuring,
-      if (measuringName != null) 'measuring_name': measuringName,
+      if (takeMedication != null) 'take_medication': takeMedication,
+      if (medicationName != null) 'medication_name': medicationName,
       if (enableNotifications != null)
         'enable_notifications': enableNotifications,
+      if (notificationSoundEnabled != null)
+        'notification_sound_enabled': notificationSoundEnabled,
+      if (notificationSoundUri != null)
+        'notification_sound_uri': notificationSoundUri,
+      if (languageCode != null) 'language_code': languageCode,
+      if (bpMonitorModel != null) 'bp_monitor_model': bpMonitorModel,
+      if (measurementLocation != null)
+        'measurement_location': measurementLocation,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -378,9 +591,14 @@ class UsersDaoCompanion extends UpdateCompanion<UsersDaoData> {
       {Value<String>? id,
       Value<String>? name,
       Value<int?>? age,
-      Value<bool>? hasMeasuring,
-      Value<String?>? measuringName,
+      Value<bool>? takeMedication,
+      Value<String?>? medicationName,
       Value<bool>? enableNotifications,
+      Value<bool>? notificationSoundEnabled,
+      Value<String?>? notificationSoundUri,
+      Value<String>? languageCode,
+      Value<String?>? bpMonitorModel,
+      Value<String?>? measurementLocation,
       Value<DateTime>? createdAt,
       Value<DateTime>? updatedAt,
       Value<int>? rowid}) {
@@ -388,9 +606,15 @@ class UsersDaoCompanion extends UpdateCompanion<UsersDaoData> {
       id: id ?? this.id,
       name: name ?? this.name,
       age: age ?? this.age,
-      hasMeasuring: hasMeasuring ?? this.hasMeasuring,
-      measuringName: measuringName ?? this.measuringName,
+      takeMedication: takeMedication ?? this.takeMedication,
+      medicationName: medicationName ?? this.medicationName,
       enableNotifications: enableNotifications ?? this.enableNotifications,
+      notificationSoundEnabled:
+          notificationSoundEnabled ?? this.notificationSoundEnabled,
+      notificationSoundUri: notificationSoundUri ?? this.notificationSoundUri,
+      languageCode: languageCode ?? this.languageCode,
+      bpMonitorModel: bpMonitorModel ?? this.bpMonitorModel,
+      measurementLocation: measurementLocation ?? this.measurementLocation,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -409,14 +633,31 @@ class UsersDaoCompanion extends UpdateCompanion<UsersDaoData> {
     if (age.present) {
       map['age'] = Variable<int>(age.value);
     }
-    if (hasMeasuring.present) {
-      map['has_measuring'] = Variable<bool>(hasMeasuring.value);
+    if (takeMedication.present) {
+      map['take_medication'] = Variable<bool>(takeMedication.value);
     }
-    if (measuringName.present) {
-      map['measuring_name'] = Variable<String>(measuringName.value);
+    if (medicationName.present) {
+      map['medication_name'] = Variable<String>(medicationName.value);
     }
     if (enableNotifications.present) {
       map['enable_notifications'] = Variable<bool>(enableNotifications.value);
+    }
+    if (notificationSoundEnabled.present) {
+      map['notification_sound_enabled'] =
+          Variable<bool>(notificationSoundEnabled.value);
+    }
+    if (notificationSoundUri.present) {
+      map['notification_sound_uri'] =
+          Variable<String>(notificationSoundUri.value);
+    }
+    if (languageCode.present) {
+      map['language_code'] = Variable<String>(languageCode.value);
+    }
+    if (bpMonitorModel.present) {
+      map['bp_monitor_model'] = Variable<String>(bpMonitorModel.value);
+    }
+    if (measurementLocation.present) {
+      map['measurement_location'] = Variable<String>(measurementLocation.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
@@ -436,9 +677,14 @@ class UsersDaoCompanion extends UpdateCompanion<UsersDaoData> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('age: $age, ')
-          ..write('hasMeasuring: $hasMeasuring, ')
-          ..write('measuringName: $measuringName, ')
+          ..write('takeMedication: $takeMedication, ')
+          ..write('medicationName: $medicationName, ')
           ..write('enableNotifications: $enableNotifications, ')
+          ..write('notificationSoundEnabled: $notificationSoundEnabled, ')
+          ..write('notificationSoundUri: $notificationSoundUri, ')
+          ..write('languageCode: $languageCode, ')
+          ..write('bpMonitorModel: $bpMonitorModel, ')
+          ..write('measurementLocation: $measurementLocation, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -500,6 +746,18 @@ class $MeasurementsDaoTable extends MeasurementsDao
   late final GeneratedColumn<String> note = GeneratedColumn<String>(
       'note', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _bpMonitorModelMeta =
+      const VerificationMeta('bpMonitorModel');
+  @override
+  late final GeneratedColumn<String> bpMonitorModel = GeneratedColumn<String>(
+      'bp_monitor_model', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _measurementLocationMeta =
+      const VerificationMeta('measurementLocation');
+  @override
+  late final GeneratedColumn<String> measurementLocation =
+      GeneratedColumn<String>('measurement_location', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
@@ -522,6 +780,8 @@ class $MeasurementsDaoTable extends MeasurementsDao
         diastolic,
         pulse,
         note,
+        bpMonitorModel,
+        measurementLocation,
         createdAt,
         updatedAt
       ];
@@ -583,6 +843,18 @@ class $MeasurementsDaoTable extends MeasurementsDao
       context.handle(
           _noteMeta, note.isAcceptableOrUnknown(data['note']!, _noteMeta));
     }
+    if (data.containsKey('bp_monitor_model')) {
+      context.handle(
+          _bpMonitorModelMeta,
+          bpMonitorModel.isAcceptableOrUnknown(
+              data['bp_monitor_model']!, _bpMonitorModelMeta));
+    }
+    if (data.containsKey('measurement_location')) {
+      context.handle(
+          _measurementLocationMeta,
+          measurementLocation.isAcceptableOrUnknown(
+              data['measurement_location']!, _measurementLocationMeta));
+    }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
           createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
@@ -620,6 +892,10 @@ class $MeasurementsDaoTable extends MeasurementsDao
           .read(DriftSqlType.int, data['${effectivePrefix}pulse']),
       note: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}note']),
+      bpMonitorModel: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}bp_monitor_model']),
+      measurementLocation: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}measurement_location']),
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
       updatedAt: attachedDatabase.typeMapping
@@ -643,6 +919,8 @@ class MeasurementsDaoData extends DataClass
   final int diastolic;
   final int? pulse;
   final String? note;
+  final String? bpMonitorModel;
+  final String? measurementLocation;
   final DateTime createdAt;
   final DateTime updatedAt;
   const MeasurementsDaoData(
@@ -654,6 +932,8 @@ class MeasurementsDaoData extends DataClass
       required this.diastolic,
       this.pulse,
       this.note,
+      this.bpMonitorModel,
+      this.measurementLocation,
       required this.createdAt,
       required this.updatedAt});
   @override
@@ -671,6 +951,12 @@ class MeasurementsDaoData extends DataClass
     if (!nullToAbsent || note != null) {
       map['note'] = Variable<String>(note);
     }
+    if (!nullToAbsent || bpMonitorModel != null) {
+      map['bp_monitor_model'] = Variable<String>(bpMonitorModel);
+    }
+    if (!nullToAbsent || measurementLocation != null) {
+      map['measurement_location'] = Variable<String>(measurementLocation);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -687,6 +973,12 @@ class MeasurementsDaoData extends DataClass
       pulse:
           pulse == null && nullToAbsent ? const Value.absent() : Value(pulse),
       note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+      bpMonitorModel: bpMonitorModel == null && nullToAbsent
+          ? const Value.absent()
+          : Value(bpMonitorModel),
+      measurementLocation: measurementLocation == null && nullToAbsent
+          ? const Value.absent()
+          : Value(measurementLocation),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -704,6 +996,9 @@ class MeasurementsDaoData extends DataClass
       diastolic: serializer.fromJson<int>(json['diastolic']),
       pulse: serializer.fromJson<int?>(json['pulse']),
       note: serializer.fromJson<String?>(json['note']),
+      bpMonitorModel: serializer.fromJson<String?>(json['bpMonitorModel']),
+      measurementLocation:
+          serializer.fromJson<String?>(json['measurementLocation']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -720,6 +1015,8 @@ class MeasurementsDaoData extends DataClass
       'diastolic': serializer.toJson<int>(diastolic),
       'pulse': serializer.toJson<int?>(pulse),
       'note': serializer.toJson<String?>(note),
+      'bpMonitorModel': serializer.toJson<String?>(bpMonitorModel),
+      'measurementLocation': serializer.toJson<String?>(measurementLocation),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -734,6 +1031,8 @@ class MeasurementsDaoData extends DataClass
           int? diastolic,
           Value<int?> pulse = const Value.absent(),
           Value<String?> note = const Value.absent(),
+          Value<String?> bpMonitorModel = const Value.absent(),
+          Value<String?> measurementLocation = const Value.absent(),
           DateTime? createdAt,
           DateTime? updatedAt}) =>
       MeasurementsDaoData(
@@ -745,6 +1044,11 @@ class MeasurementsDaoData extends DataClass
         diastolic: diastolic ?? this.diastolic,
         pulse: pulse.present ? pulse.value : this.pulse,
         note: note.present ? note.value : this.note,
+        bpMonitorModel:
+            bpMonitorModel.present ? bpMonitorModel.value : this.bpMonitorModel,
+        measurementLocation: measurementLocation.present
+            ? measurementLocation.value
+            : this.measurementLocation,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
       );
@@ -762,6 +1066,12 @@ class MeasurementsDaoData extends DataClass
       diastolic: data.diastolic.present ? data.diastolic.value : this.diastolic,
       pulse: data.pulse.present ? data.pulse.value : this.pulse,
       note: data.note.present ? data.note.value : this.note,
+      bpMonitorModel: data.bpMonitorModel.present
+          ? data.bpMonitorModel.value
+          : this.bpMonitorModel,
+      measurementLocation: data.measurementLocation.present
+          ? data.measurementLocation.value
+          : this.measurementLocation,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -778,6 +1088,8 @@ class MeasurementsDaoData extends DataClass
           ..write('diastolic: $diastolic, ')
           ..write('pulse: $pulse, ')
           ..write('note: $note, ')
+          ..write('bpMonitorModel: $bpMonitorModel, ')
+          ..write('measurementLocation: $measurementLocation, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -794,6 +1106,8 @@ class MeasurementsDaoData extends DataClass
       diastolic,
       pulse,
       note,
+      bpMonitorModel,
+      measurementLocation,
       createdAt,
       updatedAt);
   @override
@@ -808,6 +1122,8 @@ class MeasurementsDaoData extends DataClass
           other.diastolic == this.diastolic &&
           other.pulse == this.pulse &&
           other.note == this.note &&
+          other.bpMonitorModel == this.bpMonitorModel &&
+          other.measurementLocation == this.measurementLocation &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -821,6 +1137,8 @@ class MeasurementsDaoCompanion extends UpdateCompanion<MeasurementsDaoData> {
   final Value<int> diastolic;
   final Value<int?> pulse;
   final Value<String?> note;
+  final Value<String?> bpMonitorModel;
+  final Value<String?> measurementLocation;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
@@ -833,6 +1151,8 @@ class MeasurementsDaoCompanion extends UpdateCompanion<MeasurementsDaoData> {
     this.diastolic = const Value.absent(),
     this.pulse = const Value.absent(),
     this.note = const Value.absent(),
+    this.bpMonitorModel = const Value.absent(),
+    this.measurementLocation = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -846,6 +1166,8 @@ class MeasurementsDaoCompanion extends UpdateCompanion<MeasurementsDaoData> {
     required int diastolic,
     this.pulse = const Value.absent(),
     this.note = const Value.absent(),
+    this.bpMonitorModel = const Value.absent(),
+    this.measurementLocation = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
@@ -866,6 +1188,8 @@ class MeasurementsDaoCompanion extends UpdateCompanion<MeasurementsDaoData> {
     Expression<int>? diastolic,
     Expression<int>? pulse,
     Expression<String>? note,
+    Expression<String>? bpMonitorModel,
+    Expression<String>? measurementLocation,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -879,6 +1203,9 @@ class MeasurementsDaoCompanion extends UpdateCompanion<MeasurementsDaoData> {
       if (diastolic != null) 'diastolic': diastolic,
       if (pulse != null) 'pulse': pulse,
       if (note != null) 'note': note,
+      if (bpMonitorModel != null) 'bp_monitor_model': bpMonitorModel,
+      if (measurementLocation != null)
+        'measurement_location': measurementLocation,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -894,6 +1221,8 @@ class MeasurementsDaoCompanion extends UpdateCompanion<MeasurementsDaoData> {
       Value<int>? diastolic,
       Value<int?>? pulse,
       Value<String?>? note,
+      Value<String?>? bpMonitorModel,
+      Value<String?>? measurementLocation,
       Value<DateTime>? createdAt,
       Value<DateTime>? updatedAt,
       Value<int>? rowid}) {
@@ -906,6 +1235,8 @@ class MeasurementsDaoCompanion extends UpdateCompanion<MeasurementsDaoData> {
       diastolic: diastolic ?? this.diastolic,
       pulse: pulse ?? this.pulse,
       note: note ?? this.note,
+      bpMonitorModel: bpMonitorModel ?? this.bpMonitorModel,
+      measurementLocation: measurementLocation ?? this.measurementLocation,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -939,6 +1270,12 @@ class MeasurementsDaoCompanion extends UpdateCompanion<MeasurementsDaoData> {
     if (note.present) {
       map['note'] = Variable<String>(note.value);
     }
+    if (bpMonitorModel.present) {
+      map['bp_monitor_model'] = Variable<String>(bpMonitorModel.value);
+    }
+    if (measurementLocation.present) {
+      map['measurement_location'] = Variable<String>(measurementLocation.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -962,6 +1299,8 @@ class MeasurementsDaoCompanion extends UpdateCompanion<MeasurementsDaoData> {
           ..write('diastolic: $diastolic, ')
           ..write('pulse: $pulse, ')
           ..write('note: $note, ')
+          ..write('bpMonitorModel: $bpMonitorModel, ')
+          ..write('measurementLocation: $measurementLocation, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -1394,9 +1733,14 @@ typedef $$UsersDaoTableCreateCompanionBuilder = UsersDaoCompanion Function({
   required String id,
   required String name,
   Value<int?> age,
-  Value<bool> hasMeasuring,
-  Value<String?> measuringName,
+  Value<bool> takeMedication,
+  Value<String?> medicationName,
   Value<bool> enableNotifications,
+  Value<bool> notificationSoundEnabled,
+  Value<String?> notificationSoundUri,
+  Value<String> languageCode,
+  Value<String?> bpMonitorModel,
+  Value<String?> measurementLocation,
   required DateTime createdAt,
   required DateTime updatedAt,
   Value<int> rowid,
@@ -1405,9 +1749,14 @@ typedef $$UsersDaoTableUpdateCompanionBuilder = UsersDaoCompanion Function({
   Value<String> id,
   Value<String> name,
   Value<int?> age,
-  Value<bool> hasMeasuring,
-  Value<String?> measuringName,
+  Value<bool> takeMedication,
+  Value<String?> medicationName,
   Value<bool> enableNotifications,
+  Value<bool> notificationSoundEnabled,
+  Value<String?> notificationSoundUri,
+  Value<String> languageCode,
+  Value<String?> bpMonitorModel,
+  Value<String?> measurementLocation,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
   Value<int> rowid,
@@ -1468,14 +1817,35 @@ class $$UsersDaoTableFilterComposer
   ColumnFilters<int> get age => $composableBuilder(
       column: $table.age, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<bool> get hasMeasuring => $composableBuilder(
-      column: $table.hasMeasuring, builder: (column) => ColumnFilters(column));
+  ColumnFilters<bool> get takeMedication => $composableBuilder(
+      column: $table.takeMedication,
+      builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get measuringName => $composableBuilder(
-      column: $table.measuringName, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get medicationName => $composableBuilder(
+      column: $table.medicationName,
+      builder: (column) => ColumnFilters(column));
 
   ColumnFilters<bool> get enableNotifications => $composableBuilder(
       column: $table.enableNotifications,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get notificationSoundEnabled => $composableBuilder(
+      column: $table.notificationSoundEnabled,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get notificationSoundUri => $composableBuilder(
+      column: $table.notificationSoundUri,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get languageCode => $composableBuilder(
+      column: $table.languageCode, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get bpMonitorModel => $composableBuilder(
+      column: $table.bpMonitorModel,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get measurementLocation => $composableBuilder(
+      column: $table.measurementLocation,
       builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
@@ -1545,16 +1915,36 @@ class $$UsersDaoTableOrderingComposer
   ColumnOrderings<int> get age => $composableBuilder(
       column: $table.age, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<bool> get hasMeasuring => $composableBuilder(
-      column: $table.hasMeasuring,
+  ColumnOrderings<bool> get takeMedication => $composableBuilder(
+      column: $table.takeMedication,
       builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get measuringName => $composableBuilder(
-      column: $table.measuringName,
+  ColumnOrderings<String> get medicationName => $composableBuilder(
+      column: $table.medicationName,
       builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<bool> get enableNotifications => $composableBuilder(
       column: $table.enableNotifications,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get notificationSoundEnabled => $composableBuilder(
+      column: $table.notificationSoundEnabled,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get notificationSoundUri => $composableBuilder(
+      column: $table.notificationSoundUri,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get languageCode => $composableBuilder(
+      column: $table.languageCode,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get bpMonitorModel => $composableBuilder(
+      column: $table.bpMonitorModel,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get measurementLocation => $composableBuilder(
+      column: $table.measurementLocation,
       builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
@@ -1582,14 +1972,29 @@ class $$UsersDaoTableAnnotationComposer
   GeneratedColumn<int> get age =>
       $composableBuilder(column: $table.age, builder: (column) => column);
 
-  GeneratedColumn<bool> get hasMeasuring => $composableBuilder(
-      column: $table.hasMeasuring, builder: (column) => column);
+  GeneratedColumn<bool> get takeMedication => $composableBuilder(
+      column: $table.takeMedication, builder: (column) => column);
 
-  GeneratedColumn<String> get measuringName => $composableBuilder(
-      column: $table.measuringName, builder: (column) => column);
+  GeneratedColumn<String> get medicationName => $composableBuilder(
+      column: $table.medicationName, builder: (column) => column);
 
   GeneratedColumn<bool> get enableNotifications => $composableBuilder(
       column: $table.enableNotifications, builder: (column) => column);
+
+  GeneratedColumn<bool> get notificationSoundEnabled => $composableBuilder(
+      column: $table.notificationSoundEnabled, builder: (column) => column);
+
+  GeneratedColumn<String> get notificationSoundUri => $composableBuilder(
+      column: $table.notificationSoundUri, builder: (column) => column);
+
+  GeneratedColumn<String> get languageCode => $composableBuilder(
+      column: $table.languageCode, builder: (column) => column);
+
+  GeneratedColumn<String> get bpMonitorModel => $composableBuilder(
+      column: $table.bpMonitorModel, builder: (column) => column);
+
+  GeneratedColumn<String> get measurementLocation => $composableBuilder(
+      column: $table.measurementLocation, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -1666,9 +2071,14 @@ class $$UsersDaoTableTableManager extends RootTableManager<
             Value<String> id = const Value.absent(),
             Value<String> name = const Value.absent(),
             Value<int?> age = const Value.absent(),
-            Value<bool> hasMeasuring = const Value.absent(),
-            Value<String?> measuringName = const Value.absent(),
+            Value<bool> takeMedication = const Value.absent(),
+            Value<String?> medicationName = const Value.absent(),
             Value<bool> enableNotifications = const Value.absent(),
+            Value<bool> notificationSoundEnabled = const Value.absent(),
+            Value<String?> notificationSoundUri = const Value.absent(),
+            Value<String> languageCode = const Value.absent(),
+            Value<String?> bpMonitorModel = const Value.absent(),
+            Value<String?> measurementLocation = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
@@ -1677,9 +2087,14 @@ class $$UsersDaoTableTableManager extends RootTableManager<
             id: id,
             name: name,
             age: age,
-            hasMeasuring: hasMeasuring,
-            measuringName: measuringName,
+            takeMedication: takeMedication,
+            medicationName: medicationName,
             enableNotifications: enableNotifications,
+            notificationSoundEnabled: notificationSoundEnabled,
+            notificationSoundUri: notificationSoundUri,
+            languageCode: languageCode,
+            bpMonitorModel: bpMonitorModel,
+            measurementLocation: measurementLocation,
             createdAt: createdAt,
             updatedAt: updatedAt,
             rowid: rowid,
@@ -1688,9 +2103,14 @@ class $$UsersDaoTableTableManager extends RootTableManager<
             required String id,
             required String name,
             Value<int?> age = const Value.absent(),
-            Value<bool> hasMeasuring = const Value.absent(),
-            Value<String?> measuringName = const Value.absent(),
+            Value<bool> takeMedication = const Value.absent(),
+            Value<String?> medicationName = const Value.absent(),
             Value<bool> enableNotifications = const Value.absent(),
+            Value<bool> notificationSoundEnabled = const Value.absent(),
+            Value<String?> notificationSoundUri = const Value.absent(),
+            Value<String> languageCode = const Value.absent(),
+            Value<String?> bpMonitorModel = const Value.absent(),
+            Value<String?> measurementLocation = const Value.absent(),
             required DateTime createdAt,
             required DateTime updatedAt,
             Value<int> rowid = const Value.absent(),
@@ -1699,9 +2119,14 @@ class $$UsersDaoTableTableManager extends RootTableManager<
             id: id,
             name: name,
             age: age,
-            hasMeasuring: hasMeasuring,
-            measuringName: measuringName,
+            takeMedication: takeMedication,
+            medicationName: medicationName,
             enableNotifications: enableNotifications,
+            notificationSoundEnabled: notificationSoundEnabled,
+            notificationSoundUri: notificationSoundUri,
+            languageCode: languageCode,
+            bpMonitorModel: bpMonitorModel,
+            measurementLocation: measurementLocation,
             createdAt: createdAt,
             updatedAt: updatedAt,
             rowid: rowid,
@@ -1774,6 +2199,8 @@ typedef $$MeasurementsDaoTableCreateCompanionBuilder = MeasurementsDaoCompanion
   required int diastolic,
   Value<int?> pulse,
   Value<String?> note,
+  Value<String?> bpMonitorModel,
+  Value<String?> measurementLocation,
   required DateTime createdAt,
   required DateTime updatedAt,
   Value<int> rowid,
@@ -1788,6 +2215,8 @@ typedef $$MeasurementsDaoTableUpdateCompanionBuilder = MeasurementsDaoCompanion
   Value<int> diastolic,
   Value<int?> pulse,
   Value<String?> note,
+  Value<String?> bpMonitorModel,
+  Value<String?> measurementLocation,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
   Value<int> rowid,
@@ -1845,6 +2274,14 @@ class $$MeasurementsDaoTableFilterComposer
 
   ColumnFilters<String> get note => $composableBuilder(
       column: $table.note, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get bpMonitorModel => $composableBuilder(
+      column: $table.bpMonitorModel,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get measurementLocation => $composableBuilder(
+      column: $table.measurementLocation,
+      builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnFilters(column));
@@ -1905,6 +2342,14 @@ class $$MeasurementsDaoTableOrderingComposer
   ColumnOrderings<String> get note => $composableBuilder(
       column: $table.note, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get bpMonitorModel => $composableBuilder(
+      column: $table.bpMonitorModel,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get measurementLocation => $composableBuilder(
+      column: $table.measurementLocation,
+      builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnOrderings(column));
 
@@ -1961,6 +2406,12 @@ class $$MeasurementsDaoTableAnnotationComposer
 
   GeneratedColumn<String> get note =>
       $composableBuilder(column: $table.note, builder: (column) => column);
+
+  GeneratedColumn<String> get bpMonitorModel => $composableBuilder(
+      column: $table.bpMonitorModel, builder: (column) => column);
+
+  GeneratedColumn<String> get measurementLocation => $composableBuilder(
+      column: $table.measurementLocation, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -2021,6 +2472,8 @@ class $$MeasurementsDaoTableTableManager extends RootTableManager<
             Value<int> diastolic = const Value.absent(),
             Value<int?> pulse = const Value.absent(),
             Value<String?> note = const Value.absent(),
+            Value<String?> bpMonitorModel = const Value.absent(),
+            Value<String?> measurementLocation = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
@@ -2034,6 +2487,8 @@ class $$MeasurementsDaoTableTableManager extends RootTableManager<
             diastolic: diastolic,
             pulse: pulse,
             note: note,
+            bpMonitorModel: bpMonitorModel,
+            measurementLocation: measurementLocation,
             createdAt: createdAt,
             updatedAt: updatedAt,
             rowid: rowid,
@@ -2047,6 +2502,8 @@ class $$MeasurementsDaoTableTableManager extends RootTableManager<
             required int diastolic,
             Value<int?> pulse = const Value.absent(),
             Value<String?> note = const Value.absent(),
+            Value<String?> bpMonitorModel = const Value.absent(),
+            Value<String?> measurementLocation = const Value.absent(),
             required DateTime createdAt,
             required DateTime updatedAt,
             Value<int> rowid = const Value.absent(),
@@ -2060,6 +2517,8 @@ class $$MeasurementsDaoTableTableManager extends RootTableManager<
             diastolic: diastolic,
             pulse: pulse,
             note: note,
+            bpMonitorModel: bpMonitorModel,
+            measurementLocation: measurementLocation,
             createdAt: createdAt,
             updatedAt: updatedAt,
             rowid: rowid,

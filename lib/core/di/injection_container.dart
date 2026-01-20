@@ -206,6 +206,7 @@ Future<void> init() async {
       dataSource: sl(),
       userRepository: sl(),
       scheduleRepository: sl(),
+      measurementRepository: sl(),
     ),
   );
 

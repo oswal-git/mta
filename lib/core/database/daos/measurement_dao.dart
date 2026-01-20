@@ -11,6 +11,8 @@ class MeasurementsDao extends Table {
   IntColumn get diastolic => integer()();
   IntColumn get pulse => integer().nullable()();
   TextColumn get note => text().nullable()();
+  TextColumn get bpMonitorModel => text().nullable()();
+  TextColumn get measurementLocation => text().nullable()();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
 

@@ -119,3 +119,17 @@ class NotificationError extends NotificationState {
   @override
   List<Object?> get props => [message];
 }
+
+class PermissionStatusChecked extends NotificationState {
+  final bool hasNotificationPermission;
+  final bool hasExactAlarmPermission;
+
+  const PermissionStatusChecked({
+    required this.hasNotificationPermission,
+    required this.hasExactAlarmPermission,
+  });
+
+  @override
+  List<Object?> get props =>
+      [hasNotificationPermission, hasExactAlarmPermission];
+}

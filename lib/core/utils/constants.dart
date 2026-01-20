@@ -40,6 +40,7 @@ class Routes {
   static const String measurementDetail = '/measurement-detail';
   static const String scheduleSettings = '/schedule-settings';
   static const String export = '/export';
+  static const String notificationRing = '/notification-ring';
 }
 
 /// Helper to get color based on blood pressure values

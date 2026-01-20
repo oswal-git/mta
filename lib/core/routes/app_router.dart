@@ -9,6 +9,9 @@ import 'package:mta/features/measurements/presentation/pages/home_page.dart';
 import 'package:mta/features/measurements/presentation/pages/measurement_form_page.dart';
 import 'package:mta/features/measurements/presentation/pages/measurement_detail_page.dart';
 
+import 'package:mta/features/notifications/presentation/pages/notification_ring_page.dart';
+import 'package:mta/features/notifications/domain/entities/notification_entity.dart';
+
 final appRouter = GoRouter(
   initialLocation: Routes.splash,
   routes: [
@@ -31,7 +34,9 @@ final appRouter = GoRouter(
       path: Routes.measurementForm,
       builder: (context, state) {
         final measurementId = state.uri.queryParameters['measurementId'];
-        return MeasurementFormPage(measurementId: measurementId);
+        final userId = state.uri.queryParameters['userId'];
+        return MeasurementFormPage(
+            measurementId: measurementId, userId: userId);
       },
     ),
     GoRoute(
@@ -48,6 +53,13 @@ final appRouter = GoRouter(
     GoRoute(
       path: Routes.export,
       builder: (context, state) => const ExportPage(),
+    ),
+    GoRoute(
+      path: Routes.notificationRing,
+      builder: (context, state) {
+        final notification = state.extra as NotificationEntity;
+        return NotificationRingPage(notification: notification);
+      },
     ),
   ],
   errorBuilder: (context, state) => Scaffold(

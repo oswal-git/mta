@@ -12,6 +12,8 @@ class MeasurementModel extends MeasurementEntity {
     required super.diastolic,
     super.pulse,
     super.note,
+    super.bpMonitorModel,
+    super.measurementLocation,
     required super.createdAt,
     required super.updatedAt,
   });
@@ -27,6 +29,8 @@ class MeasurementModel extends MeasurementEntity {
       diastolic: measurement.diastolic,
       pulse: measurement.pulse,
       note: measurement.note,
+      bpMonitorModel: measurement.bpMonitorModel,
+      measurementLocation: measurement.measurementLocation,
       createdAt: measurement.createdAt,
       updatedAt: measurement.updatedAt,
     );
@@ -43,6 +47,8 @@ class MeasurementModel extends MeasurementEntity {
       diastolic: diastolic,
       pulse: pulse,
       note: note,
+      bpMonitorModel: bpMonitorModel,
+      measurementLocation: measurementLocation,
       createdAt: createdAt,
       updatedAt: updatedAt,
     );
@@ -59,6 +65,8 @@ class MeasurementModel extends MeasurementEntity {
       diastolic: measurement.diastolic,
       pulse: measurement.pulse,
       note: measurement.note,
+      bpMonitorModel: measurement.bpMonitorModel,
+      measurementLocation: measurement.measurementLocation,
       createdAt: measurement.createdAt,
       updatedAt: measurement.updatedAt,
     );

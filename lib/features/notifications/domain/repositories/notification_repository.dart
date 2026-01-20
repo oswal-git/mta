@@ -11,8 +11,12 @@ abstract class NotificationRepository {
   Future<Either<Failure, void>> cancelAllNotifications();
   Future<Either<Failure, bool>> isNotificationActive(String notificationId);
   Future<Either<Failure, int>> scheduleNotificationsForUserSchedules(
-      String userId);
+      String userId,
+      {String? targetScheduleId});
   Future<Either<Failure, void>> stopNotificationsForScheduleTime(
-      String scheduleId, DateTime scheduleTime);
+      String scheduleId, DateTime scheduleTime, String userId);
   Future<Either<Failure, int>> rescheduleAllNotifications();
+  Future<Either<Failure, void>> testInstantNotification(
+      NotificationEntity notification);
+  Future<Either<Failure, void>> testLogPending();
 }

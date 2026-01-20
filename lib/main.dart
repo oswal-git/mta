@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:intl/intl.dart';
 import 'package:mta/features/notifications/utils/notification_action_handler.dart';
 import 'package:mta/features/notifications/utils/notification_permission_handler.dart';
+import 'package:mta/features/users/presentation/bloc/user_state.dart';
 
 import 'core/di/injection_container.dart' as di;
 import 'core/routes/app_router.dart';
@@ -20,6 +22,7 @@ import 'features/users/presentation/bloc/user_event.dart';
 import 'features/measurements/presentation/bloc/measurement_bloc.dart';
 import 'features/schedules/presentation/bloc/schedule_bloc.dart';
 import 'features/notifications/presentation/bloc/notification_bloc.dart';
+import 'package:mta/features/notifications/presentation/bloc/notification_event.dart';
 
 // ✅ INSTANCIA GLOBAL del plugin de notificaciones
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -118,7 +121,13 @@ void main() async {
       '${DateFormat('HH:mm:ss').format(DateTime.now())} -🔧 Initializing DI...');
   await di.init();
   debugPrint(
-      '${DateFormat('HH:mm:ss').format(DateTime.now())} -✅ DI initialized');
+      '${DateFormat('HH:mm:ss').format(DateTime.now())} -💉 DI initialized');
+
+  // ✅ Sincronizar notificaciones de todos los usuarios al arrancar
+  // (Asegura que las notificaciones del OS estén al día tras una actualización)
+  di.sl<NotificationBloc>().add(const RescheduleAllNotifications());
+  debugPrint(
+      '${DateFormat('HH:mm:ss').format(DateTime.now())} -🔄 Notification sync triggered');
 
   runApp(const MTAApp());
 }
@@ -156,46 +165,54 @@ class MTAApp extends StatelessWidget {
           },
         ),
       ],
-      child: MaterialApp.router(
-        title: 'MTA',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.blue,
-            brightness: Brightness.light,
-          ),
-          useMaterial3: true,
-          appBarTheme: const AppBarTheme(
-            centerTitle: true,
-            elevation: 2,
-          ),
-          cardTheme: CardThemeData(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+      child: BlocBuilder<UserBloc, UserState>(
+        builder: (context, state) {
+          Locale appLocale = const Locale('es');
+          if (state is UsersLoaded && state.activeUser != null) {
+            appLocale = Locale(state.activeUser!.languageCode);
+          }
+          return MaterialApp.router(
+            title: 'MTA',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: Colors.blue,
+                brightness: Brightness.light,
+              ),
+              useMaterial3: true,
+              appBarTheme: const AppBarTheme(
+                centerTitle: true,
+                elevation: 2,
+              ),
+              cardTheme: CardThemeData(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              inputDecorationTheme: InputDecorationTheme(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                filled: true,
+                fillColor: Colors.grey[50],
+              ),
             ),
-          ),
-          inputDecorationTheme: InputDecorationTheme(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            filled: true,
-            fillColor: Colors.grey[50],
-          ),
-        ),
-        routerConfig: appRouter,
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: const [
-          Locale('en'),
-          Locale('es'),
-          Locale('ca'),
-        ],
-        locale: const Locale('es'), // Default language
+            routerConfig: appRouter,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en'),
+              Locale('es'),
+              Locale('ca'),
+            ],
+            locale: appLocale,
+          );
+        },
       ),
     );
   }
@@ -236,12 +253,11 @@ Future<void> _createNotificationChannels() async {
 
   // Canal principal de notificaciones
   const mainChannel = AndroidNotificationChannel(
-    'measuring_notifications',
-    'Notificaciones de Medición',
-    description: 'Recordatorios para tomar medición',
+    'mta_notifications_v5',
+    'MTA Alerta V5',
+    description: 'Canal para alertas principales',
     importance: Importance.max,
     playSound: true,
-    sound: RawResourceAndroidNotificationSound('notification'),
     enableVibration: true,
     enableLights: true,
   );
@@ -251,12 +267,11 @@ Future<void> _createNotificationChannels() async {
 
   // Canal para repeticiones
   const repeatChannel = AndroidNotificationChannel(
-    'measuring_notifications_repeat',
-    'Recordatorios Repetidos',
-    description: 'Notificaciones repetidas para medición no tomada',
+    'mta_notifications_repeat_v5',
+    'MTA Recordatorio V5',
+    description: 'Canal para recordatorios constantes',
     importance: Importance.max,
     playSound: true,
-    sound: RawResourceAndroidNotificationSound('notification'),
     enableVibration: true,
     enableLights: true,
   );
