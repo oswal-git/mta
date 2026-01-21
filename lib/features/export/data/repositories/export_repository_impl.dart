@@ -59,6 +59,7 @@ class ExportRepositoryImpl implements ExportRepository {
             measurements: filteredMeasurements,
             fileName: params.fileName,
             username: params.username,
+            translations: params.translations,
           );
           break;
         case ExportFormat.csv:
@@ -66,6 +67,7 @@ class ExportRepositoryImpl implements ExportRepository {
             measurements: filteredMeasurements,
             fileName: params.fileName,
             username: params.username,
+            translations: params.translations,
           );
           break;
         case ExportFormat.pdf:
@@ -75,8 +77,11 @@ class ExportRepositoryImpl implements ExportRepository {
             username: params.username,
             startDate: params.startDate,
             endDate: params.endDate,
+            translations: params.translations,
             userAge: params.userAge,
             medicacion: params.medication,
+            userBpMonitorModel: params.userBpMonitorModel,
+            userMeasurementLocation: params.userMeasurementLocation,
           );
           break;
       }

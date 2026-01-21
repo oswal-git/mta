@@ -14,12 +14,14 @@ abstract class ExportDataSource {
     required List<MeasurementEntity> measurements,
     required String fileName,
     required String username,
+    required Map<String, String> translations,
   });
 
   Future<String> exportToCSV({
     required List<MeasurementEntity> measurements,
     required String fileName,
     required String username,
+    required Map<String, String> translations,
   });
 
   Future<String> exportToPDF({
@@ -28,8 +30,11 @@ abstract class ExportDataSource {
     required String username,
     required DateTime startDate,
     required DateTime endDate,
+    required Map<String, String> translations,
     int? userAge,
     String? medicacion,
+    String? userBpMonitorModel,
+    String? userMeasurementLocation,
   });
 }
 
@@ -116,6 +121,7 @@ class ExportDataSourceImpl implements ExportDataSource {
     required List<MeasurementEntity> measurements,
     required String fileName,
     required String username,
+    required Map<String, String> translations,
   }) async {
     try {
       debugPrint(
@@ -128,18 +134,19 @@ class ExportDataSourceImpl implements ExportDataSource {
 
       // Headers
       sheet.appendRow([
-        TextCellValue('Fecha'),
-        TextCellValue('Día'),
-        TextCellValue('Hora'),
-        // TextCellValue('Nº Medición'),
-        TextCellValue('Sistólica (mmHg)'),
-        TextCellValue('Diastólica (mmHg)'),
-        TextCellValue('Pulsaciones (bpm)'),
-        TextCellValue('Nota'),
+        TextCellValue(translations['header_date'] ?? 'Fecha'),
+        TextCellValue(translations['header_day'] ?? 'Día'),
+        TextCellValue(translations['header_time'] ?? 'Hora'),
+        TextCellValue(translations['header_systolic'] ?? 'Sistólica (mmHg)'),
+        TextCellValue(translations['header_diastolic'] ?? 'Diastólica (mmHg)'),
+        TextCellValue(translations['header_pulse'] ?? 'Pulsaciones (bpm)'),
+        TextCellValue(translations['header_model'] ?? 'Modelo'),
+        TextCellValue(translations['header_zone'] ?? 'Zona'),
+        TextCellValue(translations['header_note'] ?? 'Nota'),
       ]);
 
       // Estilo para encabezados
-      for (int col = 0; col < 8; col++) {
+      for (int col = 0; col < 10; col++) {
         final cell = sheet
             .cell(CellIndex.indexByColumnRow(columnIndex: col, rowIndex: 0));
         cell.cellStyle = CellStyle(
@@ -161,12 +168,17 @@ class ExportDataSourceImpl implements ExportDataSource {
           measurement.pulse != null
               ? IntCellValue(measurement.pulse!)
               : TextCellValue('-'),
+          TextCellValue(measurement.bpMonitorModel ?? ''),
+          TextCellValue(
+              translations['location_${measurement.measurementLocation}'] ??
+                  measurement.measurementLocation ??
+                  ''),
           TextCellValue(measurement.note ?? ''),
         ]);
       }
 
       // Auto-ajustar columnas
-      for (int col = 0; col < 8; col++) {
+      for (int col = 0; col < 10; col++) {
         sheet.setColumnWidth(col, 15);
       }
 
@@ -205,6 +217,7 @@ class ExportDataSourceImpl implements ExportDataSource {
     required List<MeasurementEntity> measurements,
     required String fileName,
     required String username,
+    required Map<String, String> translations,
   }) async {
     try {
       debugPrint(
@@ -213,8 +226,19 @@ class ExportDataSourceImpl implements ExportDataSource {
       final buffer = StringBuffer();
 
       // Headers
+      final hDate = translations['header_date'] ?? 'Fecha';
+      final hDay = translations['header_day'] ?? 'Día';
+      final hTime = translations['header_time'] ?? 'Hora';
+      final hSystolic = translations['header_systolic'] ?? 'Sistólica (mmHg)';
+      final hDiastolic =
+          translations['header_diastolic'] ?? 'Diastólica (mmHg)';
+      final hPulse = translations['header_pulse'] ?? 'Pulsaciones (bpm)';
+      final hModel = translations['header_model'] ?? 'Modelo';
+      final hZone = translations['header_zone'] ?? 'Zona';
+      final hNote = translations['header_note'] ?? 'Nota';
+
       buffer.writeln(
-          'Fecha,Día,Hora,Nº Medición,Sistólica (mmHg),Diastólica (mmHg),Pulsaciones (bpm),Nota');
+          '$hDate,$hDay,$hTime,$hSystolic,$hDiastolic,$hPulse,$hModel,$hZone,$hNote');
 
       // Data rows
       for (final measurement in measurements) {
@@ -225,9 +249,15 @@ class ExportDataSourceImpl implements ExportDataSource {
         final systolic = measurement.systolic;
         final diastolic = measurement.diastolic;
         final pulse = measurement.pulse?.toString() ?? '-';
+        final model = measurement.bpMonitorModel ?? '';
+        final zone =
+            translations['location_${measurement.measurementLocation}'] ??
+                measurement.measurementLocation ??
+                '';
         final note = measurement.note ?? '';
 
-        buffer.writeln('$date,$day,$time,$systolic,$diastolic,$pulse,"$note"');
+        buffer.writeln(
+            '$date,$day,$time,$systolic,$diastolic,$pulse,"$model","$zone","$note"');
       }
 
       // Guardar archivo
@@ -259,8 +289,11 @@ class ExportDataSourceImpl implements ExportDataSource {
     required String username,
     required DateTime startDate,
     required DateTime endDate,
+    required Map<String, String> translations,
     int? userAge,
     String? medicacion,
+    String? userBpMonitorModel,
+    String? userMeasurementLocation,
   }) async {
     try {
       debugPrint(
@@ -274,7 +307,7 @@ class ExportDataSourceImpl implements ExportDataSource {
 
       pdf.addPage(
         pw.MultiPage(
-          pageFormat: PdfPageFormat.a4,
+          pageFormat: PdfPageFormat.a4.landscape,
           margin: const pw.EdgeInsets.all(32),
           build: (pw.Context context) {
             return [
@@ -290,7 +323,8 @@ class ExportDataSourceImpl implements ExportDataSource {
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
                     pw.Text(
-                      'Listado de Mediciones de Tensión Arterial',
+                      translations['pdf_title'] ??
+                          'Listado de Mediciones de Tensión Arterial',
                       style: pw.TextStyle(
                         fontSize: 18,
                         fontWeight: pw.FontWeight.bold,
@@ -305,16 +339,21 @@ class ExportDataSourceImpl implements ExportDataSource {
                           child: pw.Column(
                             crossAxisAlignment: pw.CrossAxisAlignment.start,
                             children: [
-                              _buildHeaderRow('Nombre:', username),
+                              _buildHeaderRow(
+                                  '${translations['header_user_name'] ?? 'Nombre'}:',
+                                  username),
                               pw.SizedBox(height: 8),
                               _buildHeaderRow(
-                                  'Edad:', userAge?.toString() ?? 'N/A'),
+                                  '${translations['header_user_age'] ?? 'Edad'}:',
+                                  userAge?.toString() ?? 'N/A'),
                               pw.SizedBox(height: 8),
                               _buildHeaderRow(
-                                  'Medicación:', medicacion ?? 'N/A'),
+                                  '${translations['header_medication'] ?? 'Medicación'}:',
+                                  medicacion ?? 'N/A'),
                               pw.SizedBox(height: 8),
                               _buildHeaderRow(
-                                  'Período:', '$startDateStr - $endDateStr'),
+                                  '${translations['header_period'] ?? 'Período'}:',
+                                  '$startDateStr - $endDateStr'),
                             ],
                           ),
                         ),
@@ -336,7 +375,9 @@ class ExportDataSourceImpl implements ExportDataSource {
                   3: const pw.FixedColumnWidth(50),
                   4: const pw.FixedColumnWidth(50),
                   5: const pw.FixedColumnWidth(50),
-                  6: const pw.FlexColumnWidth(),
+                  6: const pw.FixedColumnWidth(60),
+                  7: const pw.FixedColumnWidth(80),
+                  8: const pw.FlexColumnWidth(),
                 },
                 children: [
                   // Encabezado de tabla
@@ -345,14 +386,20 @@ class ExportDataSourceImpl implements ExportDataSource {
                       color: PdfColors.blue100,
                     ),
                     children: [
-                      _buildTableHeader('Fecha'),
-                      _buildTableHeader('Día'),
-                      _buildTableHeader('Hora'),
-                      // _buildTableHeader('Nº'),
-                      _buildTableHeader('Sist.\n(mmHg)'),
-                      _buildTableHeader('Diast.\n(mmHg)'),
-                      _buildTableHeader('Puls.\n(bpm)'),
-                      _buildTableHeader('Nota'),
+                      _buildTableHeader(translations['header_date'] ?? 'Fecha'),
+                      _buildTableHeader(translations['header_day'] ?? 'Día'),
+                      _buildTableHeader(translations['header_time'] ?? 'Hora'),
+                      _buildTableHeader(translations['header_systolic_short'] ??
+                          'Sist.\n(mmHg)'),
+                      _buildTableHeader(
+                          translations['header_diastolic_short'] ??
+                              'Diast.\n(mmHg)'),
+                      _buildTableHeader(
+                          translations['header_pulse_short'] ?? 'Puls.\n(bpm)'),
+                      _buildTableHeader(
+                          translations['header_model'] ?? 'Modelo'),
+                      _buildTableHeader(translations['header_zone'] ?? 'Zona'),
+                      _buildTableHeader(translations['header_note'] ?? 'Nota'),
                     ],
                   ),
                   // Filas de datos
@@ -370,6 +417,11 @@ class ExportDataSourceImpl implements ExportDataSource {
                         _buildTableCell(measurement.systolic.toString()),
                         _buildTableCell(measurement.diastolic.toString()),
                         _buildTableCell(measurement.pulse?.toString() ?? '-'),
+                        _buildTableCell(measurement.bpMonitorModel ?? ''),
+                        _buildTableCell(translations[
+                                'location_${measurement.measurementLocation}'] ??
+                            measurement.measurementLocation ??
+                            ''),
                         _buildTableCell(measurement.note ?? ''),
                       ],
                     );

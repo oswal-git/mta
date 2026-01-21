@@ -163,6 +163,48 @@ class AppLocalizationsCa extends AppLocalizations {
   String get exportFormat => 'Format d\'Exportació';
 
   @override
+  String get exportHeaderDate => 'Data';
+
+  @override
+  String get exportHeaderDay => 'Dia';
+
+  @override
+  String get exportHeaderTime => 'Hora';
+
+  @override
+  String get exportHeaderSystolic => 'Sistòlica (mmHg)';
+
+  @override
+  String get exportHeaderDiastolic => 'Diastòlica (mmHg)';
+
+  @override
+  String get exportHeaderPulse => 'Pulsacions (bpm)';
+
+  @override
+  String get exportHeaderModel => 'Model';
+
+  @override
+  String get exportHeaderPeriod => 'Període';
+
+  @override
+  String get exportHeaderZone => 'Zona';
+
+  @override
+  String get exportHeaderNote => 'Nota';
+
+  @override
+  String get exportPdfTitle => 'Llistat de Mesures de Pressió Arterial';
+
+  @override
+  String get exportHeaderSystolicShort => 'Sist.\n(mmHg)';
+
+  @override
+  String get exportHeaderDiastolicShort => 'Diast.\n(mmHg)';
+
+  @override
+  String get exportHeaderPulseShort => 'Puls.\n(bpm)';
+
+  @override
   String get exporting => 'Exportant...';
 
   @override

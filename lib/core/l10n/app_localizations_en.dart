@@ -163,6 +163,48 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportFormat => 'Export Format';
 
   @override
+  String get exportHeaderDate => 'Date';
+
+  @override
+  String get exportHeaderDay => 'Day';
+
+  @override
+  String get exportHeaderTime => 'Time';
+
+  @override
+  String get exportHeaderSystolic => 'Systolic (mmHg)';
+
+  @override
+  String get exportHeaderDiastolic => 'Diastolic (mmHg)';
+
+  @override
+  String get exportHeaderPulse => 'Pulse (bpm)';
+
+  @override
+  String get exportHeaderModel => 'Model';
+
+  @override
+  String get exportHeaderPeriod => 'Period';
+
+  @override
+  String get exportHeaderZone => 'Zone';
+
+  @override
+  String get exportHeaderNote => 'Note';
+
+  @override
+  String get exportPdfTitle => 'Blood Pressure Measurement List';
+
+  @override
+  String get exportHeaderSystolicShort => 'Syst.\n(mmHg)';
+
+  @override
+  String get exportHeaderDiastolicShort => 'Diast.\n(mmHg)';
+
+  @override
+  String get exportHeaderPulseShort => 'Pulse\n(bpm)';
+
+  @override
   String get exporting => 'Exporting...';
 
   @override

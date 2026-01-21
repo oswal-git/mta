@@ -10,6 +10,9 @@ class ExportParamsEntity extends Equatable {
   final String username;
   final int? userAge;
   final String? medication;
+  final String? userBpMonitorModel;
+  final String? userMeasurementLocation;
+  final Map<String, String> translations;
 
   const ExportParamsEntity({
     required this.startDate,
@@ -18,8 +21,11 @@ class ExportParamsEntity extends Equatable {
     required this.format,
     required this.userId,
     required this.username,
+    required this.translations,
     this.userAge,
     this.medication,
+    this.userBpMonitorModel,
+    this.userMeasurementLocation,
   });
 
   @override
@@ -32,6 +38,9 @@ class ExportParamsEntity extends Equatable {
         username,
         userAge,
         medication,
+        userBpMonitorModel,
+        userMeasurementLocation,
+        translations,
       ];
 }
 

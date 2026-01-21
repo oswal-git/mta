@@ -406,6 +406,90 @@ abstract class AppLocalizations {
   /// **'Formato de Exportación'**
   String get exportFormat;
 
+  /// No description provided for @exportHeaderDate.
+  ///
+  /// In es, this message translates to:
+  /// **'Fecha'**
+  String get exportHeaderDate;
+
+  /// No description provided for @exportHeaderDay.
+  ///
+  /// In es, this message translates to:
+  /// **'Día'**
+  String get exportHeaderDay;
+
+  /// No description provided for @exportHeaderTime.
+  ///
+  /// In es, this message translates to:
+  /// **'Hora'**
+  String get exportHeaderTime;
+
+  /// No description provided for @exportHeaderSystolic.
+  ///
+  /// In es, this message translates to:
+  /// **'Sistólica (mmHg)'**
+  String get exportHeaderSystolic;
+
+  /// No description provided for @exportHeaderDiastolic.
+  ///
+  /// In es, this message translates to:
+  /// **'Diastólica (mmHg)'**
+  String get exportHeaderDiastolic;
+
+  /// No description provided for @exportHeaderPulse.
+  ///
+  /// In es, this message translates to:
+  /// **'Pulsaciones (bpm)'**
+  String get exportHeaderPulse;
+
+  /// No description provided for @exportHeaderModel.
+  ///
+  /// In es, this message translates to:
+  /// **'Modelo'**
+  String get exportHeaderModel;
+
+  /// No description provided for @exportHeaderPeriod.
+  ///
+  /// In es, this message translates to:
+  /// **'Período'**
+  String get exportHeaderPeriod;
+
+  /// No description provided for @exportHeaderZone.
+  ///
+  /// In es, this message translates to:
+  /// **'Zona'**
+  String get exportHeaderZone;
+
+  /// No description provided for @exportHeaderNote.
+  ///
+  /// In es, this message translates to:
+  /// **'Nota'**
+  String get exportHeaderNote;
+
+  /// No description provided for @exportPdfTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Listado de Mediciones de Tensión Arterial'**
+  String get exportPdfTitle;
+
+  /// No description provided for @exportHeaderSystolicShort.
+  ///
+  /// In es, this message translates to:
+  /// **'Sist.\n(mmHg)'**
+  String get exportHeaderSystolicShort;
+
+  /// No description provided for @exportHeaderDiastolicShort.
+  ///
+  /// In es, this message translates to:
+  /// **'Diast.\n(mmHg)'**
+  String get exportHeaderDiastolicShort;
+
+  /// No description provided for @exportHeaderPulseShort.
+  ///
+  /// In es, this message translates to:
+  /// **'Puls.\n(bpm)'**
+  String get exportHeaderPulseShort;
+
   /// No description provided for @exporting.
   ///
   /// In es, this message translates to:

@@ -154,6 +154,33 @@ class _ExportPageState extends State<ExportPage> {
         username: userState.activeUser!.name,
         userAge: userState.activeUser!.age,
         medication: userState.activeUser!.medicationName,
+        userBpMonitorModel: userState.activeUser!.bpMonitorModel,
+        userMeasurementLocation: userState.activeUser!.measurementLocation,
+        translations: {
+          'header_date': l10n.exportHeaderDate,
+          'header_day': l10n.exportHeaderDay,
+          'header_time': l10n.exportHeaderTime,
+          'header_systolic': l10n.exportHeaderSystolic,
+          'header_diastolic': l10n.exportHeaderDiastolic,
+          'header_pulse': l10n.exportHeaderPulse,
+          'header_model': l10n.exportHeaderModel,
+          'header_zone': l10n.exportHeaderZone,
+          'header_note': l10n.exportHeaderNote,
+          'pdf_title': l10n.exportPdfTitle,
+          'header_systolic_short': l10n.exportHeaderSystolicShort,
+          'header_diastolic_short': l10n.exportHeaderDiastolicShort,
+          'header_pulse_short': l10n.exportHeaderPulseShort,
+          'header_user_name': l10n.userName,
+          'header_user_age': l10n.userAge,
+          'header_medication': l10n.medicationName,
+          'header_period': l10n.exportHeaderPeriod,
+          'location_left_arm': l10n.locationLeftArm,
+          'location_left_wrist': l10n.locationLeftWrist,
+          'location_right_arm': l10n.locationRightArm,
+          'location_right_wrist': l10n.locationRightWrist,
+          'location_null': '',
+          'location_not_indicated': '',
+        },
       );
 
       // Ejecutar exportación
@@ -248,6 +275,25 @@ class _ExportPageState extends State<ExportPage> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go(Routes.home),
         ),
+        actions: [
+          _isExporting
+              ? const Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white),
+                    ),
+                  ),
+                )
+              : IconButton(
+                  icon: const Icon(Icons.file_download),
+                  tooltip: l10n.exportButton,
+                  onPressed: _exportData,
+                ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -347,37 +393,6 @@ class _ExportPageState extends State<ExportPage> {
                 },
               ),
               const SizedBox(height: 32),
-
-              // Botón de exportar
-              ElevatedButton.icon(
-                onPressed: _isExporting ? null : _exportData,
-                icon: _isExporting
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.file_download),
-                label: Text(
-                  _isExporting ? l10n.exporting : l10n.exportButton,
-                ),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.all(16),
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Botón cancelar
-              OutlinedButton.icon(
-                onPressed: _isExporting ? null : () => context.go(Routes.home),
-                icon: const Icon(Icons.cancel),
-                label: Text(l10n.cancel),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.all(16),
-                ),
-              ),
             ],
           ),
         ),
