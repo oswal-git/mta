@@ -354,6 +354,17 @@ class ExportDataSourceImpl implements ExportDataSource {
                               _buildHeaderRow(
                                   '${translations['header_period'] ?? 'Período'}:',
                                   '$startDateStr - $endDateStr'),
+                              pw.SizedBox(height: 8),
+                              _buildHeaderRow(
+                                  '${translations['header_model'] ?? 'Modelo'}:',
+                                  userBpMonitorModel ?? 'N/A'),
+                              pw.SizedBox(height: 8),
+                              _buildHeaderRow(
+                                  '${translations['header_zone'] ?? 'Zona'}:',
+                                  translations[
+                                          'location_$userMeasurementLocation'] ??
+                                      userMeasurementLocation ??
+                                      ''),
                             ],
                           ),
                         ),

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:mta/core/utils/constants.dart';
+import 'package:mta/core/theme/theme.dart';
 import 'package:mta/features/schedules/presentation/bloc/schedule_bloc.dart';
 import 'package:mta/features/schedules/presentation/bloc/schedule_event.dart';
 import 'package:mta/features/schedules/presentation/bloc/schedule_state.dart';
@@ -124,52 +125,49 @@ class _SplashPageState extends State<SplashPage> {
         }
       },
       child: Scaffold(
-          body: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Theme.of(context).colorScheme.primary,
-                  Theme.of(context).colorScheme.secondary,
-                ],
-              ),
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Theme.of(context).colorScheme.primary,
+                Theme.of(context).colorScheme.secondary,
+              ],
             ),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.favorite,
-                    size: 100,
-                    color: Colors.white,
+          ),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.favorite,
+                  size: AppIcons.xxl,
+                  color: AppColors.white,
+                ),
+                const SizedBox(height: AppSpacing.gapLg),
+                Text(
+                  'MTA',
+                  style: AppTypography.display.copyWith(
+                    color: AppColors.white,
                   ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'MTA',
-                    style: TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                ),
+                const SizedBox(height: AppSpacing.gapSm),
+                Text(
+                  'Blood Pressure Manager',
+                  style: AppTypography.h3.copyWith(
+                    color: AppColors.white.withValues(alpha: 0.9),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Blood Pressure Manager',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white.withValues(alpha: 0.9),
-                    ),
-                  ),
-                  const SizedBox(height: 48),
-                  CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(height: AppSpacing.gapXl),
+                CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                ),
+              ],
             ),
           ),
         ),
+      ),
     );
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mta/core/utils/constants.dart';
 import 'package:mta/features/measurements/domain/entities/measurement_entity.dart';
+import 'package:mta/core/theme/theme.dart';
 
 class MeasurementListItem extends StatelessWidget {
   final MeasurementEntity measurement;
@@ -33,12 +34,15 @@ class MeasurementListItem extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm,
+        ),
         decoration: BoxDecoration(
           color: backgroundColor,
           border: Border(
             bottom: BorderSide(
-              color: Colors.grey[300]!,
+              color: AppColors.border,
               width: 1,
             ),
           ),
@@ -50,7 +54,7 @@ class MeasurementListItem extends StatelessWidget {
               flex: 5,
               child: Text(
                 dateFormat.format(measurement.measurementTime),
-                style: const TextStyle(fontSize: 13),
+                style: AppTypography.bodySmall,
               ),
             ),
             // Day
@@ -58,7 +62,7 @@ class MeasurementListItem extends StatelessWidget {
               flex: 4,
               child: Text(
                 getDayName(measurement.measurementTime),
-                style: const TextStyle(fontSize: 13),
+                style: AppTypography.bodySmall,
               ),
             ),
             // Time
@@ -66,8 +70,8 @@ class MeasurementListItem extends StatelessWidget {
               flex: 3,
               child: Text(
                 timeFormat.format(measurement.measurementTime),
-                style:
-                    const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                style: AppTypography.bodySmall
+                    .copyWith(fontWeight: FontWeight.w500),
               ),
             ),
             // Systolic
@@ -75,10 +79,8 @@ class MeasurementListItem extends StatelessWidget {
               flex: 3,
               child: Text(
                 measurement.systolic.toString(),
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: AppTypography.bodyMedium
+                    .copyWith(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -87,10 +89,8 @@ class MeasurementListItem extends StatelessWidget {
               flex: 3,
               child: Text(
                 measurement.diastolic.toString(),
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: AppTypography.bodyMedium
+                    .copyWith(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -99,7 +99,7 @@ class MeasurementListItem extends StatelessWidget {
               flex: 3,
               child: Text(
                 measurement.pulse?.toString() ?? '-',
-                style: const TextStyle(fontSize: 13),
+                style: AppTypography.bodySmall,
                 textAlign: TextAlign.center,
               ),
             ),

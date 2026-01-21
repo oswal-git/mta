@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mta/core/l10n/app_localizations.dart';
 import 'package:mta/features/schedules/domain/entities/schedule_entity.dart';
+import 'package:mta/core/theme/theme.dart';
 
 class ScheduleItemWidget extends StatelessWidget {
   final ScheduleEntity schedule;
@@ -23,21 +24,21 @@ class ScheduleItemWidget extends StatelessWidget {
       direction: DismissDirection.endToStart,
       background: Container(
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
-        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.only(right: AppSpacing.lg),
+        margin: const EdgeInsets.only(bottom: AppSpacing.md),
         decoration: BoxDecoration(
-          color: Colors.red,
-          borderRadius: BorderRadius.circular(12),
+          color: AppColors.error,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
         ),
-        child: const Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.delete, color: Colors.white, size: 32),
-            SizedBox(height: 4),
+            const Icon(Icons.delete, color: AppColors.white, size: AppIcons.lg),
+            const SizedBox(height: 4),
             Text(
               'Delete',
-              style: TextStyle(
-                color: Colors.white,
+              style: AppTypography.bodyMedium.copyWith(
+                color: AppColors.white,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -59,7 +60,7 @@ class ScheduleItemWidget extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () => Navigator.of(dialogContext).pop(true),
-                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                style: TextButton.styleFrom(foregroundColor: AppColors.error),
                 child: Text(l10n.delete),
               ),
             ],
@@ -70,12 +71,12 @@ class ScheduleItemWidget extends StatelessWidget {
         onDelete();
       },
       child: Card(
-        margin: const EdgeInsets.only(bottom: 12),
+        margin: const EdgeInsets.only(bottom: AppSpacing.md),
         child: InkWell(
           onTap: onEdit,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: AppSpacing.pAllMd,
             child: Row(
               children: [
                 // Icono de notificacion
@@ -85,18 +86,18 @@ class ScheduleItemWidget extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: schedule.isEnabled
                         ? Theme.of(context).colorScheme.primaryContainer
-                        : Colors.grey[300],
-                    borderRadius: BorderRadius.circular(8),
+                        : AppColors.border,
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                   ),
                   child: Icon(
                     Icons.notifications_active,
-                    size: 32,
+                    size: AppIcons.lg,
                     color: schedule.isEnabled
                         ? Theme.of(context).colorScheme.primary
-                        : Colors.grey[600],
+                        : AppColors.textSecondary,
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: AppSpacing.gapMd),
 
                 // Información del horario
                 Expanded(
@@ -107,24 +108,23 @@ class ScheduleItemWidget extends StatelessWidget {
                       // Hora
                       Text(
                         schedule.formattedTime,
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: schedule.isEnabled ? null : Colors.grey,
+                        style: AppTypography.h1.copyWith(
+                          color: schedule.isEnabled
+                              ? null
+                              : AppColors.textDisabled,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: AppSpacing.gapXs),
 
                       // Notificación
                       Text(
                         schedule.isEnabled
                             ? 'Notification 5 min before (${_getNotificationTime(schedule)})'
                             : 'Disabled',
-                        style: TextStyle(
-                          fontSize: 12,
+                        style: AppTypography.caption.copyWith(
                           color: schedule.isEnabled
-                              ? Colors.green[700]
-                              : Colors.grey,
+                              ? AppColors.success
+                              : AppColors.textDisabled,
                         ),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
@@ -138,7 +138,7 @@ class ScheduleItemWidget extends StatelessWidget {
                             schedule.isEnabled
                                 ? Icons.notifications_active
                                 : Icons.notifications_off,
-                            size: 14,
+                            size: AppIcons.tiny,
                             color:
                                 schedule.isEnabled ? Colors.green : Colors.grey,
                           ),
@@ -148,11 +148,10 @@ class ScheduleItemWidget extends StatelessWidget {
                               schedule.isEnabled
                                   ? 'Notification enabled'
                                   : 'Notification disabled',
-                              style: TextStyle(
-                                fontSize: 11,
+                              style: AppTypography.small.copyWith(
                                 color: schedule.isEnabled
-                                    ? Colors.green[700]
-                                    : Colors.grey,
+                                    ? AppColors.success
+                                    : AppColors.textDisabled,
                               ),
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,

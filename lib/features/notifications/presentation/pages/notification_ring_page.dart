@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:mta/core/l10n/app_localizations.dart';
+import 'package:mta/core/theme/theme.dart';
 import 'package:mta/features/notifications/domain/entities/notification_entity.dart';
 import 'package:mta/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:mta/features/notifications/presentation/bloc/notification_event.dart';
@@ -106,7 +107,7 @@ class _NotificationRingPageState extends State<NotificationRingPage>
       backgroundColor: Theme.of(context).colorScheme.errorContainer,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: AppSpacing.pAllXl,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -121,7 +122,7 @@ class _NotificationRingPageState extends State<NotificationRingPage>
                       opacity: _fadeAnimation.value,
                       child: Icon(
                         Icons.notifications_active,
-                        size: 120,
+                        size: AppIcons.jumbo,
                         color: Theme.of(context).colorScheme.error,
                       ),
                     ),
@@ -129,14 +130,14 @@ class _NotificationRingPageState extends State<NotificationRingPage>
                 },
               ),
 
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.gapXl),
 
               // Nombre del usuario destacado
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: AppSpacing.pAllMd,
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withAlpha(10),
@@ -166,13 +167,13 @@ class _NotificationRingPageState extends State<NotificationRingPage>
                 ),
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.gapLg),
 
               // Información de la medición
               Card(
                 elevation: 2,
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: AppSpacing.pAllMd,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -184,7 +185,7 @@ class _NotificationRingPageState extends State<NotificationRingPage>
                       ),
                       if (widget.notification.label != null &&
                           widget.notification.label!.isNotEmpty) ...[
-                        const SizedBox(height: 12),
+                        const SizedBox(height: AppSpacing.gapMd),
                         _buildInfoRow(
                           context,
                           Icons.label,
@@ -194,7 +195,7 @@ class _NotificationRingPageState extends State<NotificationRingPage>
                       ],
                       if (widget.notification.medication != null &&
                           widget.notification.medication!.isNotEmpty) ...[
-                        const SizedBox(height: 12),
+                        const SizedBox(height: AppSpacing.gapMd),
                         _buildInfoRow(
                           context,
                           Icons.heat_pump_rounded,
@@ -207,29 +208,29 @@ class _NotificationRingPageState extends State<NotificationRingPage>
                 ),
               ),
 
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.gapXl),
 
               // Botón principal: Marcar como tomada
               ElevatedButton.icon(
                 onPressed: () {
                   _markAsTaken();
                 },
-                icon: const Icon(Icons.check_circle, size: 28),
+                icon: const Icon(Icons.check_circle, size: AppIcons.actionIcon),
                 label: Text(
                   l10n.markAsTaken,
-                  style: const TextStyle(fontSize: 18),
+                  style: AppTypography.h3,
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Theme.of(context).colorScheme.onPrimary,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.gapMd),
 
               // Opciones de snooze
               Row(
@@ -243,12 +244,13 @@ class _NotificationRingPageState extends State<NotificationRingPage>
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius:
+                              BorderRadius.circular(AppSpacing.radiusMd),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.gapMd),
                   Expanded(
                     child: OutlinedButton.icon(
                       onPressed: () =>
@@ -258,12 +260,13 @@ class _NotificationRingPageState extends State<NotificationRingPage>
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius:
+                              BorderRadius.circular(AppSpacing.radiusMd),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.gapMd),
                   Expanded(
                     child: OutlinedButton.icon(
                       onPressed: () =>
@@ -273,7 +276,8 @@ class _NotificationRingPageState extends State<NotificationRingPage>
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius:
+                              BorderRadius.circular(AppSpacing.radiusMd),
                         ),
                       ),
                     ),
@@ -281,7 +285,7 @@ class _NotificationRingPageState extends State<NotificationRingPage>
                 ],
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.gapMd),
 
               // Botón de cancelar
               TextButton.icon(
@@ -310,10 +314,10 @@ class _NotificationRingPageState extends State<NotificationRingPage>
       children: [
         Icon(
           icon,
-          size: 20,
+          size: AppIcons.navIcon,
           color: Theme.of(context).colorScheme.primary,
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: AppSpacing.gapMd),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

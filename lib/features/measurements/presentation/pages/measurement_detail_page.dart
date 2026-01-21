@@ -11,6 +11,7 @@ import 'package:mta/features/measurements/presentation/bloc/measurement_event.da
 import 'package:mta/features/measurements/presentation/bloc/measurement_state.dart';
 import 'package:mta/features/users/presentation/bloc/user_bloc.dart';
 import 'package:mta/features/users/presentation/bloc/user_state.dart';
+import 'package:mta/core/theme/theme.dart';
 
 class MeasurementDetailPage extends StatefulWidget {
   final String measurementId;
@@ -119,7 +120,7 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
                   );
               Navigator.of(dialogContext).pop();
             },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
             child: Text(l10n.delete),
           ),
         ],
@@ -192,7 +193,7 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: Colors.red,
+                backgroundColor: AppColors.error,
               ),
             );
             // Si hay error, volver atrás
@@ -219,8 +220,8 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
                   children: [
                     const Icon(
                       Icons.error_outline,
-                      size: 64,
-                      color: Colors.red,
+                      size: AppIcons.huge,
+                      color: AppColors.error,
                     ),
                     const SizedBox(height: 16),
                     Text(
@@ -280,7 +281,7 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
                   // Header with color
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(12),
+                    padding: AppSpacing.pAllMd,
                     decoration: BoxDecoration(
                       color: backgroundColor,
                       boxShadow: [
@@ -298,21 +299,15 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
                           children: [
                             Text(
                               _measurement!.systolic.toString(),
-                              style: const TextStyle(
-                                fontSize: 38,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: AppTypography.displaySmall,
                             ),
                             const Text(
                               ' / ',
-                              style: TextStyle(fontSize: 32),
+                              style: TextStyle(fontSize: AppIcons.lg),
                             ),
                             Text(
                               _measurement!.diastolic.toString(),
-                              style: const TextStyle(
-                                fontSize: 38,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: AppTypography.displaySmall,
                             ),
                           ],
                         ),
@@ -321,16 +316,16 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
                           style: TextStyle(fontSize: 16),
                         ),
                         if (_measurement!.pulse != null) ...[
-                          const SizedBox(height: 16),
+                          const SizedBox(height: AppSpacing.gapMd),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(Icons.favorite, size: 20),
-                              const SizedBox(width: 8),
+                              const Icon(Icons.favorite,
+                                  size: AppIcons.navIcon),
+                              const SizedBox(width: AppSpacing.gapSm),
                               Text(
                                 '${_measurement!.pulse} bpm',
-                                style: const TextStyle(
-                                  fontSize: 20,
+                                style: AppTypography.h2.copyWith(
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -343,7 +338,7 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
 
                   // Form
                   Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: AppSpacing.pAllMd,
                     child: Form(
                       key: _formKey,
                       child: Column(
@@ -360,7 +355,7 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: AppSpacing.gapMd),
 
                           // Date and Time
                           Card(
@@ -380,7 +375,7 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
                                   : null,
                             ),
                           ),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: AppSpacing.gapLg),
 
                           // Systolic
                           TextFormField(
@@ -434,7 +429,7 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
                             maxLines: 3,
                             enabled: _isEditing,
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: AppSpacing.gapMd),
 
                           // BP Monitor Model
                           TextFormField(
@@ -445,7 +440,7 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
                             ),
                             enabled: _isEditing,
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: AppSpacing.gapMd),
 
                           // Measurement Location
                           if (_isEditing)

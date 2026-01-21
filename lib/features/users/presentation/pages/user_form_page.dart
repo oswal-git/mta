@@ -11,6 +11,7 @@ import 'package:mta/features/users/presentation/bloc/user_state.dart';
 import 'package:mta/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:mta/features/notifications/presentation/bloc/notification_event.dart';
 import 'package:mta/core/services/sound_service.dart';
+import 'package:mta/core/theme/theme.dart';
 
 class UserFormPage extends StatefulWidget {
   final String? userId;
@@ -224,7 +225,7 @@ class _UserFormPageState extends State<UserFormPage> {
                 }
 
                 return SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
+                  padding: AppSpacing.pAllMd,
                   child: Form(
                     key: _formKey,
                     child: Column(
@@ -239,7 +240,7 @@ class _UserFormPageState extends State<UserFormPage> {
                           validator: (value) =>
                               Validators.required(value, l10n.userName),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: AppSpacing.gapMd),
                         TextFormField(
                           controller: _ageController,
                           decoration: InputDecoration(
@@ -249,7 +250,7 @@ class _UserFormPageState extends State<UserFormPage> {
                           keyboardType: TextInputType.number,
                           validator: (value) => Validators.age(value),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: AppSpacing.gapMd),
                         DropdownButtonFormField<String>(
                           initialValue: _languageCode,
                           decoration: InputDecoration(
@@ -279,7 +280,7 @@ class _UserFormPageState extends State<UserFormPage> {
                             }
                           },
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: AppSpacing.gapMd),
                         TextFormField(
                           controller: _bpMonitorModelController,
                           decoration: InputDecoration(
@@ -288,7 +289,7 @@ class _UserFormPageState extends State<UserFormPage> {
                             prefixIcon: const Icon(Icons.monitor_heart),
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: AppSpacing.gapMd),
                         DropdownButtonFormField<String?>(
                           initialValue: _measurementLocation,
                           decoration: InputDecoration(
@@ -324,7 +325,7 @@ class _UserFormPageState extends State<UserFormPage> {
                             });
                           },
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: AppSpacing.gapLg),
                         SwitchListTile(
                           title: Text(l10n.hasMeasuring),
                           value: _takeMedication,
@@ -339,7 +340,7 @@ class _UserFormPageState extends State<UserFormPage> {
                           },
                         ),
                         if (_takeMedication) ...[
-                          const SizedBox(height: 16),
+                          const SizedBox(height: AppSpacing.gapMd),
                           TextFormField(
                             controller: _medicationNameController,
                             decoration: InputDecoration(
@@ -348,7 +349,7 @@ class _UserFormPageState extends State<UserFormPage> {
                             ),
                           ),
                         ],
-                        const SizedBox(height: 24),
+                        const SizedBox(height: AppSpacing.gapLg),
                         SwitchListTile(
                           title: Text(l10n.enableNotifications),
                           value: _enableNotifications,
@@ -359,7 +360,7 @@ class _UserFormPageState extends State<UserFormPage> {
                             });
                           },
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: AppSpacing.gapMd),
                         Card(
                           child: Column(
                             children: [
@@ -389,7 +390,7 @@ class _UserFormPageState extends State<UserFormPage> {
                                             l10n.customSound),
                                   ),
                                   trailing: const Icon(Icons.arrow_forward_ios,
-                                      size: 16),
+                                      size: AppIcons.sm),
                                   onTap: _showSoundPicker,
                                 ),
                               ],
@@ -457,7 +458,7 @@ class _UserFormPageState extends State<UserFormPage> {
                         leading: const Icon(Icons.music_note_outlined),
                         title: Text(l10n.defaultOption),
                         trailing: isSelected
-                            ? const Icon(Icons.check, color: Colors.blue)
+                            ? const Icon(Icons.check, color: AppColors.primary)
                             : null,
                         selected: isSelected,
                         onTap: () {
@@ -478,7 +479,7 @@ class _UserFormPageState extends State<UserFormPage> {
                       leading: const Icon(Icons.music_note),
                       title: Text(sound['title'] ?? l10n.unknownOption),
                       trailing: isSelected
-                          ? const Icon(Icons.check, color: Colors.blue)
+                          ? const Icon(Icons.check, color: AppColors.primary)
                           : null,
                       selected: isSelected,
                       onTap: () {

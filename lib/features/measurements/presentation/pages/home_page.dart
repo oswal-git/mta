@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:mta/core/l10n/app_localizations.dart';
+import 'package:mta/core/theme/theme.dart';
 import 'package:mta/core/utils/constants.dart';
 import 'package:mta/features/measurements/presentation/bloc/measurement_bloc.dart';
 import 'package:mta/features/measurements/presentation/bloc/measurement_event.dart';
@@ -125,7 +126,7 @@ class _HomePageState extends State<HomePage> {
                   child: Row(
                     children: [
                       const Icon(Icons.schedule),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.gapSm),
                       Text(l10n.schedules),
                     ],
                   ),
@@ -135,7 +136,7 @@ class _HomePageState extends State<HomePage> {
                   child: Row(
                     children: [
                       const Icon(Icons.person_add),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.gapSm),
                       Text(l10n.addUser),
                     ],
                   ),
@@ -145,7 +146,7 @@ class _HomePageState extends State<HomePage> {
                   child: Row(
                     children: [
                       const Icon(Icons.edit),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.gapSm),
                       Text(l10n.editUser),
                     ],
                   ),
@@ -154,10 +155,10 @@ class _HomePageState extends State<HomePage> {
                   value: 'delete_user',
                   child: Row(
                     children: [
-                      const Icon(Icons.delete, color: Colors.red),
-                      const SizedBox(width: 8),
+                      const Icon(Icons.delete, color: AppColors.error),
+                      const SizedBox(width: AppSpacing.gapSm),
                       Text(l10n.deleteUser,
-                          style: const TextStyle(color: Colors.red)),
+                          style: const TextStyle(color: AppColors.error)),
                     ],
                   ),
                 ),
@@ -180,7 +181,7 @@ class _HomePageState extends State<HomePage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(state.message),
-                  backgroundColor: Colors.red,
+                  backgroundColor: AppColors.error,
                 ),
               );
             }
@@ -198,22 +199,22 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       Icon(
                         Icons.favorite_border,
-                        size: 100,
-                        color: Colors.grey[300],
+                        size: AppIcons.xxl,
+                        color: AppColors.textDisabled,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: AppSpacing.gapMd),
                       Text(
                         'No measurements yet',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              color: Colors.grey,
-                            ),
+                        style: AppTypography.h3.copyWith(
+                          color: AppColors.textDisabled,
+                        ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: AppSpacing.gapSm),
                       Text(
                         'Tap the + button to add your first measurement',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.grey,
-                            ),
+                        style: AppTypography.bodyMedium.copyWith(
+                          color: AppColors.textDisabled,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -226,8 +227,8 @@ class _HomePageState extends State<HomePage> {
                   // Header
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.sm,
                     ),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.primaryContainer,
@@ -245,28 +246,32 @@ class _HomePageState extends State<HomePage> {
                           flex: 5,
                           child: Text(
                             l10n.date,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            style: AppTypography.bodyMedium
+                                .copyWith(fontWeight: FontWeight.bold),
                           ),
                         ),
                         Expanded(
                           flex: 4,
                           child: Text(
                             l10n.day,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            style: AppTypography.bodyMedium
+                                .copyWith(fontWeight: FontWeight.bold),
                           ),
                         ),
                         Expanded(
                           flex: 3,
                           child: Text(
                             l10n.measurementTime,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            style: AppTypography.bodyMedium
+                                .copyWith(fontWeight: FontWeight.bold),
                           ),
                         ),
                         Expanded(
                           flex: 3,
                           child: Text(
                             l10n.systolic,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            style: AppTypography.bodyMedium
+                                .copyWith(fontWeight: FontWeight.bold),
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -274,7 +279,8 @@ class _HomePageState extends State<HomePage> {
                           flex: 3,
                           child: Text(
                             l10n.diastolic,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            style: AppTypography.bodyMedium
+                                .copyWith(fontWeight: FontWeight.bold),
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -282,7 +288,8 @@ class _HomePageState extends State<HomePage> {
                           flex: 3,
                           child: Text(
                             l10n.pulse,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            style: AppTypography.bodyMedium
+                                .copyWith(fontWeight: FontWeight.bold),
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -351,7 +358,7 @@ class _HomePageState extends State<HomePage> {
                   );
               Navigator.of(dialogContext).pop();
             },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
             child: Text(l10n.delete),
           ),
         ],

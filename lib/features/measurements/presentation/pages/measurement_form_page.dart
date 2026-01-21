@@ -12,6 +12,7 @@ import 'package:mta/features/measurements/presentation/bloc/measurement_state.da
 import 'package:mta/features/users/presentation/bloc/user_bloc.dart';
 import 'package:mta/features/users/presentation/bloc/user_event.dart';
 import 'package:mta/features/users/presentation/bloc/user_state.dart';
+import 'package:mta/core/theme/theme.dart';
 
 class MeasurementFormPage extends StatefulWidget {
   final String? measurementId;
@@ -137,7 +138,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context).systoleValidation),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -147,7 +148,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context).diastoleValidation),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -157,7 +158,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context).pulseValidation),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -195,7 +196,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
         SnackBar(
           content: Text(AppLocalizations.of(context).successSaved),
           duration: const Duration(seconds: 1),
-          backgroundColor: Colors.green,
+          backgroundColor: AppColors.success,
         ),
       );
     } else {
@@ -294,7 +295,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(state.message),
-                    backgroundColor: Colors.red,
+                    backgroundColor: AppColors.error,
                   ),
                 );
               }
@@ -371,7 +372,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                     color: _getBackgroundColor(),
                     child: SafeArea(
                       child: SingleChildScrollView(
-                        padding: const EdgeInsets.all(12),
+                        padding: AppSpacing.pAllSm,
                         child: Form(
                           key: _formKey,
                           child: Column(
@@ -396,26 +397,27 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                                     borderRadius: BorderRadius.circular(8),
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(
-                                        horizontal: 12,
-                                        vertical: 8,
+                                        horizontal: AppSpacing.md,
+                                        vertical: AppSpacing.sm,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(8),
-                                        border: Border.all(
-                                            color: Colors.grey[300]!),
+                                        color: AppColors.surface,
+                                        borderRadius: BorderRadius.circular(
+                                            AppSpacing.radiusSm),
+                                        border:
+                                            Border.all(color: AppColors.border),
                                       ),
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           const Icon(Icons.calendar_today,
-                                              size: 16),
+                                              size: AppIcons.sm),
                                           const SizedBox(width: 6),
                                           Text(
                                             dateTimeFormat
                                                 .format(_selectedDateTime),
-                                            style: const TextStyle(
-                                              fontSize: 14,
+                                            style: AppTypography.bodyMedium
+                                                .copyWith(
                                               fontWeight: FontWeight.w600,
                                             ),
                                           ),
@@ -453,7 +455,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: AppSpacing.gapSm),
 
                               // LÍNEA 3: Diástole y espacio vacío
                               Row(
@@ -616,7 +618,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                                       style: ElevatedButton.styleFrom(
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 14),
-                                        backgroundColor: Colors.green[700],
+                                        backgroundColor: AppColors.success,
                                         foregroundColor: Colors.white,
                                       ),
                                     ),
@@ -648,25 +650,23 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
     return Card(
       margin: EdgeInsets.zero,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        padding: AppSpacing.pAllXs,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Icon(icon, size: 12),
+                Icon(icon, size: AppIcons.xs),
                 const SizedBox(width: 3),
                 Text(
                   label,
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey[600],
+                  style: AppTypography.small.copyWith(
                     fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: AppSpacing.gapXs),
             Row(
               children: [
                 IconButton(
@@ -679,7 +679,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                     }
                   },
                   icon: const Icon(Icons.remove_circle_outline),
-                  iconSize: 20,
+                  iconSize: AppIcons.navIcon,
                   padding: EdgeInsets.zero,
                   constraints:
                       const BoxConstraints(minWidth: 28, minHeight: 28),
@@ -699,9 +699,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
                             ],
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                            style: AppTypography.h2.copyWith(
                               height: 1.0,
                             ),
                             decoration: const InputDecoration(
@@ -723,9 +721,8 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                         ),
                         Text(
                           unit,
-                          style: TextStyle(
-                            fontSize: 9,
-                            color: Colors.grey[600],
+                          style: AppTypography.micro.copyWith(
+                            color: AppColors.textSecondary,
                           ),
                         ),
                       ],
@@ -742,7 +739,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                     }
                   },
                   icon: const Icon(Icons.add_circle_outline),
-                  iconSize: 20,
+                  iconSize: AppIcons.navIcon,
                   padding: EdgeInsets.zero,
                   constraints:
                       const BoxConstraints(minWidth: 28, minHeight: 28),
@@ -769,11 +766,11 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
           height: 40,
           decoration: BoxDecoration(
             color: color,
-            border: Border.all(color: Colors.grey),
-            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: AppColors.border),
+            borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: AppSpacing.gapMd),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -785,12 +782,12 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                   fontSize: 16,
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.gapXs),
               Text(
                 description,
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.grey[600],
+                  color: AppColors.textSecondary,
                 ),
               ),
             ],

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:mta/core/utils/constants.dart';
+import 'package:mta/core/theme/theme.dart';
 import 'package:mta/core/l10n/app_localizations.dart';
 import 'package:mta/features/schedules/presentation/bloc/schedule_bloc.dart';
 import 'package:mta/features/schedules/presentation/bloc/schedule_event.dart';
@@ -34,7 +35,7 @@ class UserSelectorWidget extends StatelessWidget {
     if (users.length == 1) {
       return Text(
         activeUser?.name ?? users.first.name,
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        style: AppTypography.h3,
       );
     }
 
@@ -43,10 +44,7 @@ class UserSelectorWidget extends StatelessWidget {
       underline: Container(),
       dropdownColor: Theme.of(context).colorScheme.surface,
       icon: const Icon(Icons.arrow_drop_down),
-      style: const TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-      ),
+      style: AppTypography.h3,
       items: users.map((user) {
         return DropdownMenuItem<String>(
           value: user.id,
@@ -54,13 +52,13 @@ class UserSelectorWidget extends StatelessWidget {
             children: [
               Icon(
                 Icons.person,
-                size: 20,
+                size: AppIcons.navIcon,
                 color: Theme.of(context).colorScheme.primary,
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.gapSm),
               Text(
                 user.name,
-                style: TextStyle(
+                style: AppTypography.bodyMedium.copyWith(
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),

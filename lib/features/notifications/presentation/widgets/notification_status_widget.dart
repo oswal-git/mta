@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mta/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:mta/features/notifications/presentation/bloc/notification_event.dart';
 import 'package:mta/features/notifications/presentation/bloc/notification_state.dart';
+import 'package:mta/core/theme/theme.dart';
 
 /// Widget que muestra el estado de las notificaciones y permite reprogramarlas
 class NotificationStatusWidget extends StatefulWidget {
@@ -45,14 +46,14 @@ class _NotificationStatusWidgetState extends State<NotificationStatusWidget> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
-              backgroundColor: Colors.green,
+              backgroundColor: AppColors.success,
             ),
           );
         } else if (state is NotificationError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
-              backgroundColor: Colors.red,
+              backgroundColor: AppColors.error,
             ),
           );
         }
@@ -60,10 +61,13 @@ class _NotificationStatusWidgetState extends State<NotificationStatusWidget> {
       child: BlocBuilder<NotificationBloc, NotificationState>(
         builder: (context, state) {
           return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            margin: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.sm,
+            ),
             elevation: 2,
             child: Padding(
-              padding: const EdgeInsets.all(12),
+              padding: AppSpacing.pAllMd,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,7 +82,7 @@ class _NotificationStatusWidgetState extends State<NotificationStatusWidget> {
                             color: Theme.of(context).colorScheme.primary,
                             size: 20,
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: AppSpacing.gapSm),
                           Text(
                             'Gestión de Alertas',
                             style: Theme.of(context)
@@ -91,7 +95,8 @@ class _NotificationStatusWidgetState extends State<NotificationStatusWidget> {
                         ],
                       ),
                       IconButton(
-                        icon: const Icon(Icons.refresh, size: 18),
+                        icon: const Icon(Icons.refresh,
+                            size: AppIcons.smallMedium),
                         onPressed: () => context
                             .read<NotificationBloc>()
                             .add(const CheckPermissionsEvent()),
@@ -112,7 +117,7 @@ class _NotificationStatusWidgetState extends State<NotificationStatusWidget> {
                           isGranted: _hasNotif,
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.gapSm),
                       Expanded(
                         child: _CompactPermissionBadge(
                           label: 'Alarmas Exactas',
@@ -132,12 +137,11 @@ class _NotificationStatusWidgetState extends State<NotificationStatusWidget> {
                           onPressed: () => context
                               .read<NotificationBloc>()
                               .add(const RequestPermissionsEvent()),
-                          icon: const Icon(Icons.settings, size: 16),
+                          icon: const Icon(Icons.settings, size: AppIcons.sm),
                           label: const Text('CORREGIR PERMISOS',
-                              style: TextStyle(
-                                  fontSize: 11, fontWeight: FontWeight.bold)),
+                              style: AppTypography.small),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.orange[800],
+                            backgroundColor: AppColors.orange,
                             foregroundColor: Colors.white,
                             padding: EdgeInsets.zero,
                           ),
@@ -184,10 +188,13 @@ class _CompactPermissionBadge extends StatelessWidget {
             : Colors.red[800]!;
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      padding: const EdgeInsets.symmetric(
+        vertical: AppSpacing.xs,
+        horizontal: AppSpacing.sm,
+      ),
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
         border: Border.all(color: borderColor),
       ),
       child: Row(
@@ -204,14 +211,13 @@ class _CompactPermissionBadge extends StatelessWidget {
           else
             Icon(
               granted ? Icons.check_circle : Icons.cancel,
-              color: granted ? Colors.green : Colors.red,
+              color: granted ? AppColors.success : AppColors.error,
               size: 12,
             ),
-          const SizedBox(width: 4),
+          const SizedBox(width: AppSpacing.gapXs),
           Text(
             label,
-            style: TextStyle(
-              fontSize: 10,
+            style: AppTypography.small.copyWith(
               fontWeight: FontWeight.bold,
               color: textColor,
             ),

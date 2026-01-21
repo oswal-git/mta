@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mta/core/l10n/app_localizations.dart';
+import 'package:mta/core/theme/theme.dart';
 import 'package:mta/core/utils/constants.dart';
 import 'package:mta/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:mta/features/notifications/presentation/bloc/notification_event.dart';
@@ -206,7 +207,7 @@ class _ScheduleSettingsPageState extends State<ScheduleSettingsPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
-              backgroundColor: Colors.red,
+              backgroundColor: AppColors.error,
             ),
           );
         }
@@ -251,17 +252,17 @@ class _ScheduleSettingsPageState extends State<ScheduleSettingsPage> {
                     if (state.schedules.length >= AppConstants.maxSchedules)
                       Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        color: Colors.orange[100],
+                        padding: AppSpacing.pAllMd,
+                        color: AppColors.warningLight,
                         child: Row(
                           children: [
-                            Icon(Icons.info, color: Colors.orange[900]),
-                            const SizedBox(width: 12),
+                            const Icon(Icons.info, color: AppColors.warning),
+                            const SizedBox(width: AppSpacing.gapMd),
                             Flexible(
                               child: Text(
                                 l10n.maxSchedulesReached,
-                                style: TextStyle(
-                                  color: Colors.orange[900],
+                                style: AppTypography.bodyMedium.copyWith(
+                                  color: AppColors.warning,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -277,8 +278,8 @@ class _ScheduleSettingsPageState extends State<ScheduleSettingsPage> {
                                 children: [
                                   Icon(
                                     Icons.schedule,
-                                    size: 100,
-                                    color: Colors.grey[300],
+                                    size: AppIcons.xxl,
+                                    color: AppColors.textDisabled,
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
@@ -305,12 +306,7 @@ class _ScheduleSettingsPageState extends State<ScheduleSettingsPage> {
                                   Text(
                                     l10n.maxSchedulesAllowed(
                                         AppConstants.maxSchedules),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall
-                                        ?.copyWith(
-                                          color: Colors.grey[600],
-                                        ),
+                                    style: AppTypography.caption,
                                   ),
                                 ],
                               ),
@@ -362,7 +358,7 @@ class _ScheduleSettingsPageState extends State<ScheduleSettingsPage> {
 
               return FloatingActionButton.extended(
                 onPressed: canAdd ? _showAddScheduleDialog : null,
-                backgroundColor: canAdd ? null : Colors.grey,
+                backgroundColor: canAdd ? null : AppColors.grey,
                 icon: const Icon(Icons.add),
                 label: Text(l10n.addSchedule),
               );

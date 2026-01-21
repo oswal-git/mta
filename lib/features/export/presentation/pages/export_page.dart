@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:mta/core/di/injection_container.dart' as di;
 import 'package:mta/core/l10n/app_localizations.dart';
+import 'package:mta/core/theme/theme.dart';
 import 'package:mta/core/utils/constants.dart';
 import 'package:mta/features/export/domain/entities/export_params_entity.dart';
 import 'package:mta/features/export/domain/usecases/export_measurements.dart';
@@ -199,7 +200,7 @@ class _ExportPageState extends State<ExportPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('${l10n.exportError}: ${failure.message}'),
-              backgroundColor: Colors.red,
+              backgroundColor: AppColors.error,
             ),
           );
         },
@@ -209,8 +210,9 @@ class _ExportPageState extends State<ExportPage> {
             builder: (context) => AlertDialog(
               title: Row(
                 children: [
-                  Icon(Icons.check_circle, color: Colors.green),
-                  const SizedBox(width: 8),
+                  Icon(Icons.check_circle,
+                      color: AppColors.success, size: AppIcons.md),
+                  const SizedBox(width: AppSpacing.gapSm),
                   Expanded(child: Text(l10n.exportSuccess)),
                 ],
               ),
@@ -219,16 +221,16 @@ class _ExportPageState extends State<ExportPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('${l10n.fileLocation}:'),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.gapSm),
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(AppSpacing.sm),
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(8),
+                      color: AppColors.surfaceVariant,
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                     ),
                     child: SelectableText(
                       filePath,
-                      style: const TextStyle(fontSize: 12),
+                      style: AppTypography.caption,
                     ),
                   ),
                 ],
@@ -251,7 +253,7 @@ class _ExportPageState extends State<ExportPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('${l10n.exportError}: $e'),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.error,
         ),
       );
     } finally {
@@ -281,10 +283,10 @@ class _ExportPageState extends State<ExportPage> {
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
                     child: SizedBox(
-                      width: 20,
-                      height: 20,
+                      width: AppIcons.navIcon,
+                      height: AppIcons.navIcon,
                       child: CircularProgressIndicator(
-                          strokeWidth: 2, color: Colors.white),
+                          strokeWidth: 2, color: AppColors.white),
                     ),
                   ),
                 )
@@ -296,7 +298,7 @@ class _ExportPageState extends State<ExportPage> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: AppSpacing.pAllMd,
         child: Form(
           key: _formKey,
           child: Column(
@@ -304,17 +306,19 @@ class _ExportPageState extends State<ExportPage> {
             children: [
               // Información
               Card(
-                color: Colors.blue[50],
+                color: AppColors.surfaceVariant,
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: AppSpacing.pAllMd,
                   child: Row(
                     children: [
-                      Icon(Icons.info_outline, color: Colors.blue[700]),
-                      const SizedBox(width: 12),
+                      Icon(Icons.info_outline,
+                          color: AppColors.info, size: AppIcons.md),
+                      const SizedBox(width: AppSpacing.gapMd),
                       Expanded(
                         child: Text(
                           l10n.selectDateRange,
-                          style: TextStyle(color: Colors.blue[700]),
+                          style: AppTypography.bodyMedium
+                              .copyWith(color: AppColors.info),
                         ),
                       ),
                     ],
