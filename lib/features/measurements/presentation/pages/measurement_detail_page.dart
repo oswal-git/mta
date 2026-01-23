@@ -233,7 +233,7 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
                     ElevatedButton.icon(
                       onPressed: () => context.go(Routes.home),
                       icon: const Icon(Icons.home),
-                      label: const Text('Volver al inicio'),
+                      label: Text(l10n.backToHome),
                     ),
                   ],
                 ),

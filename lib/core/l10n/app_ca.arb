@@ -160,5 +160,21 @@
     "validationInvalidNumber": "Número invàlid",
     "validationRequired": "Aquest camp és obligatori",
     "validationStartBeforeEnd": "La data d'inici ha de ser anterior a la data de fi",
-    "wednesday": "Dimecres"
+    "wednesday": "Dimecres",
+    "notificationChannelAlertTitle": "MTA Alerta V5",
+    "notificationChannelRepeatTitle": "MTA Recordatori V5",
+    "notificationChannelAlertDescription": "Canal per a alertes principals",
+    "notificationChannelRepeatDescription": "Canal per a recordatoris constants",
+    "actionCancelled": "✓ CANCEL·LADA",
+    "actionSnooze5": "⏰ 5 MIN",
+    "actionSnooze10": "⏰ 10 MIN",
+    "testPrefix": "🧪 PROVA: ",
+    "testNotificationBody": "Si veus això, el sistema de notificacions funciona correctament.",
+    "groupSummaryBody": "Mesures de {userName}",
+    "nextMeasurementTime": "Pròxima mesura: {time}",
+    "measurementTimeTitle": "Hora de mesura: {time}",
+    "reminderMeasurementTitle": "RECORDATORI ({repetition}ª vegada) mesura: {time}",
+    "preAvisoBody": "En 5 minuts toca la seva mesura de tensió.",
+    "scheduledTimeBody": "És el moment de fer la mesura programada.",
+    "repeatBody": "Han passat {minutes} minuts des de l'avís inicial"
 }

@@ -498,4 +498,66 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get wednesday => 'Wednesday';
+
+  @override
+  String get notificationChannelAlertTitle => 'MTA Alert V5';
+
+  @override
+  String get notificationChannelRepeatTitle => 'MTA Reminder V5';
+
+  @override
+  String get notificationChannelAlertDescription => 'Channel for main alerts';
+
+  @override
+  String get notificationChannelRepeatDescription =>
+      'Channel for constant reminders';
+
+  @override
+  String get actionCancelled => '✓ CANCELLED';
+
+  @override
+  String get actionSnooze5 => '⏰ 5 MIN';
+
+  @override
+  String get actionSnooze10 => '⏰ 10 MIN';
+
+  @override
+  String get testPrefix => '🧪 TEST: ';
+
+  @override
+  String get testNotificationBody =>
+      'If you see this, the notification system is working correctly.';
+
+  @override
+  String groupSummaryBody(Object userName) {
+    return 'Measurements of $userName';
+  }
+
+  @override
+  String nextMeasurementTime(Object time) {
+    return 'Next measurement: $time';
+  }
+
+  @override
+  String measurementTimeTitle(Object time) {
+    return 'Measurement time: $time';
+  }
+
+  @override
+  String reminderMeasurementTitle(Object repetition, Object time) {
+    return 'REMINDER (${repetition}th time) measurement: $time';
+  }
+
+  @override
+  String get preAvisoBody =>
+      'In 5 minutes it\'s time for your blood pressure measurement.';
+
+  @override
+  String get scheduledTimeBody =>
+      'It\'s time to perform the scheduled measurement.';
+
+  @override
+  String repeatBody(Object minutes) {
+    return '$minutes minutes have passed since the initial notice';
+  }
 }

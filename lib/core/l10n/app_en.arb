@@ -160,5 +160,21 @@
     "validationInvalidNumber": "Invalid number",
     "validationRequired": "This field is required",
     "validationStartBeforeEnd": "Start must be before end",
-    "wednesday": "Wednesday"
+    "wednesday": "Wednesday",
+    "notificationChannelAlertTitle": "MTA Alert V5",
+    "notificationChannelRepeatTitle": "MTA Reminder V5",
+    "notificationChannelAlertDescription": "Channel for main alerts",
+    "notificationChannelRepeatDescription": "Channel for constant reminders",
+    "actionCancelled": "✓ CANCELLED",
+    "actionSnooze5": "⏰ 5 MIN",
+    "actionSnooze10": "⏰ 10 MIN",
+    "testPrefix": "🧪 TEST: ",
+    "testNotificationBody": "If you see this, the notification system is working correctly.",
+    "groupSummaryBody": "Measurements of {userName}",
+    "nextMeasurementTime": "Next measurement: {time}",
+    "measurementTimeTitle": "Measurement time: {time}",
+    "reminderMeasurementTitle": "REMINDER ({repetition}th time) measurement: {time}",
+    "preAvisoBody": "In 5 minutes it's time for your blood pressure measurement.",
+    "scheduledTimeBody": "It's time to perform the scheduled measurement.",
+    "repeatBody": "{minutes} minutes have passed since the initial notice"
 }

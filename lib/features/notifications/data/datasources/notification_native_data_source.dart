@@ -2,23 +2,26 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:mta/features/notifications/domain/entities/notification_entity.dart';
+import 'package:mta/features/notifications/data/models/notification_strings.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 /// Data source para gestionar notificaciones persistentes con repetición
 abstract class NotificationNativeDataSource {
   Future<void> scheduleNotification(NotificationEntity notification,
-      {DateTime? maxTime});
+      {DateTime? maxTime, NotificationStrings? strings});
   Future<void> cancelNotification(String notificationId);
   Future<void> snoozeNotification(
-      String notificationId, Duration snoozeDuration);
+      String notificationId, Duration snoozeDuration,
+      {NotificationStrings? strings});
   Future<void> cancelNotificationsForSchedule(String scheduleId);
   Future<void> stopNotificationsForScheduleTime(
       NotificationEntity notification, DateTime scheduleTime,
-      {DateTime? maxTime});
+      {DateTime? maxTime, NotificationStrings? strings});
   Future<void> cancelAllNotifications();
   Future<bool> isNotificationActive(String notificationId);
   Future<List<NotificationEntity>> getActiveNotifications();
-  Future<void> showInstantNotification(NotificationEntity notification);
+  Future<void> showInstantNotification(NotificationEntity notification,
+      {NotificationStrings? strings});
   Future<void> logPendingNotifications();
 }
 
@@ -41,7 +44,7 @@ class NotificationNativeDataSourceImpl implements NotificationNativeDataSource {
 
   @override
   Future<void> scheduleNotification(NotificationEntity notification,
-      {DateTime? maxTime}) async {
+      {DateTime? maxTime, NotificationStrings? strings}) async {
     try {
       debugPrint('🔔 PROGRAMANDO NOTIFICACIONES DIARIAS (SISTEMA OS)');
       debugPrint('   Schedule ID: ${notification.scheduleId}');
@@ -53,7 +56,8 @@ class NotificationNativeDataSourceImpl implements NotificationNativeDataSource {
       if (!notification.id.startsWith('simple_test')) {
         final preTime =
             notification.notificationTime.subtract(const Duration(minutes: 5));
-        await _scheduleSingleRepeatingNotification(notification, preTime, -1);
+        await _scheduleSingleRepeatingNotification(notification, preTime, -1,
+            strings: strings);
       }
 
       // Especial para pruebas de depuración (IDs numéricos fijos para evitar errores de hash)
@@ -65,7 +69,7 @@ class NotificationNativeDataSourceImpl implements NotificationNativeDataSource {
       // 2. Programar notificación PRINCIPAL (Hora exacta)
       await _scheduleSingleRepeatingNotification(
           notification, notification.notificationTime, 0,
-          forcedId: forcedId);
+          forcedId: forcedId, strings: strings);
 
       // Log inmediato para confirmar que está en la cola
       await logPendingNotifications();
@@ -84,7 +88,8 @@ class NotificationNativeDataSourceImpl implements NotificationNativeDataSource {
             continue;
           }
 
-          await _scheduleSingleRepeatingNotification(notification, repTime, i);
+          await _scheduleSingleRepeatingNotification(notification, repTime, i,
+              strings: strings);
         }
       }
 
@@ -100,12 +105,18 @@ class NotificationNativeDataSourceImpl implements NotificationNativeDataSource {
   /// Programamos una única notificación recurrente en el OS
   Future<void> _scheduleSingleRepeatingNotification(
       NotificationEntity notification, DateTime time, int index,
-      {int? forcedId}) async {
+      {int? forcedId, NotificationStrings? strings}) async {
     final tzTime = _nextInstanceOfTime(time);
     final baseId = notification.notificationId;
 
     // Mapeo seguro de ID: si no hay forzado, usamos la lógica de offsets
     final id = forcedId ?? (baseId + ((index + 1) * 100));
+
+    // Programar el resumen del grupo si es la primera notificación (pre-aviso o principal sin pre-aviso)
+    if (index == -1 ||
+        (index == 0 && !notification.id.contains('simple_test'))) {
+      await _scheduleGroupSummary(notification, tzTime, strings: strings);
+    }
 
     debugPrint('   - Absolute Epoch: ${tzTime.millisecondsSinceEpoch}');
     debugPrint(
@@ -114,17 +125,20 @@ class NotificationNativeDataSourceImpl implements NotificationNativeDataSource {
     debugPrint('🚀 [OS Handshake - START] ID: $id | Time: $tzTime');
     await _notificationsPlugin.zonedSchedule(
       id,
-      _buildTitle(notification, repetition: index),
-      _buildBody(notification, repetition: index),
+      _buildTitle(notification, repetition: index, strings: strings),
+      _buildBody(notification, repetition: index, strings: strings),
       tzTime,
       NotificationDetails(
         android: AndroidNotificationDetails(
           index <= 0 ? 'mta_notifications_v5' : 'mta_notifications_repeat_v5',
-          index <= 0 ? 'MTA Alerta V5' : 'MTA Recordatorio V5',
+          index <= 0
+              ? (strings?.channelAlertTitle ?? 'MTA Alerta V5')
+              : (strings?.channelRepeatTitle ?? 'MTA Recordatorio V5'),
           importance: Importance.max,
           priority: Priority.max,
           category: AndroidNotificationCategory.alarm,
-          ticker: _buildTitle(notification, repetition: index),
+          ticker:
+              _buildTitle(notification, repetition: index, strings: strings),
           visibility: NotificationVisibility.public,
           ongoing: false, // Se puede deslizar para descartar
           playSound: notification.soundEnabled,
@@ -134,15 +148,16 @@ class NotificationNativeDataSourceImpl implements NotificationNativeDataSource {
           groupKey: notification.scheduleId,
           groupAlertBehavior: GroupAlertBehavior.children,
           actions: [
-            const AndroidNotificationAction('taken', '✓ CANCELADA',
+            AndroidNotificationAction(
+                'taken', strings?.actionCancelled ?? '✓ CANCELADA',
                 showsUserInterface: true),
             // Solo mostrar botón de snooze si NO es la última repetición
             if (index < _maxRepetitions)
               AndroidNotificationAction(
                 'snooze',
                 index == -1
-                    ? '⏰ 5 MIN'
-                    : '⏰ 10 MIN', // Pre-aviso: 5 min, resto: 10 min
+                    ? (strings?.actionSnooze5 ?? '⏰ 5 MIN')
+                    : (strings?.actionSnooze10 ?? '⏰ 10 MIN'),
                 showsUserInterface: true,
               ),
           ],
@@ -159,24 +174,27 @@ class NotificationNativeDataSourceImpl implements NotificationNativeDataSource {
   }
 
   @override
-  Future<void> showInstantNotification(NotificationEntity notification) async {
+  Future<void> showInstantNotification(NotificationEntity notification,
+      {NotificationStrings? strings}) async {
     const id = 999999;
     debugPrint('🧪 Mostrando notificación INSTANTÁNEA (ID: $id)');
 
     await _notificationsPlugin.show(
       id,
-      '🧪 PRUEBA: ${_buildTitle(notification)}',
-      'Si ves esto, el sistema de notificaciones funciona correctamente.',
+      '${strings?.testPrefix ?? '🧪 PRUEBA: '}${_buildTitle(notification, strings: strings)}',
+      strings?.testNotificationBody ??
+          'Si ves esto, el sistema de notificaciones funciona correctamente.',
       NotificationDetails(
         android: AndroidNotificationDetails(
           'mta_notifications_v5',
-          'MTA Alerta V5',
+          strings?.channelAlertTitle ?? 'MTA Alerta V5',
           importance: Importance.max,
           priority: Priority.max,
           playSound: true,
           fullScreenIntent: true,
           category: AndroidNotificationCategory.alarm,
           groupKey: notification.scheduleId,
+          setAsGroupSummary: true,
         ),
       ),
       payload: '${notification.scheduleId}|0|${notification.userId}',
@@ -207,7 +225,7 @@ class NotificationNativeDataSourceImpl implements NotificationNativeDataSource {
   @override
   Future<void> stopNotificationsForScheduleTime(
       NotificationEntity notification, DateTime scheduleTime,
-      {DateTime? maxTime}) async {
+      {DateTime? maxTime, NotificationStrings? strings}) async {
     // Ya no dependemos de _activeNotifications para esto
     final scheduleId = notification.scheduleId;
     final baseId = notification.notificationId;
@@ -218,25 +236,31 @@ class NotificationNativeDataSourceImpl implements NotificationNativeDataSource {
       await _notificationsPlugin.cancel(id);
     }
 
+    // ✅ Cancelar también el resumen del grupo y posibles posposiciones (snooze)
+    await _notificationsPlugin.cancel(baseId + 9991); // Summary ID
+    await _notificationsPlugin.cancel(baseId + 999); // Snooze ID
+
     debugPrint(
-        '🛑 Notificaciones detenidas para $scheduleId (Base ID: $baseId)');
+        '🛑 Notificaciones DETENIDAS y CANCELADAS para $scheduleId (Base ID: $baseId)');
 
     // 2. Reprogramar para mañana
     final preTime =
         notification.notificationTime.subtract(const Duration(minutes: 5));
 
     // Programar Pre-aviso para mañana
-    await scheduleForTomorrow(notification, preTime, -1, maxTime: maxTime);
+    await scheduleForTomorrow(notification, preTime, -1,
+        maxTime: maxTime, strings: strings);
 
     // Programar Principal para mañana
     await scheduleForTomorrow(notification, notification.notificationTime, 0,
-        maxTime: maxTime);
+        maxTime: maxTime, strings: strings);
 
     // Programar Repeticiones para mañana
     for (int i = 1; i <= _maxRepetitions; i++) {
       final repTime =
           notification.notificationTime.add(_repetitionInterval * i);
-      await scheduleForTomorrow(notification, repTime, i, maxTime: maxTime);
+      await scheduleForTomorrow(notification, repTime, i,
+          maxTime: maxTime, strings: strings);
     }
     debugPrint('💊 Reprogramado para mañana: $scheduleId');
   }
@@ -244,7 +268,7 @@ class NotificationNativeDataSourceImpl implements NotificationNativeDataSource {
   /// Helper para forzar programación mañana
   Future<void> scheduleForTomorrow(
       NotificationEntity notification, DateTime time, int index,
-      {DateTime? maxTime}) async {
+      {DateTime? maxTime, NotificationStrings? strings}) async {
     var tzTime = _nextInstanceOfTime(time);
     final now = tz.TZDateTime.now(tz.local);
 
@@ -274,16 +298,23 @@ class NotificationNativeDataSourceImpl implements NotificationNativeDataSource {
     final baseId = notification.notificationId;
     final id = baseId + ((index + 1) * 100);
 
+    // Programar el resumen del grupo también para mañana
+    if (index == -1 || index == 0) {
+      await _scheduleGroupSummary(notification, tzTime, strings: strings);
+    }
+
     debugPrint('🚀 [OS Handshake PROX - START] ID: $id | Time: $tzTime');
     await _notificationsPlugin.zonedSchedule(
       id,
-      _buildTitle(notification, repetition: index),
-      _buildBody(notification, repetition: index),
+      _buildTitle(notification, repetition: index, strings: strings),
+      _buildBody(notification, repetition: index, strings: strings),
       tzTime,
       NotificationDetails(
         android: AndroidNotificationDetails(
           index <= 0 ? 'mta_notifications_v5' : 'mta_notifications_repeat_v5',
-          index <= 0 ? 'MTA Alerta V5' : 'MTA Recordatorio V5',
+          index <= 0
+              ? (strings?.channelAlertTitle ?? 'MTA Alerta V5')
+              : (strings?.channelRepeatTitle ?? 'MTA Recordatorio V5'),
           importance: Importance.max,
           priority: Priority.max,
           playSound: notification.soundEnabled,
@@ -309,6 +340,9 @@ class NotificationNativeDataSourceImpl implements NotificationNativeDataSource {
       for (int i = -1; i <= _maxRepetitions; i++) {
         await _notificationsPlugin.cancel(baseId + ((i + 1) * 100));
       }
+      // Cancelar también el resumen del grupo
+      await _notificationsPlugin.cancel(baseId + 9991);
+
       _activeNotifications.remove(scheduleId);
       debugPrint('🛑 Notificaciones canceladas para $scheduleId');
     }
@@ -316,7 +350,8 @@ class NotificationNativeDataSourceImpl implements NotificationNativeDataSource {
 
   @override
   Future<void> snoozeNotification(
-      String notificationId, Duration snoozeDuration) async {
+      String notificationId, Duration snoozeDuration,
+      {NotificationStrings? strings}) async {
     final notification = _activeNotifications[notificationId];
     if (notification == null) return;
 
@@ -326,13 +361,13 @@ class NotificationNativeDataSourceImpl implements NotificationNativeDataSource {
     debugPrint('🚀 [OS Handshake SNOOZE - START] Time: $snoozedTime');
     await _notificationsPlugin.zonedSchedule(
       notification.notificationId + 999, // ID único para snooze
-      '⏰ ${_buildTitle(notification, repetition: 0)}',
-      'Recordatorio pospuesto $snoozeDuration',
+      '⏰ ${_buildTitle(notification, repetition: 0, strings: strings)}',
+      _buildBody(notification, repetition: 0, strings: strings),
       snoozedTime,
       NotificationDetails(
         android: AndroidNotificationDetails(
           'mta_notifications_v5',
-          'MTA Alerta V5',
+          strings?.channelAlertTitle ?? 'MTA Alerta V5',
           importance: Importance.max,
           priority: Priority.max,
           playSound: notification.soundEnabled,
@@ -341,6 +376,8 @@ class NotificationNativeDataSourceImpl implements NotificationNativeDataSource {
               : null,
           category: AndroidNotificationCategory.alarm,
           fullScreenIntent: true,
+          groupKey: notification.scheduleId,
+          groupAlertBehavior: GroupAlertBehavior.children,
         ),
       ),
       androidScheduleMode: AndroidScheduleMode.alarmClock,
@@ -383,24 +420,68 @@ class NotificationNativeDataSourceImpl implements NotificationNativeDataSource {
     }
   }
 
-  String _buildTitle(NotificationEntity notification, {int repetition = 0}) {
-    if (repetition == -1) {
-      return 'Próxima medición: ${notification.notificationTime}';
-    }
-    if (repetition == 0) {
-      return 'Hora de medición: ${notification.notificationTime}';
-    }
-    return 'RECORDATORIO ($repetitionª vez) medición: ${notification.notificationTime}';
+  /// Programa una notificación de resumen para el grupo (Android)
+  Future<void> _scheduleGroupSummary(
+      NotificationEntity notification, tz.TZDateTime time,
+      {NotificationStrings? strings}) async {
+    final baseId = notification.notificationId;
+    final summaryId = baseId + 9991; // ID único para el resumen
+
+    debugPrint(
+        '🚀 [OS Handshake SUMMARY - START] ID: $summaryId | Time: $time');
+    await _notificationsPlugin.zonedSchedule(
+      summaryId,
+      notification.title,
+      strings?.groupSummaryBody
+              .replaceAll('{userName}', notification.userName) ??
+          'Mediciones de ${notification.userName}',
+      time,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          'mta_notifications_v5',
+          strings?.channelAlertTitle ?? 'MTA Alerta V5',
+          importance: Importance.max,
+          priority: Priority.max,
+          groupKey: notification.scheduleId,
+          setAsGroupSummary: true,
+          groupAlertBehavior: GroupAlertBehavior.children,
+        ),
+      ),
+      androidScheduleMode: AndroidScheduleMode.alarmClock,
+      matchDateTimeComponents: DateTimeComponents.time,
+    );
+    debugPrint('🚀 [OS Handshake SUMMARY - DONE] ID: $summaryId');
   }
 
-  String _buildBody(NotificationEntity notification, {int repetition = 0}) {
+  String _buildTitle(NotificationEntity notification,
+      {int repetition = 0, NotificationStrings? strings}) {
+    final timeStr = notification.notificationTime.toString();
+    if (repetition == -1) {
+      return strings?.nextMeasurementTime.replaceAll('{time}', timeStr) ??
+          'Próxima medición: $timeStr';
+    }
+    if (repetition == 0) {
+      return strings?.measurementTimeTitle.replaceAll('{time}', timeStr) ??
+          'Hora de medición: $timeStr';
+    }
+    return strings?.reminderMeasurementTitle
+            .replaceAll('{repetition}', repetition.toString())
+            .replaceAll('{time}', timeStr) ??
+        'RECORDATORIO ($repetitionª vez) medición: $timeStr';
+  }
+
+  String _buildBody(NotificationEntity notification,
+      {int repetition = 0, NotificationStrings? strings}) {
     final buffer = StringBuffer();
     if (repetition == -1) {
-      buffer.write('En 5 minutos toca su medición de tensión.');
-    } else if (repetition == 0) {
-      buffer.write('Es el momento de realizar la medición programada.');
-    } else {
       buffer.write(
+          strings?.preAvisoBody ?? 'En 5 minutos toca su medición de tensión.');
+    } else if (repetition == 0) {
+      buffer.write(strings?.scheduledTimeBody ??
+          'Es el momento de realizar la medición programada.');
+    } else {
+      buffer.write(strings?.repeatBody
+              .replaceAll('{minutes}', (repetition * 10).toString()) ??
           'Han pasado ${repetition * 10} minutos desde el aviso inicial');
     }
 

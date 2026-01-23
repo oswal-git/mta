@@ -160,5 +160,21 @@
     "validationInvalidNumber": "Número inválido",
     "validationRequired": "Este campo es obligatorio",
     "validationStartBeforeEnd": "La fecha de inicio debe ser anterior a la fecha de fin",
-    "wednesday": "Miércoles"
+    "wednesday": "Miércoles",
+    "notificationChannelAlertTitle": "MTA Alerta V5",
+    "notificationChannelRepeatTitle": "MTA Recordatorio V5",
+    "notificationChannelAlertDescription": "Canal para alertas principales",
+    "notificationChannelRepeatDescription": "Canal para recordatorios constantes",
+    "actionCancelled": "✓ CANCELADA",
+    "actionSnooze5": "⏰ 5 MIN",
+    "actionSnooze10": "⏰ 10 MIN",
+    "testPrefix": "🧪 PRUEBA: ",
+    "testNotificationBody": "Si ves esto, el sistema de notificaciones funciona correctamente.",
+    "groupSummaryBody": "Mediciones de {userName}",
+    "nextMeasurementTime": "Próxima medición: {time}",
+    "measurementTimeTitle": "Hora de medición: {time}",
+    "reminderMeasurementTitle": "RECORDATORIO ({repetition}ª vez) medición: {time}",
+    "preAvisoBody": "En 5 minutos toca su medición de tensión.",
+    "scheduledTimeBody": "Es el momento de realizar la medición programada.",
+    "repeatBody": "Han pasado {minutes} minutos desde el aviso inicial"
 }

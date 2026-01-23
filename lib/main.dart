@@ -230,7 +230,7 @@ Future<void> _createNotificationChannels() async {
   if (androidPlugin == null) return;
 
   // Canal principal de notificaciones
-  const mainChannel = AndroidNotificationChannel(
+  final mainChannel = AndroidNotificationChannel(
     'mta_notifications_v5',
     'MTA Alerta V5',
     description: 'Canal para alertas principales',
@@ -244,7 +244,7 @@ Future<void> _createNotificationChannels() async {
       '${DateFormat('HH:mm:ss').format(DateTime.now())} -✅ Canal principal de notificaciones creado: ${mainChannel.id}');
 
   // Canal para repeticiones
-  const repeatChannel = AndroidNotificationChannel(
+  final repeatChannel = AndroidNotificationChannel(
     'mta_notifications_repeat_v5',
     'MTA Recordatorio V5',
     description: 'Canal para recordatorios constantes',

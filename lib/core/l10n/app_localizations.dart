@@ -1065,6 +1065,102 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Miércoles'**
   String get wednesday;
+
+  /// No description provided for @notificationChannelAlertTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'MTA Alerta V5'**
+  String get notificationChannelAlertTitle;
+
+  /// No description provided for @notificationChannelRepeatTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'MTA Recordatorio V5'**
+  String get notificationChannelRepeatTitle;
+
+  /// No description provided for @notificationChannelAlertDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Canal para alertas principales'**
+  String get notificationChannelAlertDescription;
+
+  /// No description provided for @notificationChannelRepeatDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Canal para recordatorios constantes'**
+  String get notificationChannelRepeatDescription;
+
+  /// No description provided for @actionCancelled.
+  ///
+  /// In es, this message translates to:
+  /// **'✓ CANCELADA'**
+  String get actionCancelled;
+
+  /// No description provided for @actionSnooze5.
+  ///
+  /// In es, this message translates to:
+  /// **'⏰ 5 MIN'**
+  String get actionSnooze5;
+
+  /// No description provided for @actionSnooze10.
+  ///
+  /// In es, this message translates to:
+  /// **'⏰ 10 MIN'**
+  String get actionSnooze10;
+
+  /// No description provided for @testPrefix.
+  ///
+  /// In es, this message translates to:
+  /// **'🧪 PRUEBA: '**
+  String get testPrefix;
+
+  /// No description provided for @testNotificationBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Si ves esto, el sistema de notificaciones funciona correctamente.'**
+  String get testNotificationBody;
+
+  /// No description provided for @groupSummaryBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Mediciones de {userName}'**
+  String groupSummaryBody(Object userName);
+
+  /// No description provided for @nextMeasurementTime.
+  ///
+  /// In es, this message translates to:
+  /// **'Próxima medición: {time}'**
+  String nextMeasurementTime(Object time);
+
+  /// No description provided for @measurementTimeTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Hora de medición: {time}'**
+  String measurementTimeTitle(Object time);
+
+  /// No description provided for @reminderMeasurementTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'RECORDATORIO ({repetition}ª vez) medición: {time}'**
+  String reminderMeasurementTitle(Object repetition, Object time);
+
+  /// No description provided for @preAvisoBody.
+  ///
+  /// In es, this message translates to:
+  /// **'En 5 minutos toca su medición de tensión.'**
+  String get preAvisoBody;
+
+  /// No description provided for @scheduledTimeBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Es el momento de realizar la medición programada.'**
+  String get scheduledTimeBody;
+
+  /// No description provided for @repeatBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Han pasado {minutes} minutos desde el aviso inicial'**
+  String repeatBody(Object minutes);
 }
 
 class _AppLocalizationsDelegate

@@ -503,4 +503,66 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get wednesday => 'Miércoles';
+
+  @override
+  String get notificationChannelAlertTitle => 'MTA Alerta V5';
+
+  @override
+  String get notificationChannelRepeatTitle => 'MTA Recordatorio V5';
+
+  @override
+  String get notificationChannelAlertDescription =>
+      'Canal para alertas principales';
+
+  @override
+  String get notificationChannelRepeatDescription =>
+      'Canal para recordatorios constantes';
+
+  @override
+  String get actionCancelled => '✓ CANCELADA';
+
+  @override
+  String get actionSnooze5 => '⏰ 5 MIN';
+
+  @override
+  String get actionSnooze10 => '⏰ 10 MIN';
+
+  @override
+  String get testPrefix => '🧪 PRUEBA: ';
+
+  @override
+  String get testNotificationBody =>
+      'Si ves esto, el sistema de notificaciones funciona correctamente.';
+
+  @override
+  String groupSummaryBody(Object userName) {
+    return 'Mediciones de $userName';
+  }
+
+  @override
+  String nextMeasurementTime(Object time) {
+    return 'Próxima medición: $time';
+  }
+
+  @override
+  String measurementTimeTitle(Object time) {
+    return 'Hora de medición: $time';
+  }
+
+  @override
+  String reminderMeasurementTitle(Object repetition, Object time) {
+    return 'RECORDATORIO ($repetitionª vez) medición: $time';
+  }
+
+  @override
+  String get preAvisoBody => 'En 5 minutos toca su medición de tensión.';
+
+  @override
+  String get scheduledTimeBody =>
+      'Es el momento de realizar la medición programada.';
+
+  @override
+  String repeatBody(Object minutes) {
+    return 'Han pasado $minutes minutos desde el aviso inicial';
+  }
 }

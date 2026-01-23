@@ -1,14 +1,16 @@
 import 'package:dartz/dartz.dart';
-import 'package:flutter/foundation.dart';
 import 'package:mta/core/error/failures.dart';
 import 'package:mta/features/measurements/domain/repositories/measurement_repository.dart';
 import 'package:mta/features/notifications/data/datasources/notification_native_data_source.dart';
+import 'package:mta/features/notifications/data/models/notification_strings.dart';
 import 'package:mta/features/notifications/domain/entities/notification_entity.dart';
 import 'package:mta/features/notifications/domain/repositories/notification_repository.dart';
 import 'package:mta/features/schedules/domain/entities/schedule_entity.dart';
 import 'package:mta/features/schedules/domain/repositories/schedule_repository.dart';
 import 'package:mta/features/users/domain/entities/user_entity.dart';
 import 'package:mta/features/users/domain/repositories/user_repository.dart';
+import 'package:flutter/widgets.dart';
+import 'package:mta/core/l10n/app_localizations.dart';
 
 /// Implementación del repositorio de notificaciones
 class NotificationRepositoryImpl implements NotificationRepository {
@@ -28,7 +30,8 @@ class NotificationRepositoryImpl implements NotificationRepository {
   Future<Either<Failure, void>> scheduleNotification(
       NotificationEntity notification) async {
     try {
-      await dataSource.scheduleNotification(notification);
+      final strings = await _loadLocalizedStrings(notification.userId);
+      await dataSource.scheduleNotification(notification, strings: strings);
       return const Right(null);
     } catch (e) {
       return Left(
@@ -54,7 +57,19 @@ class NotificationRepositoryImpl implements NotificationRepository {
     Duration snoozeDuration,
   ) async {
     try {
-      await dataSource.snoozeNotification(notificationId, snoozeDuration);
+      // Necesitamos el userId para cargar el idioma
+      final activeNotifications = await dataSource.getActiveNotifications();
+      String? userId;
+      try {
+        final notification =
+            activeNotifications.firstWhere((n) => n.id == notificationId);
+        userId = notification.userId;
+      } catch (_) {}
+
+      final strings =
+          userId != null ? await _loadLocalizedStrings(userId) : null;
+      await dataSource.snoozeNotification(notificationId, snoozeDuration,
+          strings: strings);
       return const Right(null);
     } catch (e) {
       return Left(
@@ -157,13 +172,18 @@ class NotificationRepositoryImpl implements NotificationRepository {
       // Ajustamos notificationTime a la hora del schedule de HOY para que la lógica de IDs coincida
       // si se generó hoy.
       final now = DateTime.now();
-      final notificationTime = DateTime(
+      var notificationTime = DateTime(
         now.year,
         now.month,
         now.day,
         schedule!.hour,
         schedule!.minute,
       );
+
+      // ✅ REGLA DE ORO: Si ya ha pasado, es para mañana
+      if (notificationTime.isBefore(now)) {
+        notificationTime = notificationTime.add(const Duration(days: 1));
+      }
 
       final notification = NotificationEntity(
         id: 'schedule_${schedule!.id}',
@@ -180,10 +200,12 @@ class NotificationRepositoryImpl implements NotificationRepository {
         isActive: true,
       );
 
+      final strings = await _loadLocalizedStrings(user!.id);
       await dataSource.stopNotificationsForScheduleTime(
         notification, // Pasamos la entidad completa
         scheduleTime,
         maxTime: maxTime,
+        strings: strings,
       );
       return const Right(null);
     } catch (e) {
@@ -258,13 +280,18 @@ class NotificationRepositoryImpl implements NotificationRepository {
         final nextSchedule = sortedSchedules[(i + 1) % sortedSchedules.length];
 
         final now = DateTime.now();
-        final notificationTime = DateTime(
+        var notificationTime = DateTime(
           now.year,
           now.month,
           now.day,
           scheduleHour,
           scheduleMinute,
         );
+
+        // ✅ REGLA DE ORO: Si ya ha pasado, es para mañana
+        if (notificationTime.isBefore(now)) {
+          notificationTime = notificationTime.add(const Duration(days: 1));
+        }
 
         var nextNotificationTime = DateTime(
           now.year,
@@ -342,7 +369,9 @@ class NotificationRepositoryImpl implements NotificationRepository {
           isActive: true,
         );
 
-        await dataSource.scheduleNotification(notification, maxTime: maxTime);
+        final strings = await _loadLocalizedStrings(user.id);
+        await dataSource.scheduleNotification(notification,
+            maxTime: maxTime, strings: strings);
         notificationsScheduled++;
         debugPrint(
             '✅ Notificación recurrente programada para schedule ${schedule.id} (Cutoff: $maxTime)');
@@ -393,7 +422,8 @@ class NotificationRepositoryImpl implements NotificationRepository {
   Future<Either<Failure, void>> testInstantNotification(
       NotificationEntity notification) async {
     try {
-      await dataSource.showInstantNotification(notification);
+      final strings = await _loadLocalizedStrings(notification.userId);
+      await dataSource.showInstantNotification(notification, strings: strings);
       return const Right(null);
     } catch (e) {
       return Left(CacheFailure('Error en prueba instantánea: ${e.toString()}'));
@@ -408,5 +438,34 @@ class NotificationRepositoryImpl implements NotificationRepository {
     } catch (e) {
       return Left(CacheFailure('Error en log diagnóstico: ${e.toString()}'));
     }
+  }
+
+  /// Carga los strings localizados para un usuario específico sin usar context
+  Future<NotificationStrings> _loadLocalizedStrings(String userId) async {
+    final userResult = await userRepository.getUsers();
+    final users = userResult.getOrElse(() => []);
+    final user = users.firstWhere((u) => u.id == userId,
+        orElse: () => throw Exception('Usuario no encontrado'));
+
+    final l10n =
+        await AppLocalizations.delegate.load(Locale(user.languageCode));
+
+    return NotificationStrings(
+      channelAlertTitle: l10n.notificationChannelAlertTitle,
+      channelRepeatTitle: l10n.notificationChannelRepeatTitle,
+      actionCancelled: l10n.actionCancelled,
+      actionSnooze5: l10n.actionSnooze5,
+      actionSnooze10: l10n.actionSnooze10,
+      groupSummaryBody: l10n.groupSummaryBody('{userName}'),
+      testPrefix: l10n.testPrefix,
+      testNotificationBody: l10n.testNotificationBody,
+      nextMeasurementTime: l10n.nextMeasurementTime('{time}'),
+      measurementTimeTitle: l10n.measurementTimeTitle('{time}'),
+      reminderMeasurementTitle:
+          l10n.reminderMeasurementTitle('{repetition}', '{time}'),
+      preAvisoBody: l10n.preAvisoBody,
+      scheduledTimeBody: l10n.scheduledTimeBody,
+      repeatBody: l10n.repeatBody('{minutes}'),
+    );
   }
 }
