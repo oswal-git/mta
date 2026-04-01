@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
-import 'package:intl/intl.dart';
 import 'package:mta/features/notifications/utils/notification_action_handler.dart';
 import 'package:mta/features/notifications/utils/notification_permission_handler.dart';
 import 'package:mta/features/users/presentation/bloc/user_state.dart';
@@ -16,6 +15,7 @@ import 'core/l10n/app_localizations.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'core/theme/app_theme.dart';
+import 'core/utils/utils_barrel.dart'; // Importar barrel para FechaD
 
 // Importar BLoCs
 import 'features/users/presentation/bloc/user_bloc.dart';
@@ -37,10 +37,8 @@ void main() async {
 
   // Capturar errores de Flutter
   FlutterError.onError = (FlutterErrorDetails details) {
-    debugPrint(
-        '${DateFormat('HH:mm:ss').format(DateTime.now())} -🔴 FLUTTER ERROR: ${details.exception}');
-    debugPrint(
-        '${DateFormat('HH:mm:ss').format(DateTime.now())} -Stack: ${details.stack}');
+    debugPrint('${fechaD('🔴')} FLUTTER ERROR: ${details.exception}');
+    debugPrint('${fechaD('🔴')} Stack: ${details.stack}');
   };
 
   // Forzar que el debugger se mantenga vivo
@@ -49,8 +47,7 @@ void main() async {
   // });
 
   // ✅ INICIALIZACIÓN PARALELA
-  debugPrint(
-      '${DateFormat('HH:mm:ss').format(DateTime.now())} -🚀 Iniciando inicialización paralela...');
+  debugPrint('${fechaD('🚀')} Iniciando inicialización paralela...');
 
   await Future.wait([
     // PASO 1 & 2: Timezone
@@ -59,11 +56,11 @@ void main() async {
         tz.initializeTimeZones();
         final timeZoneInfo = await FlutterTimezone.getLocalTimezone();
         tz.setLocalLocation(tz.getLocation(timeZoneInfo.identifier));
+        tz.setLocalLocation(tz.getLocation(timeZoneInfo.identifier));
         debugPrint(
-            '${DateFormat('HH:mm:ss').format(DateTime.now())} -✅ Timezone initialized: ${timeZoneInfo.identifier}');
+            '${fechaD()} Timezone initialized: ${timeZoneInfo.identifier}');
       } catch (e) {
-        debugPrint(
-            '${DateFormat('HH:mm:ss').format(DateTime.now())} -⚠️ Timezone warning: $e');
+        debugPrint('${fechaD('⚠️')} Timezone warning: $e');
         try {
           tz.setLocalLocation(tz.getLocation('Europe/Madrid'));
         } catch (_) {}
@@ -87,11 +84,10 @@ void main() async {
               _onBackgroundNotificationResponse,
         );
         await _createNotificationChannels();
-        debugPrint(
-            '${DateFormat('HH:mm:ss').format(DateTime.now())} -✅ Notificaciones inicializadas');
+        await _createNotificationChannels();
+        debugPrint('${fechaD()} Notificaciones inicializadas');
       } catch (e) {
-        debugPrint(
-            '${DateFormat('HH:mm:ss').format(DateTime.now())} -❌ Error notificaciones: $e');
+        debugPrint('${fechaD('❌')} Error notificaciones: $e');
       }
     })(),
 
@@ -99,36 +95,60 @@ void main() async {
     (() async {
       try {
         await DatabaseHelper.init();
-        debugPrint(
-            '${DateFormat('HH:mm:ss').format(DateTime.now())} -✅ Database ready');
+        await DatabaseHelper.init();
+        debugPrint('${fechaD()} Database ready');
       } catch (e) {
-        debugPrint(
-            '${DateFormat('HH:mm:ss').format(DateTime.now())} -❌ Error DB: $e');
+        debugPrint('${fechaD('❌')} Error DB: $e');
       }
     })(),
   ]);
 
   // Solicitar permisos puede ser asíncrono pero no queremos bloquear el arranque si no es crítico,
   // aunque es mejor tenerlos antes de programar nada.
+  // aunque es mejor tenerlos antes de programar nada.
   NotificationPermissionHandler.requestAllPermissions().then((granted) {
-    debugPrint(
-        '${DateFormat('HH:mm:ss').format(DateTime.now())} -🔐 Permisos: ${granted ? '✅' : '⚠️'}');
+    debugPrint('${fechaD('🔐')} Permisos: ${granted ? '✅' : '⚠️'}');
   });
 
   // DI depende de que la DB y SharedPreferences estén listas (o al menos que sus helpers lo estén)
   // SharedPreferences se inicializa DENTRO de di.init() en muchos casos, pero aquí lo vemos en injection_container.dart
   // Vamos a ejecutar di.init() al final de las paralelas.
-  debugPrint(
-      '${DateFormat('HH:mm:ss').format(DateTime.now())} -🔧 Initializing DI...');
+  debugPrint('${fechaD('🔧')} Initializing DI...');
   await di.init();
-  debugPrint(
-      '${DateFormat('HH:mm:ss').format(DateTime.now())} -💉 DI initialized');
+  debugPrint('${fechaD('💉')} DI initialized');
 
   // ✅ Sincronizar notificaciones de todos los usuarios al arrancar
   // (Asegura que las notificaciones del OS estén al día tras una actualización)
   di.sl<NotificationBloc>().add(const RescheduleAllNotifications());
-  debugPrint(
-      '${DateFormat('HH:mm:ss').format(DateTime.now())} -🔄 Notification sync triggered');
+  debugPrint('${fechaD('🔄')} Notification sync triggered');
+
+  // ✅ CHECK FOR NOTIFICATION LAUNCH (Cold Start)
+  try {
+    final NotificationAppLaunchDetails? notificationAppLaunchDetails =
+        await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+
+    if (notificationAppLaunchDetails?.didNotificationLaunchApp ?? false) {
+      final payload =
+          notificationAppLaunchDetails!.notificationResponse?.payload;
+      debugPrint('${fechaD('🚀')} App launched via notification!');
+      debugPrint('   Payload: $payload');
+
+      if (payload != null && payload.isNotEmpty) {
+        final parts = payload.split('|');
+        if (parts.isNotEmpty) {
+          final userId = parts.length > 2 ? parts[2] : null;
+          final targetRoute = userId != null
+              ? '${Routes.measurementForm}?userId=$userId'
+              : Routes.measurementForm;
+
+          PendingRoute.route = targetRoute;
+          debugPrint('${fechaD('📍')} PendingRoute set to: $targetRoute');
+        }
+      }
+    }
+  } catch (e) {
+    debugPrint('${fechaD('❌')} Error checking notification launch details: $e');
+  }
 
   runApp(const MTAApp());
 }
@@ -142,13 +162,11 @@ class MTAApp extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (_) {
-            debugPrint(
-                '${DateFormat('HH:mm:ss').format(DateTime.now())} -🔧 Creating UserBloc...');
+            debugPrint('${fechaD('🔧')} Creating UserBloc...');
             final bloc = di.sl<UserBloc>();
             // Cargar usuarios inmediatamente
             bloc.add(LoadUsersEvent());
-            debugPrint(
-                '${DateFormat('HH:mm:ss').format(DateTime.now())} -✅ UserBloc created and loading users');
+            debugPrint('${fechaD()} UserBloc created and loading users');
             return bloc;
           },
         ),
@@ -157,11 +175,9 @@ class MTAApp extends StatelessWidget {
         // Agregar el NotificationBloc
         BlocProvider(
           create: (_) {
-            debugPrint(
-                '${DateFormat('HH:mm:ss').format(DateTime.now())} -🔧 Creating NotificationBloc...');
+            debugPrint('${fechaD('🔧')} Creating NotificationBloc...');
             final bloc = di.sl<NotificationBloc>();
-            debugPrint(
-                '${DateFormat('HH:mm:ss').format(DateTime.now())} -✅ NotificationBloc created');
+            debugPrint('${fechaD()} NotificationBloc created');
             return bloc;
           },
         ),
@@ -199,7 +215,7 @@ class MTAApp extends StatelessWidget {
 /// Callback cuando el usuario toca la notificación o sus acciones
 void _onNotificationResponse(NotificationResponse response) {
   debugPrint('');
-  debugPrint('👆 NOTIFICACIÓN INTERACTUADA');
+  debugPrint('${fechaD('👆')} NOTIFICACIÓN INTERACTUADA');
   debugPrint('   Action ID: ${response.actionId}');
   debugPrint('   Payload: ${response.payload}');
   debugPrint('');
@@ -216,7 +232,8 @@ void _onNotificationResponse(NotificationResponse response) {
 /// Callback para notificaciones en background
 @pragma('vm:entry-point')
 void _onBackgroundNotificationResponse(NotificationResponse response) {
-  debugPrint('🔔 Notificación en background: ${response.actionId}');
+  debugPrint(
+      '${fechaD('🔔')} Notificación en background: ${response.actionId}');
   // Las acciones en background son limitadas
   // Normalmente solo se registra el evento
 }
@@ -241,7 +258,7 @@ Future<void> _createNotificationChannels() async {
   );
 
   debugPrint(
-      '${DateFormat('HH:mm:ss').format(DateTime.now())} -✅ Canal principal de notificaciones creado: ${mainChannel.id}');
+      '${fechaD()} Canal principal de notificaciones creado: ${mainChannel.id}');
 
   // Canal para repeticiones
   final repeatChannel = AndroidNotificationChannel(
@@ -255,10 +272,10 @@ Future<void> _createNotificationChannels() async {
   );
 
   debugPrint(
-      '${DateFormat('HH:mm:ss').format(DateTime.now())} -✅ Canal de repeticiones de notificaciones creado: ${repeatChannel.id}');
+      '${fechaD()} Canal de repeticiones de notificaciones creado: ${repeatChannel.id}');
 
   await androidPlugin.createNotificationChannel(mainChannel);
   await androidPlugin.createNotificationChannel(repeatChannel);
 
-  debugPrint('✅ Canales de notificaciones creados');
+  debugPrint('${fechaD()} Canales de notificaciones creados');
 }

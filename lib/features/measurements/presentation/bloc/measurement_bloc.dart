@@ -10,6 +10,7 @@ import 'package:mta/features/measurements/presentation/bloc/measurement_event.da
 import 'package:mta/features/measurements/presentation/bloc/measurement_state.dart';
 import 'package:mta/features/notifications/domain/repositories/notification_repository.dart';
 import 'package:mta/features/schedules/domain/repositories/schedule_repository.dart';
+import 'package:mta/core/utils/utils_barrel.dart';
 
 class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
   final GetMeasurements getMeasurements;
@@ -43,6 +44,8 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
     LoadMeasurementsEvent event,
     Emitter<MeasurementState> emit,
   ) async {
+    debugPrint(
+        '${fechaD('🔄')} HomePage - Loading measurements for: ${event.userId}');
     emit(MeasurementLoading());
 
     final result = await getMeasurements(
@@ -87,7 +90,7 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
     await result.fold(
       (failure) async => emit(MeasurementError(failure.message)),
       (measurement) async {
-        debugPrint('✅ Medición creada: ${measurement.id}');
+        debugPrint('${fechaD()} Medición creada: ${measurement.id}');
 
         // 🔔 Detener notificaciones relacionadas con esta medición
         await _stopNotificationsForMeasurement(measurement);
@@ -111,7 +114,7 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
     await result.fold(
       (failure) async => emit(MeasurementError(failure.message)),
       (measurement) async {
-        debugPrint('✅ Medición actualizada: ${measurement.id}');
+        debugPrint('${fechaD()} Medición actualizada: ${measurement.id}');
 
         // 🔔 Detener notificaciones relacionadas con esta medición
         await _stopNotificationsForMeasurement(measurement);
@@ -156,8 +159,9 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
   Future<void> _stopNotificationsForMeasurement(dynamic measurement) async {
     try {
       debugPrint('');
-      debugPrint('🔍 Verificando notificaciones para detener...');
-      debugPrint('   Medición creada a las: ${measurement.measurementTime}');
+      debugPrint('${fechaD('🔄')} Verificando notificaciones para detener...');
+      debugPrint(
+          '${fechaD()}    Medición creada a las: ${measurement.measurementTime}');
 
       // Obtener todos los schedules del usuario
       final schedulesResult =
@@ -178,7 +182,7 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
           );
 
           debugPrint(
-              '   Hora de la medición: ${measurementTime.hour}:${measurementTime.minute}');
+              '${fechaD()}    Hora de la medición: ${measurementTime.hour}:${measurementTime.minute}');
 
           // Buscar schedules que correspondan a esta toma
           for (final schedule in schedules) {
@@ -190,31 +194,33 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
               schedule.minute,
             );
 
-            // Condición 1: La toma es posterior al horario (hasta 2 horas después)
-            // Esto cubre las repeticiones (que duran 60 min)
-            final isAfter = measurementTime.isAfter(scheduleTime) ||
-                measurementTime.isAtSameMomentAs(scheduleTime);
-            final differenceAfter = measurementTime.difference(scheduleTime);
+            // Calcular diferencia en minutos (puede ser negativa si es antes)
+            final differenceInMinutes =
+                measurementTime.difference(scheduleTime).inMinutes;
 
-            // Condición 2: La toma es poco antes del horario (hasta 30 min antes)
-            // Para evitar que suene si se adelantó un poco
-            final isBefore = measurementTime.isBefore(scheduleTime);
-            final differenceBefore = scheduleTime.difference(measurementTime);
+            debugPrint(
+                '${fechaD()}    Checking Schedule ${schedule.id} (${schedule.formattedTime}) | Diff: ${differenceInMinutes}m');
 
             bool shouldCancel = false;
-            if (isAfter && differenceAfter.inHours < 2) {
+
+            // CASO 1: Medición POSTERIOR al horario (Late)
+            // Permitimos hasta 120 minutos (2 horas) después para cubrir repeticiones
+            if (differenceInMinutes >= 0 && differenceInMinutes <= 120) {
               debugPrint(
-                  '   ✅ Toma posterior al schedule ${schedule.id} (${schedule.formattedTime})');
+                  '${fechaD('✅')}    ✅ Match: Toma posterior (dentro de 2h)');
               shouldCancel = true;
-            } else if (isBefore && differenceBefore.inMinutes <= 30) {
+            }
+            // CASO 2: Medición ANTERIOR al horario (Early / Pre-aviso)
+            // Permitimos hasta 30 minutos antes (según requisito usuario)
+            else if (differenceInMinutes < 0 && differenceInMinutes >= -30) {
               debugPrint(
-                  '   ✅ Toma anticipada para el schedule ${schedule.id} (${schedule.formattedTime})');
+                  '${fechaD('✅')}    ✅ Match: Toma anticipada (dentro de 30m)');
               shouldCancel = true;
             }
 
             if (shouldCancel) {
               debugPrint(
-                  '   🛑 Deteniendo notificaciones para este horario...');
+                  '${fechaD('🔴')}    🛑 [MATCH!] Deteniendo notificaciones para horario: ${schedule.formattedTime} (ID: ${schedule.id})');
 
               // Detener las notificaciones de repetición para este schedule HOY
               final result =
@@ -227,15 +233,16 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
               result.fold(
                 (failure) {
                   debugPrint(
-                      '   ❌ Error al detener notificaciones: ${failure.message}');
+                      '${fechaD('❌')}    ❌ Error al llamar stopNotifications: ${failure.message}');
                 },
                 (_) {
-                  debugPrint('   ✅ Notificaciones detenidas correctamente');
+                  debugPrint(
+                      '${fechaD('✅')}    ✅ stopNotifications llamado con ÉXITO');
                 },
               );
             } else {
               debugPrint(
-                  '   ℹ️  Medición NO corresponde al schedule ${schedule.id}');
+                  '${fechaD()}    ℹ️  No match for ${schedule.formattedTime} (Diff: ${differenceInMinutes}m outside windows [-30, +120])');
             }
           }
         },
@@ -243,7 +250,7 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
 
       debugPrint('');
     } catch (e) {
-      debugPrint('❌ Error al procesar notificaciones: $e');
+      debugPrint('${fechaD('❌')} Error al procesar notificaciones: $e');
     }
   }
 }

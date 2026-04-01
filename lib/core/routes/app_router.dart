@@ -12,6 +12,23 @@ import 'package:mta/features/measurements/presentation/pages/measurement_detail_
 import 'package:mta/features/notifications/presentation/pages/notification_ring_page.dart';
 import 'package:mta/features/notifications/domain/entities/notification_entity.dart';
 
+/// Clase para manejar rutas pendientes desde notificaciones
+class PendingRoute {
+  static String? _route;
+  static String? get route => _route;
+  static set route(String? value) {
+    debugPrint('📍 PendingRoute set to: $value');
+    _route = value;
+  }
+
+  static String? consume() {
+    final r = _route;
+    if (r != null) debugPrint('📍 PendingRoute consumed: $r');
+    _route = null;
+    return r;
+  }
+}
+
 final appRouter = GoRouter(
   initialLocation: Routes.splash,
   routes: [

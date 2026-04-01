@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mta/core/utils/logging.dart';
 import 'package:mta/features/notifications/domain/repositories/notification_repository.dart';
 import 'package:mta/features/schedules/domain/usecases/create_schedule.dart';
 import 'package:mta/features/schedules/domain/usecases/delete_schedule.dart';
@@ -52,6 +53,9 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
     CreateScheduleEvent event,
     Emitter<ScheduleState> emit,
   ) async {
+    debugPrint(
+        '${fechaD('🔄')} Creación nuevo horario ${event.schedule.notificationDateTime.toString()}');
+
     emit(ScheduleLoading());
 
     final result = await createSchedule(
@@ -61,12 +65,12 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
     await result.fold(
       (failure) async => emit(ScheduleError(failure.message)),
       (schedule) async {
-        debugPrint('✅ Schedule creado: ${schedule.id}');
+        debugPrint('${fechaD('✅')} Schedule creado: ${schedule.id}');
 
         // 🔔 Si el schedule está habilitado, programar notificaciones
         if (schedule.isEnabled) {
           debugPrint(
-              '📅 Programando notificaciones para el schedule ${schedule.id}');
+              '${fechaD('📅')} Programando notificaciones para el schedule ${schedule.id}');
 
           final notificationResult = await notificationRepository
               .scheduleNotificationsForUserSchedules(schedule.userId,
@@ -75,13 +79,13 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
           notificationResult.fold(
             (failure) {
               debugPrint(
-                  '❌ Error al programar notificaciones: ${failure.message}');
+                  '${fechaD('❌')} Error al programar notificaciones: ${failure.message}');
               emit(ScheduleError(
                 'Schedule creado pero error al programar notificaciones: ${failure.message}',
               ));
             },
             (count) {
-              debugPrint('✅ $count notificaciones programadas');
+              debugPrint('${fechaD('✅')} $count notificaciones programadas');
               emit(ScheduleOperationSuccess(
                 'Schedule created successfully',
                 userId: schedule.userId,
@@ -90,7 +94,7 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
           );
         } else {
           debugPrint(
-              'ℹ️ Schedule deshabilitado, no se programan notificaciones');
+              '${fechaD('ℹ️')} Schedule deshabilitado, no se programan notificaciones');
 
           emit(ScheduleOperationSuccess(
             'Schedule created successfully',
@@ -114,11 +118,11 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
     await result.fold(
       (failure) async => emit(ScheduleError(failure.message)),
       (schedule) async {
-        debugPrint('✅ Schedule actualizado: ${schedule.id}');
+        debugPrint('${fechaD('✅')} Schedule actualizado: ${schedule.id}');
 
         // 🔔 Reprogramar notificaciones del usuario
         debugPrint(
-            '🔄 Reprogramando notificaciones del usuario ${schedule.userId}');
+            '${fechaD('🔄')} Reprogramando notificaciones del usuario ${schedule.userId}');
 
         // Primero cancelar todas las notificaciones existentes de este usuario
         await _cancelUserNotifications(schedule.userId);
@@ -132,13 +136,13 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
           notificationResult.fold(
             (failure) {
               debugPrint(
-                  '❌ Error al reprogramar notificaciones: ${failure.message}');
+                  '${fechaD('❌')} Error al reprogramar notificaciones: ${failure.message}');
               emit(ScheduleError(
                 'Schedule actualizado pero error al reprogramar notificaciones: ${failure.message}',
               ));
             },
             (count) {
-              debugPrint('✅ $count notificaciones reprogramadas');
+              debugPrint('${fechaD('✅')} $count notificaciones reprogramadas');
               emit(ScheduleOperationSuccess(
                 'Schedule updated successfully',
                 userId: schedule.userId,
@@ -146,7 +150,8 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
             },
           );
         } else {
-          debugPrint('ℹ️ Schedule deshabilitado, notificaciones canceladas');
+          debugPrint(
+              '${fechaD('ℹ️')} Schedule deshabilitado, notificaciones canceladas');
           emit(ScheduleOperationSuccess(
             'Schedule updated successfully',
             userId: schedule.userId,
@@ -169,11 +174,11 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
     await result.fold(
       (failure) async => emit(ScheduleError(failure.message)),
       (_) async {
-        debugPrint('✅ Schedule eliminado: ${event.id}');
+        debugPrint('${fechaD('✅')} Schedule eliminado: ${event.id}');
 
         // 🔔 Reprogramar notificaciones del usuario (sin el schedule eliminado)
         debugPrint(
-            '🔄 Reprogramando notificaciones del usuario ${event.userId}');
+            '${fechaD('🔄')} Reprogramando notificaciones del usuario ${event.userId}');
 
         await _cancelUserNotifications(event.userId);
 
@@ -183,7 +188,7 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
         notificationResult.fold(
           (failure) {
             debugPrint(
-                '❌ Error al reprogramar notificaciones: ${failure.message}');
+                '${fechaD('❌')} Error al reprogramar notificaciones: ${failure.message}');
             // Aún así marcamos el schedule como eliminado
             emit(ScheduleOperationSuccess(
               'Schedule deleted successfully',
@@ -192,7 +197,7 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
           },
           (count) {
             debugPrint(
-                '✅ $count notificaciones reprogramadas después de eliminar');
+                '${fechaD('✅')} $count notificaciones reprogramadas después de eliminar');
             emit(ScheduleOperationSuccess(
               'Schedule deleted successfully',
               userId: event.userId,
@@ -217,14 +222,14 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
 
   /// Cancela todas las notificaciones de un usuario
   Future<void> _cancelUserNotifications(String userId) async {
-    debugPrint('🛑 Cancelando notificaciones del usuario $userId');
+    debugPrint('${fechaD('🛑')} Cancelando notificaciones del usuario $userId');
 
     final result = await notificationRepository.cancelAllNotifications();
 
     result.fold(
-      (failure) =>
-          debugPrint('❌ Error al cancelar notificaciones: ${failure.message}'),
-      (_) => debugPrint('✅ Notificaciones canceladas'),
+      (failure) => debugPrint(
+          '  ${fechaD('❌')} Error al cancelar notificaciones: ${failure.message}'),
+      (_) => debugPrint('${fechaD('✅')} Notificaciones canceladas'),
     );
   }
 }

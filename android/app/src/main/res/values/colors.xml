@@ -4,4 +4,6 @@
     <color name="splash_color">#6787A6</color>
     <color name="launch_gradient_start">#6787A6</color>
     <color name="launch_gradient_end">#A0C4E7FF</color>
+    <color name="ic_launcher_background_tint">#FCFCFC</color>
+    <color name="ic_launcher_foreground_tint">#000000</color>
 </resources>

@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mta/core/utils/logging.dart';
 import 'package:mta/features/notifications/domain/repositories/notification_repository.dart';
 import 'package:mta/features/notifications/domain/usecases/cancel_notification.dart';
 import 'package:mta/features/notifications/domain/usecases/schedule_notification.dart';
@@ -120,6 +122,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     ScheduleNotificationsForUser event,
     Emitter<NotificationState> emit,
   ) async {
+    debugPrint('${fechaD('🔄')} Sincronizar de urgencia');
     emit(const NotificationLoading());
 
     final result =

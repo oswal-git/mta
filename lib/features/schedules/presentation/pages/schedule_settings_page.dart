@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mta/core/l10n/app_localizations.dart';
 import 'package:mta/core/theme/theme.dart';
 import 'package:mta/core/utils/constants.dart';
@@ -216,6 +217,14 @@ class _ScheduleSettingsPageState extends State<ScheduleSettingsPage> {
         return Scaffold(
           appBar: AppBar(
             title: Text(l10n.schedules),
+            // ✅ Mostrar botón de Home si no se puede volver atrás (flujo de registro)
+            leading: context.canPop()
+                ? null
+                : IconButton(
+                    icon: const Icon(Icons.home),
+                    tooltip: 'Home',
+                    onPressed: () => context.go(Routes.home),
+                  ),
             actions: [
               IconButton(
                 icon: const Icon(Icons.sync),
@@ -228,11 +237,6 @@ class _ScheduleSettingsPageState extends State<ScheduleSettingsPage> {
                   }
                 },
               ),
-              // IconButton(
-              //   icon: const Icon(Icons.arrow_back),
-              //   tooltip: 'Done',
-              //   onPressed: () => context.go(Routes.home),
-              // ),
             ],
           ),
           body: Builder(

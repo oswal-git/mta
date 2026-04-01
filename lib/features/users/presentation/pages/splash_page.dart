@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:mta/core/routes/app_router.dart';
 import 'package:mta/core/utils/constants.dart';
 import 'package:mta/core/theme/theme.dart';
 import 'package:mta/features/schedules/presentation/bloc/schedule_bloc.dart';
@@ -94,9 +95,16 @@ class _SplashPageState extends State<SplashPage> {
               '${DateFormat('HH:mm:ss').format(DateTime.now())} -➡️ Going to ScheduleSettings (no schedules)');
           context.go(Routes.scheduleSettings);
         } else {
-          debugPrint(
-              '${DateFormat('HH:mm:ss').format(DateTime.now())} -➡️ Going to Home');
-          context.go(Routes.home);
+          final pending = PendingRoute.consume();
+          if (pending != null) {
+            debugPrint(
+                '${DateFormat('HH:mm:ss').format(DateTime.now())} -➡️ Going to PendingRoute: $pending');
+            context.go(pending);
+          } else {
+            debugPrint(
+                '${DateFormat('HH:mm:ss').format(DateTime.now())} -➡️ Going to Home');
+            context.go(Routes.home);
+          }
         }
       } else {
         debugPrint(

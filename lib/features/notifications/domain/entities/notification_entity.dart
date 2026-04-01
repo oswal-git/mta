@@ -100,7 +100,21 @@ class NotificationEntity extends Equatable {
     );
   }
 
-  /// Convierte el String ID a int para las notificaciones locales
-  /// Usa el hashCode del ID para generar un int único
-  int get notificationId => id.hashCode.abs();
+  /// Convierte el String ID a int para las notificaciones locales de forma DETERMINISTA.
+  /// No usa String.hashCode porque no es estable entre ejecuciones o reinicios.
+  int get notificationId {
+    // Si el ID contiene un número largo (como un timestamp), intentamos usarlo directamente
+    final numericPart = id.replaceAll(RegExp(r'[^0-9]'), '');
+    if (numericPart.length >= 9) {
+      // Usamos los últimos 9 dígitos para asegurar que quepa en un int de 31 bits
+      return int.parse(numericPart.substring(numericPart.length - 9));
+    }
+
+    // Fallback: Hash determinista simple (similar a Java String.hashCode)
+    int hash = 0;
+    for (int i = 0; i < id.length; i++) {
+      hash = (31 * hash + id.codeUnitAt(i)) & 0x7FFFFFFF;
+    }
+    return hash;
+  }
 }

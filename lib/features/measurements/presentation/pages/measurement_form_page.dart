@@ -317,6 +317,13 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
         child: Scaffold(
           appBar: AppBar(
             title: Text(l10n.addMeasurement),
+            leading: context.canPop()
+                ? null
+                : IconButton(
+                    icon: const Icon(Icons.home),
+                    tooltip: 'Home',
+                    onPressed: () => context.go(Routes.home),
+                  ),
             actions: [
               IconButton(
                 icon: const Icon(Icons.info_outline),

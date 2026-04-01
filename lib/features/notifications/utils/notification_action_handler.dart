@@ -4,7 +4,7 @@ import 'package:mta/features/notifications/presentation/bloc/notification_bloc.d
 import 'package:mta/features/notifications/presentation/bloc/notification_event.dart';
 import 'package:mta/features/measurements/presentation/bloc/measurement_bloc.dart';
 import 'package:mta/core/routes/app_router.dart';
-import 'package:mta/core/utils/constants.dart';
+import 'package:mta/core/utils/utils_barrel.dart';
 
 /// Manejador de acciones de notificaciones
 class NotificationActionHandler {
@@ -22,19 +22,19 @@ class NotificationActionHandler {
     final payload = response.payload;
 
     debugPrint('');
-    debugPrint('🎯 PROCESANDO ACCIÓN DE NOTIFICACIÓN');
-    debugPrint('   Action: $actionId');
-    debugPrint('   Payload: $payload');
+    debugPrint('${fechaD('👆')} PROCESANDO ACCIÓN DE NOTIFICACIÓN');
+    debugPrint('${fechaD()}    Action: $actionId');
+    debugPrint('${fechaD()}    Payload: $payload');
 
     if (payload == null || payload.isEmpty) {
-      debugPrint('   ⚠️ Payload vacío, ignorando');
+      debugPrint('${fechaD('⚠️')}    ⚠️ Payload vacío, ignorando');
       return;
     }
 
     // Parsear el payload: "scheduleId|repetitionNumber|userId"
     final parts = payload.split('|');
     if (parts.isEmpty) {
-      debugPrint('   ⚠️ Formato de payload inválido');
+      debugPrint('${fechaD('⚠️')}    ⚠️ Formato de payload inválido');
       return;
     }
 
@@ -42,9 +42,9 @@ class NotificationActionHandler {
     final repetitionNumber = parts.length > 1 ? int.tryParse(parts[1]) ?? 0 : 0;
     final userId = parts.length > 2 ? parts[2] : null;
 
-    debugPrint('   Schedule ID: $scheduleId');
-    debugPrint('   Repetición: $repetitionNumber');
-    debugPrint('   User ID: $userId');
+    debugPrint('${fechaD()}    Schedule ID: $scheduleId');
+    debugPrint('${fechaD()}    Repetición: $repetitionNumber');
+    debugPrint('${fechaD()}    User ID: $userId');
 
     // Procesar la acción
     switch (actionId) {
@@ -53,7 +53,7 @@ class NotificationActionHandler {
           _handleMeasuringTaken(scheduleId, userId);
         } else {
           debugPrint(
-              '   ⚠️ No se puede marcar como tomada: falta userId en payload (Versión antigua de notificación)');
+              '${fechaD('⚠️')}    ⚠️ No se puede marcar como tomada: falta userId en payload (Versión antigua de notificación)');
         }
         break;
 
@@ -68,7 +68,7 @@ class NotificationActionHandler {
         break;
 
       default:
-        debugPrint('   ⚠️ Acción desconocida: $actionId');
+        debugPrint('${fechaD('⚠️')}    ⚠️ Acción desconocida: $actionId');
     }
 
     debugPrint('');
@@ -76,7 +76,7 @@ class NotificationActionHandler {
 
   /// Maneja cuando el usuario marca como "tomada"
   void _handleMeasuringTaken(String scheduleId, String userId) {
-    debugPrint('💊 Usuario marcó medicación como tomada');
+    debugPrint('${fechaD('💉')} Usuario marcó medicación como tomada');
 
     // Detener las notificaciones del schedule para HOY y programar para MAÑANA
     notificationBloc.add(MarkAsTaken(
@@ -85,13 +85,14 @@ class NotificationActionHandler {
       userId: userId,
     ));
 
-    debugPrint('   ✅ Notificaciones reprogramadas para mañana');
-    debugPrint('   ℹ️  TODO: Implementar creación automática de medición');
+    debugPrint('${fechaD('🔄')}    ✅ Notificaciones reprogramadas para mañana');
+    debugPrint(
+        '${fechaD('🔧')}    ℹ️  TODO: Implementar creación automática de medición');
   }
 
   /// Maneja cuando el usuario pospone (snooze)
   void _handleSnooze(String scheduleId) {
-    debugPrint('⏰ Usuario pospuso la notificación');
+    debugPrint('${fechaD('🔔')} Usuario pospuso la notificación');
 
     // Posponer por 5 minutos
     const snoozeDuration = Duration(minutes: 5);
@@ -102,23 +103,29 @@ class NotificationActionHandler {
     ));
 
     debugPrint(
-        '   ✅ Notificación pospuesta por ${snoozeDuration.inMinutes} minutos');
+        '${fechaD('🔄')}    ✅ Notificación pospuesta por ${snoozeDuration.inMinutes} minutos');
   }
 
   /// Maneja cuando el usuario simplemente toca la notificación
   void _handleNotificationTap(String scheduleId, String? userId) {
-    debugPrint('👆 Usuario tocó la notificación (Schedule: $scheduleId)');
-    debugPrint('   → Abriendo pantalla de nueva toma');
+    debugPrint(
+        '${fechaD('👆')} Usuario tocó la notificación (Schedule: $scheduleId)');
+    debugPrint('${fechaD()}    → Preparando navegación...');
 
-    if (userId != null) {
-      debugPrint('   → Navegando con userId: $userId');
-      // Navegar a la pantalla de nueva toma con el userId
-      appRouter.push('${Routes.measurementForm}?userId=$userId');
-    } else {
-      debugPrint(
-          '   ⚠️ No se pudo extraer userId del payload, navegando sin contexto');
-      // Navegar directamente a la pantalla de nueva toma
-      appRouter.push(Routes.measurementForm);
-    }
+    final targetRoute = userId != null
+        ? '${Routes.measurementForm}?userId=$userId'
+        : Routes.measurementForm;
+
+    // Guardamos como ruta pendiente por si el router no está listo o la app se está abriendo
+    PendingRoute.route = targetRoute;
+
+    // Intentamos navegar inmediatamente con un pequeño delay para asegurar que el frame actual terminó
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (PendingRoute.route == targetRoute) {
+        debugPrint('${fechaD()}    → Ejecutando push demorado a: $targetRoute');
+        appRouter.push(targetRoute);
+        PendingRoute.consume(); // Limpiamos si tuvo éxito
+      }
+    });
   }
 }
