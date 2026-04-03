@@ -40,6 +40,9 @@ class Routes {
   static const String measurementDetail = '/measurement-detail';
   static const String scheduleSettings = '/schedule-settings';
   static const String export = '/export';
+  static const String clearMeasurements = '/clear-measurements';
+  static const String restoreMeasurements = '/restore-measurements';
+  static const String help = '/help';
   static const String notificationRing = '/notification-ring';
 }
 

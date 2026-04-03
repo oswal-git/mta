@@ -70,8 +70,8 @@ class _SplashPageState extends State<SplashPage> {
 
     if (userState.users.isEmpty) {
       debugPrint(
-          '${DateFormat('HH:mm:ss').format(DateTime.now())} -➡️ Going to UserForm (no users)');
-      context.go(Routes.userForm);
+          '${DateFormat('HH:mm:ss').format(DateTime.now())} -➡️ Going to Help (onboarding)');
+      context.go('${Routes.help}?isFirstTime=true');
     } else if (userState.activeUser != null) {
       // Hay usuario activo, verificar horarios
       debugPrint(

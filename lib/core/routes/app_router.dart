@@ -8,6 +8,9 @@ import 'package:mta/features/users/presentation/pages/user_form_page.dart';
 import 'package:mta/features/measurements/presentation/pages/home_page.dart';
 import 'package:mta/features/measurements/presentation/pages/measurement_form_page.dart';
 import 'package:mta/features/measurements/presentation/pages/measurement_detail_page.dart';
+import 'package:mta/features/measurements/presentation/pages/clear_measurements_page.dart';
+import 'package:mta/features/measurements/presentation/pages/restore_measurements_page.dart';
+import 'package:mta/features/measurements/presentation/pages/help_page.dart';
 
 import 'package:mta/features/notifications/presentation/pages/notification_ring_page.dart';
 import 'package:mta/features/notifications/domain/entities/notification_entity.dart';
@@ -70,6 +73,22 @@ final appRouter = GoRouter(
     GoRoute(
       path: Routes.export,
       builder: (context, state) => const ExportPage(),
+    ),
+    GoRoute(
+      path: Routes.clearMeasurements,
+      builder: (context, state) => const ClearMeasurementsPage(),
+    ),
+    GoRoute(
+      path: Routes.restoreMeasurements,
+      builder: (context, state) => const RestoreMeasurementsPage(),
+    ),
+    GoRoute(
+      path: Routes.help,
+      builder: (context, state) {
+        final isFirstTime =
+            state.uri.queryParameters['isFirstTime'] == 'true';
+        return HelpPage(isFirstTime: isFirstTime);
+      },
     ),
     GoRoute(
       path: Routes.notificationRing,

@@ -5,7 +5,10 @@ import 'package:mta/features/measurements/domain/usecases/delete_measurement.dar
 import 'package:mta/features/measurements/domain/usecases/get_measurement_by_id.dart';
 import 'package:mta/features/measurements/domain/usecases/get_measurements.dart';
 import 'package:mta/features/measurements/domain/usecases/get_next_measurement_number.dart';
+import 'package:mta/features/measurements/domain/usecases/backup_and_clear_measurements.dart';
 import 'package:mta/features/measurements/domain/usecases/update_measurement.dart';
+import 'package:mta/features/measurements/domain/usecases/auto_backup_measurements.dart';
+import 'package:mta/features/measurements/domain/usecases/restore_measurements.dart';
 import 'package:mta/features/measurements/presentation/bloc/measurement_event.dart';
 import 'package:mta/features/measurements/presentation/bloc/measurement_state.dart';
 import 'package:mta/features/notifications/domain/repositories/notification_repository.dart';
@@ -18,6 +21,9 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
   final CreateMeasurement createMeasurement;
   final UpdateMeasurement updateMeasurement;
   final DeleteMeasurement deleteMeasurement;
+  final BackupAndClearMeasurements backupAndClearMeasurements;
+  final AutoBackupMeasurements autoBackupMeasurements;
+  final RestoreMeasurements restoreMeasurements;
   final GetNextMeasurementNumber getNextMeasurementNumber;
   final NotificationRepository notificationRepository;
   final ScheduleRepository scheduleRepository;
@@ -28,6 +34,9 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
     required this.createMeasurement,
     required this.updateMeasurement,
     required this.deleteMeasurement,
+    required this.backupAndClearMeasurements,
+    required this.autoBackupMeasurements,
+    required this.restoreMeasurements,
     required this.getNextMeasurementNumber,
     required this.notificationRepository,
     required this.scheduleRepository,
@@ -37,7 +46,10 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
     on<CreateMeasurementEvent>(_onCreateMeasurement);
     on<UpdateMeasurementEvent>(_onUpdateMeasurement);
     on<DeleteMeasurementEvent>(_onDeleteMeasurement);
+    on<ClearMeasurementsByDateRangeEvent>(_onClearMeasurementsByDateRange);
     on<GetNextMeasurementNumberEvent>(_onGetNextMeasurementNumber);
+    on<AutoBackupEvent>(_onAutoBackup);
+    on<RestoreMeasurementsEvent>(_onRestoreMeasurements);
   }
 
   Future<void> _onLoadMeasurements(
@@ -119,8 +131,14 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
         // 🔔 Detener notificaciones relacionadas con esta medición
         await _stopNotificationsForMeasurement(measurement);
 
-        emit(MeasurementOperationSuccess('Medición actualizada exitosamente',
+        emit(MeasurementOperationSuccess('Medición personalizada actualizada exitosamente',
             userId: measurement.userId));
+
+        // 💾 Auto-backup (invisible)
+        add(AutoBackupEvent(
+          userId: measurement.userId,
+          userName: event.userName,
+        ));
       },
     );
   }
@@ -137,8 +155,82 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
 
     result.fold(
       (failure) => emit(MeasurementError(failure.message)),
-      (_) =>
-          emit(MeasurementOperationSuccess('Medición eliminada exitosamente')),
+      (_) {
+        emit(MeasurementOperationSuccess('Medición eliminada exitosamente'));
+
+        // 💾 Auto-backup (invisible)
+        add(AutoBackupEvent(
+          userId: event.userId,
+          userName: event.userName,
+        ));
+      },
+    );
+  }
+
+  Future<void> _onClearMeasurementsByDateRange(
+    ClearMeasurementsByDateRangeEvent event,
+    Emitter<MeasurementState> emit,
+  ) async {
+    emit(MeasurementLoading());
+
+    final result = await backupAndClearMeasurements(
+      BackupAndClearParams(
+        userId: event.userId,
+        userName: event.userName,
+        startDate: event.startDate,
+        endDate: event.endDate,
+      ),
+    );
+
+    result.fold(
+      (failure) => emit(MeasurementError(failure.message)),
+      (res) {
+        emit(ClearMeasurementsSuccess(
+          count: res.count,
+          backupPath: res.backupPath,
+          userId: event.userId,
+        ));
+
+        // 💾 Auto-backup (invisible) - since data was cleared, we want a fresh backup of what's left
+        add(AutoBackupEvent(
+          userId: event.userId,
+          userName: event.userName,
+        ));
+      },
+    );
+  }
+
+  Future<void> _onAutoBackup(
+    AutoBackupEvent event,
+    Emitter<MeasurementState> emit,
+  ) async {
+    // Auto-backup is silent, we don't emit loading or error states that interrupt the UI
+    final result = await autoBackupMeasurements(
+      AutoBackupParams(userId: event.userId, userName: event.userName),
+    );
+
+    result.fold(
+      (failure) => debugPrint('❌ Auto-backup failed: ${failure.message}'),
+      (path) => debugPrint('✅ Auto-backup success: $path'),
+    );
+  }
+
+  Future<void> _onRestoreMeasurements(
+    RestoreMeasurementsEvent event,
+    Emitter<MeasurementState> emit,
+  ) async {
+    emit(MeasurementLoading());
+
+    final result = await restoreMeasurements(
+      RestoreParams(filePath: event.filePath, userId: event.userId),
+    );
+
+    result.fold(
+      (failure) => emit(MeasurementError(failure.message)),
+      (count) => emit(RestoreMeasurementsSuccess(
+        count: count,
+        userId: event.userId,
+      )),
     );
   }
 

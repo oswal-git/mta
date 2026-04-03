@@ -54,6 +54,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirm => 'Confirm';
 
   @override
+  String get resume => 'Continue';
+
+  @override
   String get customSound => 'Custom sound';
 
   @override
@@ -235,7 +238,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friday => 'Friday';
 
   @override
-  String get hasMeasuring => 'Taking Measuring?';
+  String get hasMeasuring => 'Are you taking any medication?';
 
   @override
   String get high => 'High';
@@ -560,4 +563,114 @@ class AppLocalizationsEn extends AppLocalizations {
   String repeatBody(Object minutes) {
     return '$minutes minutes have passed since the initial notice';
   }
+
+  @override
+  String get clearMeasurements => 'Clear measurements';
+
+  @override
+  String get clearMeasurementsTitle => 'Clear Measurements';
+
+  @override
+  String get fromDate => 'From date';
+
+  @override
+  String get toDate => 'To date';
+
+  @override
+  String get noLimitFrom => 'No limit from';
+
+  @override
+  String get noLimitTo => 'No limit to';
+
+  @override
+  String get confirmDeleteMeasurements =>
+      'Are you sure you want to delete measurements in this range?';
+
+  @override
+  String deleteMeasurementsSummaryBoth(String fdesde, String fhasta) {
+    return 'Records deleted from $fdesde to $fhasta.';
+  }
+
+  @override
+  String deleteMeasurementsSummaryUntil(String fhasta) {
+    return 'Records deleted until $fhasta.';
+  }
+
+  @override
+  String deleteMeasurementsSummaryFrom(String fdesde) {
+    return 'Records deleted from $fdesde.';
+  }
+
+  @override
+  String get deleteMeasurementsSummaryAll => 'All records deleted.';
+
+  @override
+  String backupSavedIn(String path) {
+    return 'Backup saved in $path';
+  }
+
+  @override
+  String get noMeasurementsToDelete =>
+      'No measurements to delete in this range.';
+
+  @override
+  String get restoreMeasurements => 'Restore measurements';
+
+  @override
+  String get restoreMeasurementsTitle => 'Restore from backup';
+
+  @override
+  String get selectBackupFile => 'Select a backup file';
+
+  @override
+  String get confirmRestore =>
+      'Are you sure you want to restore measurements from this file?\n\nExisting data with the same ID will be overwritten.';
+
+  @override
+  String restoreSuccess(int count) {
+    return '$count measurements have been successfully restored.';
+  }
+
+  @override
+  String get noBackupsFound => 'No backup files found.';
+
+  @override
+  String get backupFolder => 'Backup folder';
+
+  @override
+  String get autoBackupSuccess => 'Automatic backup completed.';
+
+  @override
+  String get help => 'Help';
+
+  @override
+  String get helpTitle => 'User Guide';
+
+  @override
+  String get helpSectionTomaTitle => 'How to take a correct measurement';
+
+  @override
+  String get helpSectionTomaContent =>
+      '1. Sit quietly for 5 minutes before the measurement.\n2. Place your arm at heart level.\n3. Do not talk or move during the measurement.\n4. Take 3 measurements with a 1-minute interval between each.';
+
+  @override
+  String get helpSectionColorsTitle => 'Color Interpretation';
+
+  @override
+  String get helpSectionColorsContent =>
+      '• Green (Normal): Systole < 130 and Diastole < 85.\n• Orange (Elevated): Systole 130-139 or Diastole 85-89.\n• Red (High): Systole ≥ 140 or Diastole ≥ 90.';
+
+  @override
+  String get helpSectionDataTitle => 'Data Security';
+
+  @override
+  String get helpSectionDataContent =>
+      'The application performs automatic backups in the \'backup\' folder of your Documents. The last 10 files are kept so you can restore them if necessary.';
+
+  @override
+  String get helpSectionSchedulesTitle => 'Schedules and Alerts';
+
+  @override
+  String get helpSectionSchedulesContent =>
+      'Configure your usual measurement times in the Schedules section. The application will notify you and repeat the notice if you forget to take the measurement.';
 }

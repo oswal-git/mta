@@ -54,6 +54,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get confirm => 'Confirmar';
 
   @override
+  String get resume => 'Continuar';
+
+  @override
   String get customSound => 'Sonido personalizado';
 
   @override
@@ -235,7 +238,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get friday => 'Viernes';
 
   @override
-  String get hasMeasuring => '¿Toma medición?';
+  String get hasMeasuring => '¿Toma medicación?';
 
   @override
   String get high => 'Alta';
@@ -565,4 +568,114 @@ class AppLocalizationsEs extends AppLocalizations {
   String repeatBody(Object minutes) {
     return 'Han pasado $minutes minutos desde el aviso inicial';
   }
+
+  @override
+  String get clearMeasurements => 'Limpiar mediciones';
+
+  @override
+  String get clearMeasurementsTitle => 'Limpiar mediciones';
+
+  @override
+  String get fromDate => 'Desde fecha';
+
+  @override
+  String get toDate => 'Hasta fecha';
+
+  @override
+  String get noLimitFrom => 'Sin límite desde';
+
+  @override
+  String get noLimitTo => 'Sin límite hasta';
+
+  @override
+  String get confirmDeleteMeasurements =>
+      '¿Seguro que desea eliminar las mediciones de este rango?';
+
+  @override
+  String deleteMeasurementsSummaryBoth(String fdesde, String fhasta) {
+    return 'Registros eliminados desde $fdesde hasta $fhasta.';
+  }
+
+  @override
+  String deleteMeasurementsSummaryUntil(String fhasta) {
+    return 'Registros eliminados hasta $fhasta.';
+  }
+
+  @override
+  String deleteMeasurementsSummaryFrom(String fdesde) {
+    return 'Registros eliminados desde $fdesde.';
+  }
+
+  @override
+  String get deleteMeasurementsSummaryAll => 'Todos los registros eliminados.';
+
+  @override
+  String backupSavedIn(String path) {
+    return 'Copia de seguridad en $path';
+  }
+
+  @override
+  String get noMeasurementsToDelete =>
+      'No hay mediciones para borrar en este rango.';
+
+  @override
+  String get restoreMeasurements => 'Restaurar mediciones';
+
+  @override
+  String get restoreMeasurementsTitle => 'Restaurar desde backup';
+
+  @override
+  String get selectBackupFile => 'Seleccione un archivo de respaldo';
+
+  @override
+  String get confirmRestore =>
+      '¿Seguro que desea restaurar las mediciones de este archivo?\n\nLos datos existentes con el mismo ID serán sobrescritos.';
+
+  @override
+  String restoreSuccess(int count) {
+    return 'Se han restaurado $count mediciones con éxito.';
+  }
+
+  @override
+  String get noBackupsFound => 'No se encontraron archivos de respaldo.';
+
+  @override
+  String get backupFolder => 'Carpeta de backups';
+
+  @override
+  String get autoBackupSuccess => 'Copia de seguridad automática realizada.';
+
+  @override
+  String get help => 'Ayuda';
+
+  @override
+  String get helpTitle => 'Guía de Uso';
+
+  @override
+  String get helpSectionTomaTitle => 'Cómo realizar una toma correcta';
+
+  @override
+  String get helpSectionTomaContent =>
+      '1. Siéntese tranquilamente durante 5 minutos antes de la medición.\n2. Coloque el brazo a la altura del corazón.\n3. No hable ni se mueva durante la medición.\n4. Realice 3 tomas con un intervalo de 1 minuto entre ellas.';
+
+  @override
+  String get helpSectionColorsTitle => 'Interpretación de Colores';
+
+  @override
+  String get helpSectionColorsContent =>
+      '• Verde (Normal): Sístole < 130 y Diástole < 85.\n• Naranja (Elevada): Sístole 130-139 o Diástole 85-89.\n• Rojo (Alta): Sístole ≥ 140 o Diástole ≥ 90.';
+
+  @override
+  String get helpSectionDataTitle => 'Seguridad de Datos';
+
+  @override
+  String get helpSectionDataContent =>
+      'La aplicación realiza copias de seguridad automáticas en la carpeta \'backup\' de sus Documentos. Se mantienen los últimos 10 archivos para que pueda restaurarlos si es necesario.';
+
+  @override
+  String get helpSectionSchedulesTitle => 'Horarios y Alertas';
+
+  @override
+  String get helpSectionSchedulesContent =>
+      'Configure sus horas de toma habituales en la sección de Horarios. La aplicación le notificará y repetirá el aviso si olvida realizar la medición.';
 }

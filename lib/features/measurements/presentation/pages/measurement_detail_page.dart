@@ -91,8 +91,14 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
         updatedAt: DateTime.now(),
       );
 
+      final userState = context.read<UserBloc>().state;
+      String userName = '';
+      if (userState is UsersLoaded && userState.activeUser != null) {
+        userName = userState.activeUser!.name;
+      }
+
       context.read<MeasurementBloc>().add(
-            UpdateMeasurementEvent(updatedMeasurement),
+            UpdateMeasurementEvent(updatedMeasurement, userName),
           );
     }
   }
@@ -112,10 +118,17 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
           ),
           TextButton(
             onPressed: () {
+              final userState = context.read<UserBloc>().state;
+              String userName = '';
+              if (userState is UsersLoaded && userState.activeUser != null) {
+                userName = userState.activeUser!.name;
+              }
+
               context.read<MeasurementBloc>().add(
                     DeleteMeasurementEvent(
                       widget.measurementId,
                       _measurement!.userId,
+                      userName,
                     ),
                   );
               Navigator.of(dialogContext).pop();

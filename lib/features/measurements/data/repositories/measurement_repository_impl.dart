@@ -74,6 +74,16 @@ class MeasurementRepositoryImpl implements MeasurementRepository {
   }
 
   @override
+  Future<Either<Failure, void>> deleteMeasurementsByDateRange(String userId, DateTime? startDate, DateTime? endDate) async {
+    try {
+      await localDataSource.deleteMeasurementsByDateRange(userId, startDate, endDate);
+      return const Right(null);
+    } on CacheFailure catch (e) {
+      return Left(CacheFailure(e.message));
+    }
+  }
+
+  @override
   Future<Either<Failure, int>> getNextMeasurementNumber(
     String userId,
     DateTime date,
@@ -82,6 +92,20 @@ class MeasurementRepositoryImpl implements MeasurementRepository {
       final number =
           await localDataSource.getNextMeasurementNumber(userId, date);
       return Right(number);
+    } on CacheFailure catch (e) {
+      return Left(CacheFailure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> restoreMeasurements(
+    List<MeasurementEntity> measurements,
+  ) async {
+    try {
+      final measurementModels =
+          measurements.map((m) => MeasurementModel.fromEntity(m)).toList();
+      await localDataSource.restoreMeasurements(measurementModels);
+      return const Right(null);
     } on CacheFailure catch (e) {
       return Left(CacheFailure(e.message));
     }

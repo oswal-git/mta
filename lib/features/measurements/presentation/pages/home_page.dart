@@ -100,8 +100,17 @@ class _HomePageState extends State<HomePage> {
               icon: const Icon(Icons.more_vert),
               onSelected: (value) {
                 switch (value) {
+                  case 'clear_measurements':
+                    context.push(Routes.clearMeasurements);
+                    break;
+                  case 'restore_measurements':
+                    context.push(Routes.restoreMeasurements);
+                    break;
                   case 'schedules':
                     context.push(Routes.scheduleSettings);
+                    break;
+                  case 'help':
+                    context.push(Routes.help);
                     break;
                   case 'new_user':
                     context.push(Routes.userForm);
@@ -121,6 +130,26 @@ class _HomePageState extends State<HomePage> {
                 }
               },
               itemBuilder: (context) => [
+                PopupMenuItem(
+                  value: 'clear_measurements',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.delete_sweep),
+                      const SizedBox(width: AppSpacing.gapSm),
+                      Text(l10n.clearMeasurementsTitle),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 'restore_measurements',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.settings_backup_restore),
+                      const SizedBox(width: AppSpacing.gapSm),
+                      Text(l10n.restoreMeasurements),
+                    ],
+                  ),
+                ),
                 PopupMenuItem(
                   value: 'schedules',
                   child: Row(
@@ -148,6 +177,16 @@ class _HomePageState extends State<HomePage> {
                       const Icon(Icons.edit),
                       const SizedBox(width: AppSpacing.gapSm),
                       Text(l10n.editUser),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 'help',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.help_outline),
+                      const SizedBox(width: AppSpacing.gapSm),
+                      Text(l10n.help),
                     ],
                   ),
                 ),

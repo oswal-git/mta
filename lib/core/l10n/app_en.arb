@@ -15,6 +15,7 @@
     "cancelNotification": "Cancel notification",
     "close": "Close",
     "confirm": "Confirm",
+    "resume": "Continue",
     "customSound": "Custom sound",
     "date": "Date",
     "day": "Day",
@@ -75,7 +76,7 @@
     "formatExcel": "Excel (XLSX)",
     "formatPdf": "PDF",
     "friday": "Friday",
-    "hasMeasuring": "Taking Measuring?",
+    "hasMeasuring": "Are you taking any medication?",
     "high": "High",
     "language": "Language",
     "languageSelection": "Language Selection",
@@ -176,5 +177,62 @@
     "reminderMeasurementTitle": "REMINDER ({repetition}th time) measurement: {time}",
     "preAvisoBody": "In 5 minutes it's time for your blood pressure measurement.",
     "scheduledTimeBody": "It's time to perform the scheduled measurement.",
-    "repeatBody": "{minutes} minutes have passed since the initial notice"
+    "repeatBody": "{minutes} minutes have passed since the initial notice",
+    "clearMeasurements": "Clear measurements",
+    "clearMeasurementsTitle": "Clear Measurements",
+    "fromDate": "From date",
+    "toDate": "To date",
+    "noLimitFrom": "No limit from",
+    "noLimitTo": "No limit to",
+    "confirmDeleteMeasurements": "Are you sure you want to delete measurements in this range?",
+    "deleteMeasurementsSummaryBoth": "Records deleted from {fdesde} to {fhasta}.",
+    "@deleteMeasurementsSummaryBoth": {
+        "placeholders": {
+            "fdesde": {"type": "String"},
+            "fhasta": {"type": "String"}
+        }
+    },
+    "deleteMeasurementsSummaryUntil": "Records deleted until {fhasta}.",
+    "@deleteMeasurementsSummaryUntil": {
+        "placeholders": {
+            "fhasta": {"type": "String"}
+        }
+    },
+    "deleteMeasurementsSummaryFrom": "Records deleted from {fdesde}.",
+    "@deleteMeasurementsSummaryFrom": {
+        "placeholders": {
+            "fdesde": {"type": "String"}
+        }
+    },
+    "deleteMeasurementsSummaryAll": "All records deleted.",
+    "backupSavedIn": "Backup saved in {path}",
+    "@backupSavedIn": {
+        "placeholders": {
+            "path": {"type": "String"}
+        }
+    },
+    "noMeasurementsToDelete": "No measurements to delete in this range.",
+    "restoreMeasurements": "Restore measurements",
+    "restoreMeasurementsTitle": "Restore from backup",
+    "selectBackupFile": "Select a backup file",
+    "confirmRestore": "Are you sure you want to restore measurements from this file?\n\nExisting data with the same ID will be overwritten.",
+    "restoreSuccess": "{count} measurements have been successfully restored.",
+    "@restoreSuccess": {
+        "placeholders": {
+            "count": {"type": "int"}
+        }
+    },
+    "noBackupsFound": "No backup files found.",
+    "backupFolder": "Backup folder",
+    "autoBackupSuccess": "Automatic backup completed.",
+    "help": "Help",
+    "helpTitle": "User Guide",
+    "helpSectionTomaTitle": "How to take a correct measurement",
+    "helpSectionTomaContent": "1. Sit quietly for 5 minutes before the measurement.\n2. Place your arm at heart level.\n3. Do not talk or move during the measurement.\n4. Take 3 measurements with a 1-minute interval between each.",
+    "helpSectionColorsTitle": "Color Interpretation",
+    "helpSectionColorsContent": "• Green (Normal): Systole < 130 and Diastole < 85.\n• Orange (Elevated): Systole 130-139 or Diastole 85-89.\n• Red (High): Systole ≥ 140 or Diastole ≥ 90.",
+    "helpSectionDataTitle": "Data Security",
+    "helpSectionDataContent": "The application performs automatic backups in the 'backup' folder of your Documents. The last 10 files are kept so you can restore them if necessary.",
+    "helpSectionSchedulesTitle": "Schedules and Alerts",
+    "helpSectionSchedulesContent": "Configure your usual measurement times in the Schedules section. The application will notify you and repeat the notice if you forget to take the measurement."
 }

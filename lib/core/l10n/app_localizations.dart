@@ -190,6 +190,12 @@ abstract class AppLocalizations {
   /// **'Confirmar'**
   String get confirm;
 
+  /// No description provided for @resume.
+  ///
+  /// In es, this message translates to:
+  /// **'Continuar'**
+  String get resume;
+
   /// No description provided for @customSound.
   ///
   /// In es, this message translates to:
@@ -553,7 +559,7 @@ abstract class AppLocalizations {
   /// No description provided for @hasMeasuring.
   ///
   /// In es, this message translates to:
-  /// **'¿Toma medición?'**
+  /// **'¿Toma medicación?'**
   String get hasMeasuring;
 
   /// No description provided for @high.
@@ -1161,6 +1167,192 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Han pasado {minutes} minutos desde el aviso inicial'**
   String repeatBody(Object minutes);
+
+  /// No description provided for @clearMeasurements.
+  ///
+  /// In es, this message translates to:
+  /// **'Limpiar mediciones'**
+  String get clearMeasurements;
+
+  /// No description provided for @clearMeasurementsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Limpiar mediciones'**
+  String get clearMeasurementsTitle;
+
+  /// No description provided for @fromDate.
+  ///
+  /// In es, this message translates to:
+  /// **'Desde fecha'**
+  String get fromDate;
+
+  /// No description provided for @toDate.
+  ///
+  /// In es, this message translates to:
+  /// **'Hasta fecha'**
+  String get toDate;
+
+  /// No description provided for @noLimitFrom.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin límite desde'**
+  String get noLimitFrom;
+
+  /// No description provided for @noLimitTo.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin límite hasta'**
+  String get noLimitTo;
+
+  /// No description provided for @confirmDeleteMeasurements.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Seguro que desea eliminar las mediciones de este rango?'**
+  String get confirmDeleteMeasurements;
+
+  /// No description provided for @deleteMeasurementsSummaryBoth.
+  ///
+  /// In es, this message translates to:
+  /// **'Registros eliminados desde {fdesde} hasta {fhasta}.'**
+  String deleteMeasurementsSummaryBoth(String fdesde, String fhasta);
+
+  /// No description provided for @deleteMeasurementsSummaryUntil.
+  ///
+  /// In es, this message translates to:
+  /// **'Registros eliminados hasta {fhasta}.'**
+  String deleteMeasurementsSummaryUntil(String fhasta);
+
+  /// No description provided for @deleteMeasurementsSummaryFrom.
+  ///
+  /// In es, this message translates to:
+  /// **'Registros eliminados desde {fdesde}.'**
+  String deleteMeasurementsSummaryFrom(String fdesde);
+
+  /// No description provided for @deleteMeasurementsSummaryAll.
+  ///
+  /// In es, this message translates to:
+  /// **'Todos los registros eliminados.'**
+  String get deleteMeasurementsSummaryAll;
+
+  /// No description provided for @backupSavedIn.
+  ///
+  /// In es, this message translates to:
+  /// **'Copia de seguridad en {path}'**
+  String backupSavedIn(String path);
+
+  /// No description provided for @noMeasurementsToDelete.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay mediciones para borrar en este rango.'**
+  String get noMeasurementsToDelete;
+
+  /// No description provided for @restoreMeasurements.
+  ///
+  /// In es, this message translates to:
+  /// **'Restaurar mediciones'**
+  String get restoreMeasurements;
+
+  /// No description provided for @restoreMeasurementsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Restaurar desde backup'**
+  String get restoreMeasurementsTitle;
+
+  /// No description provided for @selectBackupFile.
+  ///
+  /// In es, this message translates to:
+  /// **'Seleccione un archivo de respaldo'**
+  String get selectBackupFile;
+
+  /// No description provided for @confirmRestore.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Seguro que desea restaurar las mediciones de este archivo?\n\nLos datos existentes con el mismo ID serán sobrescritos.'**
+  String get confirmRestore;
+
+  /// No description provided for @restoreSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Se han restaurado {count} mediciones con éxito.'**
+  String restoreSuccess(int count);
+
+  /// No description provided for @noBackupsFound.
+  ///
+  /// In es, this message translates to:
+  /// **'No se encontraron archivos de respaldo.'**
+  String get noBackupsFound;
+
+  /// No description provided for @backupFolder.
+  ///
+  /// In es, this message translates to:
+  /// **'Carpeta de backups'**
+  String get backupFolder;
+
+  /// No description provided for @autoBackupSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Copia de seguridad automática realizada.'**
+  String get autoBackupSuccess;
+
+  /// No description provided for @help.
+  ///
+  /// In es, this message translates to:
+  /// **'Ayuda'**
+  String get help;
+
+  /// No description provided for @helpTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Guía de Uso'**
+  String get helpTitle;
+
+  /// No description provided for @helpSectionTomaTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Cómo realizar una toma correcta'**
+  String get helpSectionTomaTitle;
+
+  /// No description provided for @helpSectionTomaContent.
+  ///
+  /// In es, this message translates to:
+  /// **'1. Siéntese tranquilamente durante 5 minutos antes de la medición.\n2. Coloque el brazo a la altura del corazón.\n3. No hable ni se mueva durante la medición.\n4. Realice 3 tomas con un intervalo de 1 minuto entre ellas.'**
+  String get helpSectionTomaContent;
+
+  /// No description provided for @helpSectionColorsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Interpretación de Colores'**
+  String get helpSectionColorsTitle;
+
+  /// No description provided for @helpSectionColorsContent.
+  ///
+  /// In es, this message translates to:
+  /// **'• Verde (Normal): Sístole < 130 y Diástole < 85.\n• Naranja (Elevada): Sístole 130-139 o Diástole 85-89.\n• Rojo (Alta): Sístole ≥ 140 o Diástole ≥ 90.'**
+  String get helpSectionColorsContent;
+
+  /// No description provided for @helpSectionDataTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Seguridad de Datos'**
+  String get helpSectionDataTitle;
+
+  /// No description provided for @helpSectionDataContent.
+  ///
+  /// In es, this message translates to:
+  /// **'La aplicación realiza copias de seguridad automáticas en la carpeta \'backup\' de sus Documentos. Se mantienen los últimos 10 archivos para que pueda restaurarlos si es necesario.'**
+  String get helpSectionDataContent;
+
+  /// No description provided for @helpSectionSchedulesTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Horarios y Alertas'**
+  String get helpSectionSchedulesTitle;
+
+  /// No description provided for @helpSectionSchedulesContent.
+  ///
+  /// In es, this message translates to:
+  /// **'Configure sus horas de toma habituales en la sección de Horarios. La aplicación le notificará y repetirá el aviso si olvida realizar la medición.'**
+  String get helpSectionSchedulesContent;
 }
 
 class _AppLocalizationsDelegate

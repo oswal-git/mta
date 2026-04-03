@@ -11,6 +11,9 @@ abstract class MeasurementRepository {
   Future<Either<Failure, MeasurementEntity>> updateMeasurement(
       MeasurementEntity measurement);
   Future<Either<Failure, void>> deleteMeasurement(String id);
+  Future<Either<Failure, void>> deleteMeasurementsByDateRange(String userId, DateTime? startDate, DateTime? endDate);
   Future<Either<Failure, int>> getNextMeasurementNumber(
       String userId, DateTime date);
+  Future<Either<Failure, void>> restoreMeasurements(
+      List<MeasurementEntity> measurements);
 }

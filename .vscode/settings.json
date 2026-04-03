@@ -8,5 +8,14 @@
         "**/*.dart.js": true,
         "**/*.dart.js.map": true
     },
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "java.jdt.ls.java.home": "C:\\Program Files\\Android\\Android Studio1\\jbr",
+    "java.import.gradle.java.home": "C:\\Program Files\\Android\\Android Studio1\\jbr",
+    "java.configuration.runtimes": [
+        {
+            "name": "JavaSE-17",
+            "path": "C:\\Program Files\\Android\\Android Studio1\\jbr",
+            "default": true
+        }
+    ]
 }

@@ -15,6 +15,7 @@
     "cancelNotification": "Cancelar notificación",
     "close": "Cerrar",
     "confirm": "Confirmar",
+    "resume": "Continuar",
     "customSound": "Sonido personalizado",
     "date": "Fecha",
     "day": "Día",
@@ -75,7 +76,7 @@
     "formatExcel": "Excel (XLSX)",
     "formatPdf": "PDF",
     "friday": "Viernes",
-    "hasMeasuring": "¿Toma medición?",
+    "hasMeasuring": "¿Toma medicación?",
     "high": "Alta",
     "language": "Idioma",
     "languageSelection": "Selección de Idioma",
@@ -176,5 +177,62 @@
     "reminderMeasurementTitle": "RECORDATORIO ({repetition}ª vez) medición: {time}",
     "preAvisoBody": "En 5 minutos toca su medición de tensión.",
     "scheduledTimeBody": "Es el momento de realizar la medición programada.",
-    "repeatBody": "Han pasado {minutes} minutos desde el aviso inicial"
+    "repeatBody": "Han pasado {minutes} minutos desde el aviso inicial",
+    "clearMeasurements": "Limpiar mediciones",
+    "clearMeasurementsTitle": "Limpiar mediciones",
+    "fromDate": "Desde fecha",
+    "toDate": "Hasta fecha",
+    "noLimitFrom": "Sin límite desde",
+    "noLimitTo": "Sin límite hasta",
+    "confirmDeleteMeasurements": "¿Seguro que desea eliminar las mediciones de este rango?",
+    "deleteMeasurementsSummaryBoth": "Registros eliminados desde {fdesde} hasta {fhasta}.",
+    "@deleteMeasurementsSummaryBoth": {
+        "placeholders": {
+            "fdesde": {"type": "String"},
+            "fhasta": {"type": "String"}
+        }
+    },
+    "deleteMeasurementsSummaryUntil": "Registros eliminados hasta {fhasta}.",
+    "@deleteMeasurementsSummaryUntil": {
+        "placeholders": {
+            "fhasta": {"type": "String"}
+        }
+    },
+    "deleteMeasurementsSummaryFrom": "Registros eliminados desde {fdesde}.",
+    "@deleteMeasurementsSummaryFrom": {
+        "placeholders": {
+            "fdesde": {"type": "String"}
+        }
+    },
+    "deleteMeasurementsSummaryAll": "Todos los registros eliminados.",
+    "backupSavedIn": "Copia de seguridad en {path}",
+    "@backupSavedIn": {
+        "placeholders": {
+            "path": {"type": "String"}
+        }
+    },
+    "noMeasurementsToDelete": "No hay mediciones para borrar en este rango.",
+    "restoreMeasurements": "Restaurar mediciones",
+    "restoreMeasurementsTitle": "Restaurar desde backup",
+    "selectBackupFile": "Seleccione un archivo de respaldo",
+    "confirmRestore": "¿Seguro que desea restaurar las mediciones de este archivo?\n\nLos datos existentes con el mismo ID serán sobrescritos.",
+    "restoreSuccess": "Se han restaurado {count} mediciones con éxito.",
+    "@restoreSuccess": {
+        "placeholders": {
+            "count": {"type": "int"}
+        }
+    },
+    "noBackupsFound": "No se encontraron archivos de respaldo.",
+    "backupFolder": "Carpeta de backups",
+    "autoBackupSuccess": "Copia de seguridad automática realizada.",
+    "help": "Ayuda",
+    "helpTitle": "Guía de Uso",
+    "helpSectionTomaTitle": "Cómo realizar una toma correcta",
+    "helpSectionTomaContent": "1. Siéntese tranquilamente durante 5 minutos antes de la medición.\n2. Coloque el brazo a la altura del corazón.\n3. No hable ni se mueva durante la medición.\n4. Realice 3 tomas con un intervalo de 1 minuto entre ellas.",
+    "helpSectionColorsTitle": "Interpretación de Colores",
+    "helpSectionColorsContent": "• Verde (Normal): Sístole < 130 y Diástole < 85.\n• Naranja (Elevada): Sístole 130-139 o Diástole 85-89.\n• Rojo (Alta): Sístole ≥ 140 o Diástole ≥ 90.",
+    "helpSectionDataTitle": "Seguridad de Datos",
+    "helpSectionDataContent": "La aplicación realiza copias de seguridad automáticas en la carpeta 'backup' de sus Documentos. Se mantienen los últimos 10 archivos para que pueda restaurarlos si es necesario.",
+    "helpSectionSchedulesTitle": "Horarios y Alertas",
+    "helpSectionSchedulesContent": "Configure sus horas de toma habituales en la sección de Horarios. La aplicación le notificará y repetirá el aviso si olvida realizar la medición."
 }

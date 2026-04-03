@@ -200,6 +200,15 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
         ),
       );
     } else {
+      // 💾 Auto-backup (invisible) only on Finish
+      final userState = context.read<UserBloc>().state;
+      if (userState is UsersLoaded && userState.activeUser != null) {
+        context.read<MeasurementBloc>().add(AutoBackupEvent(
+              userId: _userId!,
+              userName: userState.activeUser!.name,
+            ));
+      }
+
       // Al terminar, simplemente volvemos. La HomePage se actualizará
       // al recibir el estado de MeasurementOperationSuccess.
       if (context.canPop()) {

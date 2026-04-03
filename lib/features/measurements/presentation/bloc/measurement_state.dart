@@ -70,3 +70,31 @@ class MeasurementError extends MeasurementState {
   @override
   List<Object> get props => [message];
 }
+
+class ClearMeasurementsSuccess extends MeasurementState {
+  final int count;
+  final String? backupPath;
+  final String userId;
+
+  const ClearMeasurementsSuccess({
+    required this.count,
+    this.backupPath,
+    required this.userId,
+  });
+
+  @override
+  List<Object?> get props => [count, backupPath, userId];
+}
+
+class RestoreMeasurementsSuccess extends MeasurementState {
+  final int count;
+  final String userId;
+
+  const RestoreMeasurementsSuccess({
+    required this.count,
+    required this.userId,
+  });
+
+  @override
+  List<Object> get props => [count, userId];
+}
