@@ -172,6 +172,12 @@ abstract class AppLocalizations {
   /// **'Cancelar'**
   String get cancel;
 
+  /// No description provided for @continueEditing.
+  ///
+  /// In es, this message translates to:
+  /// **'Continuar editando'**
+  String get continueEditing;
+
   /// No description provided for @cancelNotification.
   ///
   /// In es, this message translates to:
@@ -232,6 +238,12 @@ abstract class AppLocalizations {
   /// **'usuario'**
   String get defaultUsername;
 
+  /// No description provided for @discard.
+  ///
+  /// In es, this message translates to:
+  /// **'Abandonar cambios'**
+  String get discard;
+
   /// No description provided for @delete.
   ///
   /// In es, this message translates to:
@@ -291,6 +303,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'¿Descartar cambios?'**
   String get discardChanges;
+
+  /// No description provided for @discardChangesMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Deseas abandonar los cambios realizados en esta medición?'**
+  String get discardChangesMessage;
+
+  /// No description provided for @discardChangesTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambios sin guardar'**
+  String get discardChangesTitle;
 
   /// No description provided for @edit.
   ///

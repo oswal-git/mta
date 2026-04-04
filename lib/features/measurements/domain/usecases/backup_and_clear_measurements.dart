@@ -50,23 +50,24 @@ class BackupAndClearMeasurements
             ));
           }
 
-          // 3. Generar archivo CSV en la carpeta pública
+          // 3. Generar archivo CSV en la carpeta pública (Normalizar a minúsculas)
+          final normalizedUserName = params.userName.toLowerCase();
           Directory eliminadosDir;
           if (Platform.isAndroid) {
-            eliminadosDir = Directory('/storage/emulated/0/Documents/MTA/${params.userName}/eliminados');
+            eliminadosDir = Directory('/storage/emulated/0/Documents/MTA/$normalizedUserName/eliminados');
             try {
               if (!await eliminadosDir.exists()) {
                 await eliminadosDir.create(recursive: true);
               }
             } catch (e) {
-              eliminadosDir = Directory('/storage/emulated/0/Downloads/MTA/${params.userName}/eliminados');
+              eliminadosDir = Directory('/storage/emulated/0/Downloads/MTA/$normalizedUserName/eliminados');
               if (!await eliminadosDir.exists()) {
                 await eliminadosDir.create(recursive: true);
               }
             }
           } else {
             final docsDir = await getApplicationDocumentsDirectory();
-            eliminadosDir = Directory('${docsDir.path}/mta/${params.userName}/eliminados');
+            eliminadosDir = Directory('${docsDir.path}/mta/$normalizedUserName/eliminados');
             if (!await eliminadosDir.exists()) {
               await eliminadosDir.create(recursive: true);
             }

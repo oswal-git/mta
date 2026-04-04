@@ -22,10 +22,19 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final ScrollController _scrollController = ScrollController();
+  static const double _itemHeight = 56.0; // Estimated height of MeasurementListItem
+
   @override
   void initState() {
     super.initState();
     _loadMeasurements();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   void _loadMeasurements() {
@@ -36,16 +45,27 @@ class _HomePageState extends State<HomePage> {
       context.read<MeasurementBloc>().add(
             LoadMeasurementsEvent(userState.activeUser!.id),
           );
-    } else {
-      debugPrint(
-          '${DateFormat('HH:mm:ss').format(DateTime.now())} -⚠️ HomePage - No active user, cannot load measurements');
     }
   }
 
   void _onUserChanged() {
-    debugPrint(
-        '${DateFormat('HH:mm:ss').format(DateTime.now())} -🔄 HomePage - User changed, reloading measurements');
     _loadMeasurements();
+  }
+
+  Future<void> _scrollToItem(String measurementId, List measurements) async {
+    final index = measurements.indexWhere((m) => m.id == measurementId);
+    if (index != -1) {
+      // Pequeno delay para asegurar que la lista se ha renderizado si volvió de una operación
+      await Future.delayed(const Duration(milliseconds: 300));
+      if (_scrollController.hasClients) {
+        final targetOffset = index * _itemHeight;
+        _scrollController.animateTo(
+          targetOffset,
+          duration: const Duration(milliseconds: 600),
+          curve: Curves.easeInOutCubic,
+        );
+      }
+    }
   }
 
   @override
@@ -55,8 +75,6 @@ class _HomePageState extends State<HomePage> {
     return BlocListener<UserBloc, UserState>(
       listener: (context, state) {
         if (state is UsersLoaded && state.activeUser != null) {
-          debugPrint(
-              '${DateFormat('HH:mm:ss').format(DateTime.now())} -🎧 HomePage - UserBloc changed, reloading measurements');
           context.read<MeasurementBloc>().add(
                 LoadMeasurementsEvent(state.activeUser!.id),
               );
@@ -285,7 +303,7 @@ class _HomePageState extends State<HomePage> {
                           flex: 5,
                           child: Text(
                             l10n.date,
-                            style: AppTypography.bodyMedium
+                            style: AppTypography.bodySmall
                                 .copyWith(fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -293,7 +311,7 @@ class _HomePageState extends State<HomePage> {
                           flex: 4,
                           child: Text(
                             l10n.day,
-                            style: AppTypography.bodyMedium
+                            style: AppTypography.bodySmall
                                 .copyWith(fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -301,7 +319,7 @@ class _HomePageState extends State<HomePage> {
                           flex: 3,
                           child: Text(
                             l10n.measurementTime,
-                            style: AppTypography.bodyMedium
+                            style: AppTypography.bodySmall
                                 .copyWith(fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -309,7 +327,7 @@ class _HomePageState extends State<HomePage> {
                           flex: 3,
                           child: Text(
                             l10n.systolic,
-                            style: AppTypography.bodyMedium
+                            style: AppTypography.bodySmall
                                 .copyWith(fontWeight: FontWeight.bold),
                             textAlign: TextAlign.center,
                           ),
@@ -318,7 +336,7 @@ class _HomePageState extends State<HomePage> {
                           flex: 3,
                           child: Text(
                             l10n.diastolic,
-                            style: AppTypography.bodyMedium
+                            style: AppTypography.bodySmall
                                 .copyWith(fontWeight: FontWeight.bold),
                             textAlign: TextAlign.center,
                           ),
@@ -327,7 +345,7 @@ class _HomePageState extends State<HomePage> {
                           flex: 3,
                           child: Text(
                             l10n.pulse,
-                            style: AppTypography.bodyMedium
+                            style: AppTypography.bodySmall
                                 .copyWith(fontWeight: FontWeight.bold),
                             textAlign: TextAlign.center,
                           ),
@@ -338,15 +356,20 @@ class _HomePageState extends State<HomePage> {
                   // List
                   Expanded(
                     child: ListView.builder(
+                      controller: _scrollController,
                       itemCount: state.measurements.length,
                       itemBuilder: (context, index) {
                         final measurement = state.measurements[index];
                         return MeasurementListItem(
                           measurement: measurement,
-                          onTap: () {
-                            context.push(
+                          onTap: () async {
+                            final resultId = await context.push(
                               '${Routes.measurementDetail}?measurementId=${measurement.id}',
                             );
+                            
+                            if (resultId != null && resultId is String) {
+                              _scrollToItem(resultId, state.measurements);
+                            }
                           },
                         );
                       },
@@ -356,7 +379,6 @@ class _HomePageState extends State<HomePage> {
               );
             }
 
-            // Initial state or error
             return Center(
               child: Text(
                 'Select a user to view measurements',
@@ -366,7 +388,7 @@ class _HomePageState extends State<HomePage> {
           },
         ),
       ),
-    ); // Scaffold
+    );
   }
 
   void _showDeleteUserDialog(BuildContext context) {

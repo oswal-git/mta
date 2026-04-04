@@ -24,7 +24,10 @@ class MeasurementLocalDataSourceImpl implements MeasurementLocalDataSource {
     try {
       final measurements = await (database.select(database.measurementsDao)
             ..where((tbl) => tbl.userId.equals(userId))
-            ..orderBy([(tbl) => drift.OrderingTerm.desc(tbl.measurementTime)]))
+            ..orderBy([
+              (tbl) => drift.OrderingTerm.desc(tbl.measurementTime),
+              (tbl) => drift.OrderingTerm.desc(tbl.measurementNumber),
+            ]))
           .get();
 
       return measurements.map((m) => MeasurementModel.fromDao(m)).toList();

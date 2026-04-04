@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -13,6 +12,8 @@ import 'package:mta/features/users/presentation/bloc/user_bloc.dart';
 import 'package:mta/features/users/presentation/bloc/user_event.dart';
 import 'package:mta/features/users/presentation/bloc/user_state.dart';
 import 'package:mta/core/theme/theme.dart';
+import 'package:uuid/uuid.dart';
+import 'package:mta/features/measurements/presentation/widgets/compact_increment_field_widget.dart';
 
 class MeasurementFormPage extends StatefulWidget {
   final String? measurementId;
@@ -77,14 +78,12 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
     }
 
     setState(() {
-      _currentMeasurementNumber = 1; // <-- reiniciar al abrir
-      _selectedDateTime = DateTime.now(); // <-- opcional, iniciar fecha actual
-      _isDateTimeManuallyChanged = false; // resetear la bandera
+      _currentMeasurementNumber = 1;
+      _selectedDateTime = DateTime.now();
+      _isDateTimeManuallyChanged = false;
+      _isInitialized =
+          true; // Mark as initialized since we don't wait for Bloc anymore
     });
-
-    context.read<MeasurementBloc>().add(
-          GetNextMeasurementNumberEvent(_userId!, _selectedDateTime),
-        );
   }
 
   @override
@@ -120,9 +119,9 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
     });
 
     if (_userId != null) {
-      context.read<MeasurementBloc>().add(
-            GetNextMeasurementNumberEvent(_userId!, _selectedDateTime),
-          );
+      setState(() {
+        _currentMeasurementNumber++;
+      });
     }
   }
 
@@ -172,7 +171,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
     }
 
     final measurement = MeasurementEntity(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: const Uuid().v4(),
       userId: _userId!,
       measurementTime: _selectedDateTime,
       measurementNumber: _currentMeasurementNumber,
@@ -255,11 +254,10 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
           _isDateTimeManuallyChanged = true;
         });
 
-        if (_userId != null) {
-          context.read<MeasurementBloc>().add(
-                GetNextMeasurementNumberEvent(_userId!, _selectedDateTime),
-              );
-        }
+        // Si se cambia la fecha manualmente, no reiniciamos el contador,
+        // simplemente mantenemos el contador local. El usuario pidió
+        // que empiece en 1 al abrir la ventana y suba con "Siguiente".
+        debugPrint('📅 Fecha cambiada manualmente a: $_selectedDateTime');
       }
     }
   }
@@ -449,24 +447,26 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                               Row(
                                 children: [
                                   Expanded(
-                                    child: _buildCompactIncrementField(
+                                    child: CompactIncrementFieldWidget(
                                       label: l10n.systole,
                                       controller: _systolicController,
                                       unit: 'mmHg',
                                       icon: Icons.arrow_upward,
                                       min: 50,
                                       max: 250,
+                                      onChanged: () => setState(() {}),
                                     ),
                                   ),
                                   const SizedBox(width: 8),
                                   Expanded(
-                                    child: _buildCompactIncrementField(
+                                    child: CompactIncrementFieldWidget(
                                       label: l10n.pulse,
                                       controller: _pulseController,
                                       unit: 'bpm',
                                       icon: Icons.favorite,
                                       min: 30,
                                       max: 200,
+                                      onChanged: () => setState(() {}),
                                     ),
                                   ),
                                 ],
@@ -477,13 +477,14 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                               Row(
                                 children: [
                                   Expanded(
-                                    child: _buildCompactIncrementField(
+                                    child: CompactIncrementFieldWidget(
                                       label: l10n.diastole,
                                       controller: _diastolicController,
                                       unit: 'mmHg',
                                       icon: Icons.arrow_downward,
                                       min: 30,
                                       max: 150,
+                                      onChanged: () => setState(() {}),
                                     ),
                                   ),
                                   const SizedBox(width: 8),
@@ -650,120 +651,6 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                   ),
                 )
               : const Center(child: CircularProgressIndicator()),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCompactIncrementField({
-    required String label,
-    required TextEditingController controller,
-    required String unit,
-    required IconData icon,
-    required int min,
-    required int max,
-  }) {
-    return Card(
-      margin: EdgeInsets.zero,
-      child: Padding(
-        padding: AppSpacing.pAllXs,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon, size: AppIcons.xs),
-                const SizedBox(width: 3),
-                Text(
-                  label,
-                  style: AppTypography.small.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: AppSpacing.gapXs),
-            Row(
-              children: [
-                IconButton(
-                  onPressed: () {
-                    final currentValue = int.tryParse(controller.text) ?? min;
-                    if (currentValue > min) {
-                      setState(() {
-                        controller.text = (currentValue - 1).toString();
-                      });
-                    }
-                  },
-                  icon: const Icon(Icons.remove_circle_outline),
-                  iconSize: AppIcons.navIcon,
-                  padding: EdgeInsets.zero,
-                  constraints:
-                      const BoxConstraints(minWidth: 28, minHeight: 28),
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                Expanded(
-                  child: IntrinsicHeight(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          constraints: const BoxConstraints(minHeight: 32),
-                          child: TextFormField(
-                            controller: controller,
-                            textAlign: TextAlign.center,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            style: AppTypography.h2.copyWith(
-                              height: 1.0,
-                            ),
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(vertical: 4),
-                              isDense: true,
-                            ),
-                            onChanged: (value) {
-                              setState(() {}); // Actualizar el color de fondo
-                            },
-                            onTap: () {
-                              // Seleccionar todo el texto al tocar
-                              controller.selection = TextSelection(
-                                baseOffset: 0,
-                                extentOffset: controller.text.length,
-                              );
-                            },
-                          ),
-                        ),
-                        Text(
-                          unit,
-                          style: AppTypography.micro.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    final currentValue = int.tryParse(controller.text) ?? min;
-                    if (currentValue < max) {
-                      setState(() {
-                        controller.text = (currentValue + 1).toString();
-                      });
-                    }
-                  },
-                  icon: const Icon(Icons.add_circle_outline),
-                  iconSize: AppIcons.navIcon,
-                  padding: EdgeInsets.zero,
-                  constraints:
-                      const BoxConstraints(minWidth: 28, minHeight: 28),
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ],
-            ),
-          ],
         ),
       ),
     );

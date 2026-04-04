@@ -240,7 +240,11 @@ class _ClearMeasurementsPageState extends State<ClearMeasurementsPage> {
                                     ),
                                     Row(
                                       children: [
-                                        Text(l10n.noLimitFrom),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 8.0),
+                                          child: Text(l10n.noLimitFrom),
+                                        ),
                                         Switch(
                                           value: _noLimitFrom,
                                           onChanged: (value) {
@@ -295,7 +299,11 @@ class _ClearMeasurementsPageState extends State<ClearMeasurementsPage> {
                                     ),
                                     Row(
                                       children: [
-                                        Text(l10n.noLimitTo),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 8.0),
+                                          child: Text(l10n.noLimitTo),
+                                        ),
                                         Switch(
                                           value: _noLimitTo,
                                           onChanged: (value) {

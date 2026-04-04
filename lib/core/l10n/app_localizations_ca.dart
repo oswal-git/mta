@@ -45,6 +45,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get cancel => 'Cancel·lar';
 
   @override
+  String get continueEditing => 'Continuar editant';
+
+  @override
   String get cancelNotification => 'Cancel·lar notificació';
 
   @override
@@ -73,6 +76,9 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get defaultUsername => 'usuari';
+
+  @override
+  String get discard => 'Abandonar canvis';
 
   @override
   String get delete => 'Eliminar';
@@ -104,6 +110,13 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get discardChanges => 'Descartar canvis?';
+
+  @override
+  String get discardChangesMessage =>
+      'Vols abandonar els canvis realitzats en aquesta medició?';
+
+  @override
+  String get discardChangesTitle => 'Canvis sense desar';
 
   @override
   String get edit => 'Editar';

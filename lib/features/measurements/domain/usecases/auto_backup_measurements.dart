@@ -28,15 +28,16 @@ class AutoBackupMeasurements implements UseCase<String, AutoBackupParams> {
             return const Right('');
           }
 
-          // 2. Determinar directorio de backup
+          // 2. Determinar directorio de backup (Normalizar a minúsculas)
+          final normalizedUserName = params.userName.toLowerCase();
           Directory backupDir;
           if (Platform.isAndroid) {
             backupDir = Directory(
-                '/storage/emulated/0/Documents/MTA/${params.userName}/backup');
+                '/storage/emulated/0/Documents/MTA/$normalizedUserName/backup');
           } else {
             final docsDir = await getApplicationDocumentsDirectory();
             backupDir =
-                Directory('${docsDir.path}/mta/${params.userName}/backup');
+                Directory('${docsDir.path}/mta/$normalizedUserName/backup');
           }
 
           if (!await backupDir.exists()) {

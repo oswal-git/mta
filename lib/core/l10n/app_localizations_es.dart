@@ -45,6 +45,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get cancel => 'Cancelar';
 
   @override
+  String get continueEditing => 'Continuar editando';
+
+  @override
   String get cancelNotification => 'Cancelar notificación';
 
   @override
@@ -73,6 +76,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get defaultUsername => 'usuario';
+
+  @override
+  String get discard => 'Abandonar cambios';
 
   @override
   String get delete => 'Eliminar';
@@ -104,6 +110,13 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get discardChanges => '¿Descartar cambios?';
+
+  @override
+  String get discardChangesMessage =>
+      '¿Deseas abandonar los cambios realizados en esta medición?';
+
+  @override
+  String get discardChangesTitle => 'Cambios sin guardar';
 
   @override
   String get edit => 'Editar';

@@ -305,27 +305,23 @@ class _ExportPageState extends State<ExportPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Información
-              Card(
-                color: AppColors.surfaceVariant,
-                child: Padding(
-                  padding: AppSpacing.pAllMd,
-                  child: Row(
-                    children: [
-                      Icon(Icons.info_outline,
-                          color: AppColors.info, size: AppIcons.md),
-                      const SizedBox(width: AppSpacing.gapMd),
-                      Expanded(
-                        child: Text(
-                          l10n.selectDateRange,
-                          style: AppTypography.bodyMedium
-                              .copyWith(color: AppColors.info),
-                        ),
+              Padding(
+                padding: AppSpacing.pAllMd,
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline,
+                        color: AppColors.info, size: AppIcons.lg),
+                    const SizedBox(width: AppSpacing.gapMd),
+                    Expanded(
+                      child: Text(
+                        l10n.selectDateRange,
+                        style: AppTypography.bodyLarge
+                            .copyWith(color: AppColors.info),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 24),
 
               // Fecha de inicio
               Card(
@@ -360,7 +356,6 @@ class _ExportPageState extends State<ExportPage> {
                 l10n.exportFormat,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-              const SizedBox(height: 12),
               RadioGroup<ExportFormat>(
                 groupValue: _selectedFormat,
                 onChanged: (value) {
@@ -371,13 +366,15 @@ class _ExportPageState extends State<ExportPage> {
                   }
                 },
                 child: Column(
-                    children: ExportFormat.values.map((format) {
-                  return RadioListTile<ExportFormat>(
-                    title: Text(_getFormatDisplayName(format, l10n)),
-                    subtitle: Text('.${format.extension}'),
-                    value: format,
-                  );
-                }).toList()),
+                  // spacing: -18,
+                  children: ExportFormat.values.map((format) {
+                    return RadioListTile<ExportFormat>(
+                      title: Text(_getFormatDisplayName(format, l10n)),
+                      subtitle: Text('.${format.extension}'),
+                      value: format,
+                    );
+                  }).toList(),
+                ),
               ),
               const SizedBox(height: 24),
 

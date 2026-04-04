@@ -12,6 +12,7 @@ import 'package:mta/features/measurements/presentation/bloc/measurement_state.da
 import 'package:mta/features/users/presentation/bloc/user_bloc.dart';
 import 'package:mta/features/users/presentation/bloc/user_state.dart';
 import 'package:mta/core/theme/theme.dart';
+import 'package:mta/features/measurements/presentation/widgets/compact_increment_field_widget.dart';
 
 class MeasurementDetailPage extends StatefulWidget {
   final String measurementId;
@@ -23,30 +24,316 @@ class MeasurementDetailPage extends StatefulWidget {
 }
 
 class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
-  final _formKey = GlobalKey<FormState>();
-  final _systolicController = TextEditingController();
-  final _diastolicController = TextEditingController();
-  final _pulseController = TextEditingController();
-  final _noteController = TextEditingController();
-  final _bpMonitorModelController = TextEditingController();
-
-  DateTime? _selectedDateTime;
-  String? _measurementLocation;
-  MeasurementEntity? _measurement;
-  bool _isEditing = false;
-  bool _hasLoadedInitialData = false;
+  PageController? _pageController;
+  int _currentIndex = 0;
+  List<MeasurementEntity> _measurements = [];
+  bool _isInitialized = false;
+  bool _isCurrentPageDirty = false;
 
   @override
   void initState() {
     super.initState();
-    _loadMeasurement();
   }
 
-  void _loadMeasurement() {
-    debugPrint('🔍 Loading measurement: ${widget.measurementId}');
-    context.read<MeasurementBloc>().add(
-          LoadMeasurementByIdEvent(widget.measurementId),
+  @override
+  void dispose() {
+    _pageController?.dispose();
+    super.dispose();
+  }
+
+  void _initializePageView(List<MeasurementEntity> measurements) {
+    if (_isInitialized) return;
+
+    final index = measurements.indexWhere((m) => m.id == widget.measurementId);
+    if (index != -1) {
+      _measurements = measurements;
+      _currentIndex = index;
+      _pageController = PageController(initialPage: index);
+      _isInitialized = true;
+    }
+  }
+
+  Future<bool> _showDiscardDialog() async {
+    final l10n = AppLocalizations.of(context);
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.discardChangesTitle),
+        content: Text(l10n.discardChangesMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l10n.continueEditing),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: Text(l10n.discard),
+          ),
+        ],
+      ),
+    );
+    return result ?? false;
+  }
+
+  void _handleBack() async {
+    if (_isCurrentPageDirty) {
+      final discard = await _showDiscardDialog();
+      if (!discard) return;
+    }
+    if (mounted) {
+      context.pop(_measurements[_currentIndex].id);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
+    return BlocBuilder<MeasurementBloc, MeasurementState>(
+      builder: (context, state) {
+        if (state is MeasurementsLoaded) {
+          _initializePageView(state.measurements);
+
+          if (!_isInitialized) {
+            return Scaffold(
+              appBar: AppBar(title: Text(l10n.measurementDetails)),
+              body: const Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          return PopScope(
+            canPop: false,
+            onPopInvokedWithResult: (didPop, result) async {
+              if (didPop) return;
+              _handleBack();
+            },
+            child: Scaffold(
+              appBar: AppBar(
+                title: Text(
+                    '${l10n.measurementDetails} (${_currentIndex + 1}/${_measurements.length})'),
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: _handleBack,
+                ),
+              ),
+              body: GestureDetector(
+                onHorizontalDragStart: (_) {
+                  // Captura el inicio del swipe si está el modo "Dirty" bloqueado
+                },
+                child: PageView.builder(
+                  controller: _pageController,
+                  physics: _isCurrentPageDirty
+                      ? const NeverScrollableScrollPhysics()
+                      : const BouncingScrollPhysics(),
+                  itemCount: _measurements.length,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _currentIndex = index;
+                      _isCurrentPageDirty = false;
+                    });
+                  },
+                  itemBuilder: (context, index) {
+                    return Stack(
+                      children: [
+                        _MeasurementDetailView(
+                          measurement: _measurements[index],
+                          onDeleted: () => context.go(Routes.home),
+                          onDirtyChanged: (isDirty) {
+                            if (_isCurrentPageDirty != isDirty) {
+                              setState(() {
+                                _isCurrentPageDirty = isDirty;
+                              });
+                            }
+                          },
+                        ),
+                        // Overlay para detectar swipes cuando está bloqueado
+                        if (_isCurrentPageDirty)
+                          Positioned.fill(
+                            child: Row(
+                              children: [
+                                // Lado izquierdo (detectar swipe hacia la derecha -> página anterior)
+                                Expanded(
+                                  child: GestureDetector(
+                                    behavior: HitTestBehavior.translucent,
+                                    onHorizontalDragUpdate: (details) async {
+                                      if (details.primaryDelta! > 10) {
+                                        final discard =
+                                            await _showDiscardDialog();
+                                        if (discard && mounted) {
+                                          setState(() =>
+                                              _isCurrentPageDirty = false);
+                                          _pageController?.previousPage(
+                                            duration: const Duration(
+                                                milliseconds: 300),
+                                            curve: Curves.easeInOut,
+                                          );
+                                        }
+                                      } else if (details.primaryDelta! < -10) {
+                                        final discard =
+                                            await _showDiscardDialog();
+                                        if (discard && mounted) {
+                                          setState(() =>
+                                              _isCurrentPageDirty = false);
+                                          _pageController?.nextPage(
+                                            duration: const Duration(
+                                                milliseconds: 300),
+                                            curve: Curves.easeInOut,
+                                          );
+                                        }
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ),
+          );
+        }
+
+        return Scaffold(
+          appBar: AppBar(title: Text(l10n.measurementDetails)),
+          body: const Center(child: CircularProgressIndicator()),
         );
+      },
+    );
+  }
+}
+
+class _MeasurementDetailView extends StatefulWidget {
+  final MeasurementEntity measurement;
+  final VoidCallback onDeleted;
+  final Function(bool isDirty) onDirtyChanged;
+
+  const _MeasurementDetailView({
+    required this.measurement,
+    required this.onDeleted,
+    required this.onDirtyChanged,
+  });
+
+  @override
+  State<_MeasurementDetailView> createState() => _MeasurementDetailViewState();
+}
+
+class _MeasurementDetailViewState extends State<_MeasurementDetailView> {
+  final _formKey = GlobalKey<FormState>();
+  late TextEditingController _systolicController;
+  late TextEditingController _diastolicController;
+  late TextEditingController _pulseController;
+  late TextEditingController _noteController;
+  late TextEditingController _bpMonitorModelController;
+
+  DateTime? _selectedDateTime;
+  String? _measurementLocation;
+  bool _isEditing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initControllers();
+  }
+
+  @override
+  void didUpdateWidget(covariant _MeasurementDetailView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.measurement.id != widget.measurement.id) {
+      _initControllers();
+      _isEditing = false;
+    }
+  }
+
+  void _initControllers() {
+    _selectedDateTime = widget.measurement.measurementTime;
+    _systolicController =
+        TextEditingController(text: widget.measurement.systolic.toString());
+    _diastolicController =
+        TextEditingController(text: widget.measurement.diastolic.toString());
+    _pulseController =
+        TextEditingController(text: widget.measurement.pulse?.toString() ?? '');
+    _noteController =
+        TextEditingController(text: widget.measurement.note ?? '');
+    _bpMonitorModelController =
+        TextEditingController(text: widget.measurement.bpMonitorModel ?? '');
+    _measurementLocation = widget.measurement.measurementLocation;
+
+    _systolicController.addListener(_checkDirty);
+    _diastolicController.addListener(_checkDirty);
+    _pulseController.addListener(_checkDirty);
+    _noteController.addListener(_checkDirty);
+    _bpMonitorModelController.addListener(_checkDirty);
+  }
+
+  void _checkDirty() {
+    final isDirty = _isCurrentlyDirty();
+    widget.onDirtyChanged(isDirty);
+    setState(() {}); // Actualizar estado de iconos
+  }
+
+  bool _isCurrentlyDirty() {
+    if (!_isEditing) return false;
+
+    final currentPulse = _pulseController.text.isEmpty
+        ? null
+        : int.tryParse(_pulseController.text);
+    final currentNote =
+        _noteController.text.isEmpty ? null : _noteController.text;
+    final currentModel = _bpMonitorModelController.text.trim().isEmpty
+        ? null
+        : _bpMonitorModelController.text.trim();
+
+    bool dirty = false;
+    dirty |= _systolicController.text != widget.measurement.systolic.toString();
+    dirty |=
+        _diastolicController.text != widget.measurement.diastolic.toString();
+    dirty |= currentPulse != widget.measurement.pulse;
+    dirty |= currentNote != widget.measurement.note;
+    dirty |= currentModel != widget.measurement.bpMonitorModel;
+    dirty |= _measurementLocation != widget.measurement.measurementLocation;
+    dirty |= _selectedDateTime != widget.measurement.measurementTime;
+
+    return dirty;
+  }
+
+  Future<bool> _showDiscardDialog() async {
+    final l10n = AppLocalizations.of(context);
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.discardChangesTitle),
+        content: Text(l10n.discardChangesMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l10n.continueEditing),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: Text(l10n.discard),
+          ),
+        ],
+      ),
+    );
+    return result ?? false;
+  }
+
+  void _exitEditMode() async {
+    if (_isCurrentlyDirty()) {
+      final discard = await _showDiscardDialog();
+      if (!discard) return;
+    }
+
+    setState(() {
+      _isEditing = false;
+      _initControllers();
+    });
+    widget.onDirtyChanged(false);
   }
 
   @override
@@ -59,24 +346,9 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
     super.dispose();
   }
 
-  void _loadMeasurementData(MeasurementEntity measurement) {
-    setState(() {
-      _measurement = measurement;
-      _selectedDateTime = measurement.measurementTime;
-      _systolicController.text = measurement.systolic.toString();
-      _diastolicController.text = measurement.diastolic.toString();
-      _pulseController.text = measurement.pulse?.toString() ?? '';
-      _noteController.text = measurement.note ?? '';
-      _bpMonitorModelController.text = measurement.bpMonitorModel ?? '';
-      _measurementLocation = measurement.measurementLocation;
-      _hasLoadedInitialData = true;
-    });
-    debugPrint('✅ Measurement data loaded: ${measurement.id}');
-  }
-
   void _updateMeasurement() {
-    if (_formKey.currentState!.validate() && _measurement != null) {
-      final updatedMeasurement = _measurement!.copyWith(
+    if (_formKey.currentState!.validate()) {
+      final updatedMeasurement = widget.measurement.copyWith(
         measurementTime: _selectedDateTime!,
         systolic: int.parse(_systolicController.text),
         diastolic: int.parse(_diastolicController.text),
@@ -97,15 +369,19 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
         userName = userState.activeUser!.name;
       }
 
-      context.read<MeasurementBloc>().add(
-            UpdateMeasurementEvent(updatedMeasurement, userName),
-          );
+      context
+          .read<MeasurementBloc>()
+          .add(UpdateMeasurementEvent(updatedMeasurement, userName));
+
+      setState(() {
+        _isEditing = false;
+      });
+      widget.onDirtyChanged(false);
     }
   }
 
   void _deleteMeasurement() {
     final l10n = AppLocalizations.of(context);
-
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -113,9 +389,8 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
         content: Text(l10n.deleteConfirmMessage),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(l10n.cancel),
-          ),
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(l10n.cancel)),
           TextButton(
             onPressed: () {
               final userState = context.read<UserBloc>().state;
@@ -123,15 +398,10 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
               if (userState is UsersLoaded && userState.activeUser != null) {
                 userName = userState.activeUser!.name;
               }
-
-              context.read<MeasurementBloc>().add(
-                    DeleteMeasurementEvent(
-                      widget.measurementId,
-                      _measurement!.userId,
-                      userName,
-                    ),
-                  );
+              context.read<MeasurementBloc>().add(DeleteMeasurementEvent(
+                  widget.measurement.id, widget.measurement.userId, userName));
               Navigator.of(dialogContext).pop();
+              widget.onDeleted();
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
             child: Text(l10n.delete),
@@ -141,409 +411,347 @@ class _MeasurementDetailPageState extends State<MeasurementDetailPage> {
     );
   }
 
-  Future<void> _selectDateTime() async {
-    if (_selectedDateTime == null) return;
-
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: _selectedDateTime!,
-      firstDate: DateTime(2000),
-      lastDate: DateTime.now(),
-    );
-
-    if (pickedDate != null && mounted) {
-      final TimeOfDay? pickedTime = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.fromDateTime(_selectedDateTime!),
-      );
-
-      if (pickedTime != null && mounted) {
-        setState(() {
-          _selectedDateTime = DateTime(
-            pickedDate.year,
-            pickedDate.month,
-            pickedDate.day,
-            pickedTime.hour,
-            pickedTime.minute,
-          );
-        });
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final dateFormat = DateFormat('dd/MM/yyyy HH:mm');
+    final backgroundColor = getBloodPressureColor(
+        widget.measurement.systolic, widget.measurement.diastolic);
 
-    return PopScope(
-      canPop: true,
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop && _measurement != null) {
-          debugPrint(
-              '🔙 MeasurementDetail - User pressed back, reloading measurements');
-          // Recargar las mediciones del usuario antes de salir
-          final userState = context.read<UserBloc>().state;
-          if (userState is UsersLoaded && userState.activeUser != null) {
-            context.read<MeasurementBloc>().add(
-                  LoadMeasurementsEvent(userState.activeUser!.id),
-                );
-          }
-        }
-      },
-      child: BlocConsumer<MeasurementBloc, MeasurementState>(
-        listener: (context, state) {
-          debugPrint('📊 MeasurementDetail State: ${state.runtimeType}');
-
-          if (state is MeasurementDetailLoaded) {
-            _loadMeasurementData(state.measurement);
-          } else if (state is MeasurementOperationSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
-            context.go(Routes.home);
-          } else if (state is MeasurementError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: AppColors.error,
-              ),
-            );
-            // Si hay error, volver atrás
-            if (mounted) {
-              context.go(Routes.home);
-            }
-          }
-        },
-        builder: (context, state) {
-          if (state is MeasurementLoading && !_hasLoadedInitialData) {
-            return Scaffold(
-              appBar: AppBar(title: Text(l10n.measurementDetails)),
-              body: const Center(child: CircularProgressIndicator()),
-            );
-          }
-
-          // Si hay error y no tenemos datos, mostrar mensaje
-          if (state is MeasurementError && _measurement == null) {
-            return Scaffold(
-              appBar: AppBar(title: Text(l10n.measurementDetails)),
-              body: Center(
-                child: Column(
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            padding: AppSpacing.pAllMd,
+            decoration: BoxDecoration(color: backgroundColor, boxShadow: [
+              BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4))
+            ]),
+            child: Column(
+              children: [
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(
-                      Icons.error_outline,
-                      size: AppIcons.huge,
-                      color: AppColors.error,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      state.message,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                    const SizedBox(height: 24),
-                    ElevatedButton.icon(
-                      onPressed: () => context.go(Routes.home),
-                      icon: const Icon(Icons.home),
-                      label: Text(l10n.backToHome),
-                    ),
+                    Text(widget.measurement.systolic.toString(),
+                        style: AppTypography.displaySmall),
+                    const Text(' / ', style: TextStyle(fontSize: AppIcons.lg)),
+                    Text(widget.measurement.diastolic.toString(),
+                        style: AppTypography.displaySmall),
                   ],
                 ),
-              ),
-            );
-          }
-
-          // Si no tenemos medición todavía, mostrar loading
-          if (_measurement == null) {
-            return Scaffold(
-              appBar: AppBar(title: Text(l10n.measurementDetails)),
-              body: const Center(child: CircularProgressIndicator()),
-            );
-          }
-
-          final backgroundColor = getBloodPressureColor(
-            _measurement!.systolic,
-            _measurement!.diastolic,
-          );
-
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(l10n.measurementDetails),
-              actions: [
+                const Text('mmHg', style: TextStyle(fontSize: 16)),
+                if (widget.measurement.pulse != null) ...[
+                  const SizedBox(height: AppSpacing.gapMd),
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    const Icon(Icons.favorite, size: AppIcons.navIcon),
+                    const SizedBox(width: AppSpacing.gapSm),
+                    Text('${widget.measurement.pulse} bpm',
+                        style: AppTypography.h2
+                            .copyWith(fontWeight: FontWeight.w500)),
+                  ]),
+                ],
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
                 if (!_isEditing)
                   IconButton(
                     icon: const Icon(Icons.edit),
                     tooltip: l10n.edit,
-                    onPressed: () {
-                      setState(() {
-                        _isEditing = true;
-                      });
-                    },
+                    onPressed: () => setState(() => _isEditing = true),
+                  )
+                else ...[
+                  IconButton(
+                    onPressed: _exitEditMode,
+                    icon: const Icon(Icons.edit_off_outlined),
+                    tooltip: l10n.cancel,
                   ),
+                  IconButton(
+                    onPressed: _isCurrentlyDirty() ? _updateMeasurement : null,
+                    icon: const Icon(Icons.save),
+                    tooltip: l10n.save,
+                  ),
+                ],
                 IconButton(
-                  icon: const Icon(Icons.delete),
-                  tooltip: l10n.delete,
-                  onPressed: _deleteMeasurement,
-                ),
+                    icon: const Icon(Icons.delete, color: AppColors.error),
+                    tooltip: l10n.delete,
+                    onPressed: _deleteMeasurement),
               ],
             ),
-            body: SingleChildScrollView(
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+            child: Form(
+              key: _formKey,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Header with color
-                  Container(
-                    width: double.infinity,
-                    padding: AppSpacing.pAllMd,
-                    decoration: BoxDecoration(
-                      color: backgroundColor,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                          l10n.measurementTitle(
+                              widget.measurement.measurementNumber.toString()),
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold)),
+                      Row(
+                        children: [
+                          const Icon(Icons.calendar_today),
+                          const SizedBox(width: AppSpacing.gapSm),
+                          Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(l10n.measurementTime),
+                                Text(_selectedDateTime != null
+                                    ? dateFormat.format(_selectedDateTime!)
+                                    : ''),
+                              ]),
+                          const SizedBox(width: AppSpacing.gapMd),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.gapLg),
+                  // LÍNEA 2: Sístole y Pulso
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CompactIncrementFieldWidget(
+                          label: l10n.systole,
+                          controller: _systolicController,
+                          unit: 'mmHg',
+                          icon: Icons.arrow_upward,
+                          min: 50,
+                          max: 250,
+                          enabled: _isEditing,
+                          onChanged: _checkDirty,
+                          validator: (value) => Validators.systolic(value),
                         ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              _measurement!.systolic.toString(),
-                              style: AppTypography.displaySmall,
-                            ),
-                            const Text(
-                              ' / ',
-                              style: TextStyle(fontSize: AppIcons.lg),
-                            ),
-                            Text(
-                              _measurement!.diastolic.toString(),
-                              style: AppTypography.displaySmall,
-                            ),
-                          ],
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: CompactIncrementFieldWidget(
+                          label: l10n.pulse,
+                          controller: _pulseController,
+                          unit: 'bpm',
+                          icon: Icons.favorite,
+                          min: 30,
+                          max: 200,
+                          enabled: _isEditing,
+                          onChanged: _checkDirty,
+                          validator: (value) => Validators.pulse(value),
                         ),
-                        const Text(
-                          'mmHg',
-                          style: TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  // LÍNEA 3: Diástole y espacio vacío
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CompactIncrementFieldWidget(
+                          label: l10n.diastole,
+                          controller: _diastolicController,
+                          unit: 'mmHg',
+                          icon: Icons.arrow_downward,
+                          min: 30,
+                          max: 150,
+                          enabled: _isEditing,
+                          onChanged: _checkDirty,
+                          validator: (value) => Validators.diastolic(value),
                         ),
-                        if (_measurement!.pulse != null) ...[
-                          const SizedBox(height: AppSpacing.gapMd),
+                      ),
+                      const SizedBox(width: 8),
+                      const Expanded(child: SizedBox()),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  // LÍNEA 4: Nota
+                  Card(
+                    margin: EdgeInsets.zero,
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(Icons.favorite,
-                                  size: AppIcons.navIcon),
-                              const SizedBox(width: AppSpacing.gapSm),
+                              const Icon(Icons.note, size: 16),
+                              const SizedBox(width: 6),
                               Text(
-                                '${_measurement!.pulse} bpm',
-                                style: AppTypography.h2.copyWith(
-                                  fontWeight: FontWeight.w500,
+                                _isEditing ? l10n.addNoteHint : l10n.note,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
                                 ),
                               ),
                             ],
                           ),
-                        ],
-                      ],
-                    ),
-                  ),
-
-                  // Form
-                  Padding(
-                    padding: AppSpacing.pAllMd,
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          // Measurement Number (read-only)
-                          Card(
-                            child: ListTile(
-                              leading: const Icon(Icons.numbers),
-                              title: Text(l10n.measurementNumber),
-                              trailing: Text(
-                                _measurement!.measurementNumber.toString(),
-                                style: Theme.of(context).textTheme.titleLarge,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: AppSpacing.gapMd),
-
-                          // Date and Time
-                          Card(
-                            child: ListTile(
-                              leading: const Icon(Icons.calendar_today),
-                              title: Text(l10n.measurementTime),
-                              subtitle: Text(
-                                _selectedDateTime != null
-                                    ? dateFormat.format(_selectedDateTime!)
-                                    : '',
-                              ),
-                              trailing: _isEditing
-                                  ? IconButton(
-                                      icon: const Icon(Icons.edit),
-                                      onPressed: _selectDateTime,
-                                    )
-                                  : null,
-                            ),
-                          ),
-                          const SizedBox(height: AppSpacing.gapLg),
-
-                          // Systolic
-                          TextFormField(
-                            controller: _systolicController,
-                            decoration: InputDecoration(
-                              labelText: '${l10n.systolic} *',
-                              prefixIcon: const Icon(Icons.arrow_upward),
-                              suffixText: 'mmHg',
-                            ),
-                            keyboardType: TextInputType.number,
-                            enabled: _isEditing,
-                            validator: (value) => Validators.systolic(value),
-                          ),
-                          const SizedBox(height: 16),
-
-                          // Diastolic
-                          TextFormField(
-                            controller: _diastolicController,
-                            decoration: InputDecoration(
-                              labelText: '${l10n.diastolic} *',
-                              prefixIcon: const Icon(Icons.arrow_downward),
-                              suffixText: 'mmHg',
-                            ),
-                            keyboardType: TextInputType.number,
-                            enabled: _isEditing,
-                            validator: (value) => Validators.diastolic(value),
-                          ),
-                          const SizedBox(height: 16),
-
-                          // Pulse
-                          TextFormField(
-                            controller: _pulseController,
-                            decoration: InputDecoration(
-                              labelText: l10n.pulse,
-                              prefixIcon: const Icon(Icons.favorite),
-                              suffixText: 'bpm',
-                            ),
-                            keyboardType: TextInputType.number,
-                            enabled: _isEditing,
-                            validator: (value) => Validators.pulse(value),
-                          ),
-                          const SizedBox(height: 16),
-
-                          // Note
+                          const SizedBox(height: 6),
                           TextFormField(
                             controller: _noteController,
                             decoration: InputDecoration(
-                              labelText: l10n.note,
-                              prefixIcon: const Icon(Icons.note),
+                              hintText:
+                                  _isEditing ? l10n.addNoteHint : l10n.note,
+                              border: const OutlineInputBorder(),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 8,
+                              ),
+                              isDense: true,
                             ),
                             maxLines: 3,
                             enabled: _isEditing,
+                            maxLength: 200,
+                            style: const TextStyle(fontSize: 14),
                           ),
-                          const SizedBox(height: AppSpacing.gapMd),
-
-                          // BP Monitor Model
-                          TextFormField(
-                            controller: _bpMonitorModelController,
-                            decoration: InputDecoration(
-                              labelText: l10n.bloodPressureMonitorModel,
-                              prefixIcon: const Icon(Icons.monitor_heart),
-                            ),
-                            enabled: _isEditing,
-                          ),
-                          const SizedBox(height: AppSpacing.gapMd),
-
-                          // Measurement Location
-                          if (_isEditing)
-                            DropdownButtonFormField<String?>(
-                              initialValue: _measurementLocation,
-                              decoration: InputDecoration(
-                                labelText: l10n.measurementLocation,
-                                prefixIcon: const Icon(Icons.accessibility_new),
-                              ),
-                              items: [
-                                DropdownMenuItem(
-                                  value: null,
-                                  child: Text(l10n.locationNotIndicated),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'left_arm',
-                                  child: Text(l10n.locationLeftArm),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'left_wrist',
-                                  child: Text(l10n.locationLeftWrist),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'right_arm',
-                                  child: Text(l10n.locationRightArm),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'right_wrist',
-                                  child: Text(l10n.locationRightWrist),
-                                ),
-                              ],
-                              onChanged: (value) {
-                                setState(() {
-                                  _measurementLocation = value;
-                                });
-                              },
-                            )
-                          else
-                            Card(
-                              child: ListTile(
-                                leading: const Icon(Icons.accessibility_new),
-                                title: Text(l10n.measurementLocation),
-                                subtitle: Text(_measurementLocation == null
-                                    ? l10n.locationNotIndicated
-                                    : (_measurementLocation == 'left_arm'
-                                        ? l10n.locationLeftArm
-                                        : (_measurementLocation == 'left_wrist'
-                                            ? l10n.locationLeftWrist
-                                            : (_measurementLocation ==
-                                                    'right_arm'
-                                                ? l10n.locationRightArm
-                                                : l10n.locationRightWrist)))),
-                              ),
-                            ),
-                          const SizedBox(height: 32),
-
-                          // Buttons
-                          if (_isEditing) ...[
-                            ElevatedButton.icon(
-                              onPressed: _updateMeasurement,
-                              icon: const Icon(Icons.save),
-                              label: Text(l10n.save),
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.all(16),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            OutlinedButton.icon(
-                              onPressed: () {
-                                setState(() {
-                                  _isEditing = false;
-                                  _loadMeasurementData(_measurement!);
-                                });
-                              },
-                              icon: const Icon(Icons.cancel),
-                              label: Text(l10n.cancel),
-                              style: OutlinedButton.styleFrom(
-                                padding: const EdgeInsets.all(16),
-                              ),
-                            ),
-                          ],
                         ],
                       ),
                     ),
                   ),
+                  const SizedBox(height: AppSpacing.gapMd),
+                  // LÍNEA 5: Tensiómetro y Ubicación
+                  Card(
+                    margin: EdgeInsets.zero,
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TextFormField(
+                            controller: _bpMonitorModelController,
+                            decoration: InputDecoration(
+                              labelText:
+                                  '${l10n.bloodPressureMonitorModel} (opcional)',
+                              prefixIcon: const Icon(Icons.monitor_heart),
+                              isDense: true,
+                              enabled: _isEditing,
+                            ),
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                          if (_isEditing)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 16.0),
+                              child: DropdownButtonFormField<String?>(
+                                initialValue: _measurementLocation,
+                                isExpanded: true,
+                                decoration: InputDecoration(
+                                  labelText:
+                                      '${l10n.measurementLocation} (opcional)',
+                                  prefixIcon:
+                                      const Icon(Icons.accessibility_new),
+                                  isDense: true,
+                                ),
+                                items: [
+                                  DropdownMenuItem(
+                                    value: null,
+                                    child: Text(l10n.locationNotIndicated),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'left_arm',
+                                    child: Text(l10n.locationLeftArm),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'left_wrist',
+                                    child: Text(l10n.locationLeftWrist),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'right_arm',
+                                    child: Text(l10n.locationRightArm),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'right_wrist',
+                                    child: Text(l10n.locationRightWrist),
+                                  ),
+                                ],
+                                onChanged: (value) {
+                                  setState(() {
+                                    _measurementLocation = value;
+                                  });
+                                },
+                                style: const TextStyle(
+                                    fontSize: 14, color: Colors.black),
+                              ),
+                            )
+                          else
+                            Padding(
+                              padding: const EdgeInsets.only(top: 12.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: AppColors.textDisabled,
+                                  ),
+                                  borderRadius: BorderRadius.circular(
+                                      AppSpacing.radiusSm),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12.0, vertical: 6.0),
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.accessibility_new),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              l10n.measurementLocation,
+                                              style: const TextStyle(
+                                                color: AppColors.textDisabled,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                                height: AppSpacing.gapXs),
+                                            Text(
+                                              _measurementLocation == null
+                                                  ? l10n.locationNotIndicated
+                                                  : (_measurementLocation ==
+                                                          'left_arm'
+                                                      ? l10n.locationLeftArm
+                                                      : (_measurementLocation ==
+                                                              'left_wrist'
+                                                          ? l10n
+                                                              .locationLeftWrist
+                                                          : (_measurementLocation ==
+                                                                  'right_arm'
+                                                              ? l10n
+                                                                  .locationRightArm
+                                                              : l10n
+                                                                  .locationRightWrist))),
+                                              style: const TextStyle(
+                                                color: AppColors.textDisabled,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            )
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 32),
                 ],
               ),
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }

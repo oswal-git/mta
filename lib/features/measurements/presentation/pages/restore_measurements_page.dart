@@ -51,11 +51,12 @@ class _RestoreMeasurementsPageState extends State<RestoreMeasurementsPage> {
 
     try {
       Directory backupDir;
+      final normalizedUserName = _userName?.toLowerCase() ?? '';
       if (Platform.isAndroid) {
-        backupDir = Directory('/storage/emulated/0/Documents/MTA/$_userName/backup');
+        backupDir = Directory('/storage/emulated/0/Documents/MTA/$normalizedUserName/backup');
       } else {
         final docsDir = await getApplicationDocumentsDirectory();
-        backupDir = Directory('${docsDir.path}/mta/$_userName/backup');
+        backupDir = Directory('${docsDir.path}/mta/$normalizedUserName/backup');
       }
 
       if (await backupDir.exists()) {
