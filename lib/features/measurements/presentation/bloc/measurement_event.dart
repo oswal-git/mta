@@ -37,21 +37,23 @@ class CreateMeasurementEvent extends MeasurementEvent {
 
 class UpdateMeasurementEvent extends MeasurementEvent {
   final MeasurementEntity measurement;
+  final String userName;
 
-  const UpdateMeasurementEvent(this.measurement);
+  const UpdateMeasurementEvent(this.measurement, this.userName);
 
   @override
-  List<Object> get props => [measurement];
+  List<Object> get props => [measurement, userName];
 }
 
 class DeleteMeasurementEvent extends MeasurementEvent {
   final String id;
   final String userId;
+  final String userName;
 
-  const DeleteMeasurementEvent(this.id, this.userId);
+  const DeleteMeasurementEvent(this.id, this.userId, this.userName);
 
   @override
-  List<Object> get props => [id, userId];
+  List<Object> get props => [id, userId, userName];
 }
 
 class GetNextMeasurementNumberEvent extends MeasurementEvent {
@@ -66,4 +68,42 @@ class GetNextMeasurementNumberEvent extends MeasurementEvent {
 
 class ResetMeasurementStateEvent extends MeasurementEvent {
   const ResetMeasurementStateEvent();
+}
+
+class ClearMeasurementsByDateRangeEvent extends MeasurementEvent {
+  final String userId;
+  final String userName;
+  final DateTime? startDate;
+  final DateTime? endDate;
+
+  const ClearMeasurementsByDateRangeEvent({
+    required this.userId,
+    required this.userName,
+    this.startDate,
+    this.endDate,
+  });
+
+  @override
+  List<Object?> get props => [userId, userName, startDate, endDate];
+}
+
+class AutoBackupEvent extends MeasurementEvent {
+  final String userId;
+  final String userName;
+
+  const AutoBackupEvent({required this.userId, required this.userName});
+
+  @override
+  List<Object> get props => [userId, userName];
+}
+
+class RestoreMeasurementsEvent extends MeasurementEvent {
+  final String userId;
+  final String filePath;
+
+  const RestoreMeasurementsEvent(
+      {required this.userId, required this.filePath});
+
+  @override
+  List<Object> get props => [userId, filePath];
 }

@@ -15,15 +15,18 @@
     "bloodPressureMonitorModel": "Marca i model del tensiòmetre",
     "bloodPressureReference": "Referència de Pressió Arterial",
     "cancel": "Cancel·lar",
+    "continueEditing": "Continuar editant",
     "cancelNotification": "Cancel·lar notificació",
     "close": "Tancar",
     "confirm": "Confirmar",
+    "resume": "Continuar",
     "customSound": "So personalitzat",
     "date": "Data",
     "day": "Dia",
     "defaultOption": "Predeterminat",
     "defaultSound": "So predeterminat",
     "defaultUsername": "usuari",
+    "discard": "Abandonar canvis",
     "delete": "Eliminar",
     "deleteConfirmMessage": "Estàs segur que vols eliminar aquest element?",
     "deleteConfirmTitle": "Confirmar Eliminació",
@@ -34,6 +37,8 @@
     "diastoleValidation": "La diàstole ha d'estar entre 30 i 150",
     "diastolic": "Diastòl.",
     "discardChanges": "Descartar canvis?",
+    "discardChangesMessage": "Vols abandonar els canvis realitzats en aquesta medició?",
+    "discardChangesTitle": "Canvis sense desar",
     "edit": "Editar",
     "editMeasurement": "Editar Mesura",
     "editSchedule": "Editar Horari",
@@ -79,7 +84,7 @@
     "formatPdf": "PDF",
     "friday": "Divendres",
     "groupSummaryBody": "Mesures de {userName}",
-    "hasMeasuring": "Hi ha mesurament?",
+    "hasMeasuring": "Estàs prenent algun medicament?",
     "high": "Alta",
     "language": "Idioma",
     "languageSelection": "Selecció d'Idioma",
@@ -176,5 +181,62 @@
     "validationInvalidNumber": "Número invàlid",
     "validationRequired": "Aquest camp és obligatori",
     "validationStartBeforeEnd": "La data d'inici ha de ser anterior a la data de fi",
-    "wednesday": "Dimecres"
+    "wednesday": "Dimecres",
+    "clearMeasurements": "Netejar mesures",
+    "clearMeasurementsTitle": "Netejar Mesures",
+    "fromDate": "Des de la data",
+    "toDate": "Fins a la data",
+    "noLimitFrom": "Sense límit des de",
+    "noLimitTo": "Sense límit fins",
+    "confirmDeleteMeasurements": "Esteu segur que voleu eliminar les mesures en aquest rang?",
+    "deleteMeasurementsSummaryBoth": "Registres eliminats des de {fdesde} fins a {fhasta}.",
+    "@deleteMeasurementsSummaryBoth": {
+        "placeholders": {
+            "fdesde": {"type": "String"},
+            "fhasta": {"type": "String"}
+        }
+    },
+    "deleteMeasurementsSummaryUntil": "Registres eliminats fins a {fhasta}.",
+    "@deleteMeasurementsSummaryUntil": {
+        "placeholders": {
+            "fhasta": {"type": "String"}
+        }
+    },
+    "deleteMeasurementsSummaryFrom": "Registres eliminats des de {fdesde}.",
+    "@deleteMeasurementsSummaryFrom": {
+        "placeholders": {
+            "fdesde": {"type": "String"}
+        }
+    },
+    "deleteMeasurementsSummaryAll": "Tots els registres eliminats.",
+    "backupSavedIn": "Còpia de seguretat a {path}",
+    "@backupSavedIn": {
+        "placeholders": {
+            "path": {"type": "String"}
+        }
+    },
+    "noMeasurementsToDelete": "No hi ha mesuraments per esborrar en aquest rang.",
+    "restoreMeasurements": "Restaurar mesures",
+    "restoreMeasurementsTitle": "Restaurar des de còpia de seguretat",
+    "selectBackupFile": "Selecciona un fitxer de còpia de seguretat",
+    "confirmRestore": "Segur que voleu restaurar les mesures d'aquest fitxer?\n\nLes dades existents amb el mateix ID seran sobrescrites.",
+    "restoreSuccess": "S'han restaurat {count} mesures amb èxit.",
+    "@restoreSuccess": {
+        "placeholders": {
+            "count": {"type": "int"}
+        }
+    },
+    "noBackupsFound": "No s'han trobat fitxers de còpia de seguretat.",
+    "backupFolder": "Carpeta de còpies de seguretat",
+    "autoBackupSuccess": "Còpia de seguretat automàtica realitzada.",
+    "help": "Ajuda",
+    "helpTitle": "Guia d'Ús",
+    "helpSectionTomaTitle": "Com fer una presa correcta",
+    "helpSectionTomaContent": "1. Segueu tranquil·lament durant 5 minuts abans de la mesura.\n2. Col·loqueu el braç a l'alçada del cor.\n3. No parleu ni us mogueu durant la mesura.\n4. Realitzeu 3 preses amb un interval d'1 minut entre elles.",
+    "helpSectionColorsTitle": "Interpretació de Colors",
+    "helpSectionColorsContent": "• Verd (Normal): Sístole < 130 i Diàstole < 85.\n• Taronja (Elevada): Sístole 130-139 o Diàstole 85-89.\n• Vermell (Alta): Sístole ≥ 140 o Diàstole ≥ 90.",
+    "helpSectionDataTitle": "Seguretat de Dades",
+    "helpSectionDataContent": "L'aplicació realitza còpies de seguretat automàtiques a la carpeta 'backup' dels seus Documents. Es mantenen els últims 10 fitxers perquè pugui restaurar-los si cal.",
+    "helpSectionSchedulesTitle": "Horaris i Alertes",
+    "helpSectionSchedulesContent": "Configureu les vostres hores de presa habituals a la secció d'Horaris. L'aplicació us notificarà i repetirà l'avís si oblideu fer la mesura."
 }

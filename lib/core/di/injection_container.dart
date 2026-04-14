@@ -13,14 +13,17 @@ import 'package:mta/features/export/domain/usecases/export_measurements.dart';
 
 // Features - Mesurements
 import 'package:mta/features/measurements/data/datasources/measurement_local_data_source.dart';
-import 'package:mta/features/measurements/data/repostoris/measurement_repository_impl.dart';
+import 'package:mta/features/measurements/data/repositories/measurement_repository_impl.dart';
 import 'package:mta/features/measurements/domain/repositories/measurement_repository.dart';
+import 'package:mta/features/measurements/domain/usecases/backup_and_clear_measurements.dart';
 import 'package:mta/features/measurements/domain/usecases/create_measurement.dart';
 import 'package:mta/features/measurements/domain/usecases/delete_measurement.dart';
 import 'package:mta/features/measurements/domain/usecases/get_measurement_by_id.dart';
 import 'package:mta/features/measurements/domain/usecases/get_measurements.dart';
 import 'package:mta/features/measurements/domain/usecases/get_next_measurement_number.dart';
 import 'package:mta/features/measurements/domain/usecases/update_measurement.dart';
+import 'package:mta/features/measurements/domain/usecases/auto_backup_measurements.dart';
+import 'package:mta/features/measurements/domain/usecases/restore_measurements.dart';
 import 'package:mta/features/measurements/presentation/bloc/measurement_bloc.dart';
 
 // Features - Notifications
@@ -117,6 +120,9 @@ Future<void> init() async {
         updateMeasurement: sl(),
         deleteMeasurement: sl(),
         getNextMeasurementNumber: sl(),
+        backupAndClearMeasurements: sl(),
+        autoBackupMeasurements: sl(),
+        restoreMeasurements: sl(),
         notificationRepository: sl(),
         scheduleRepository: sl(),
       ));
@@ -127,6 +133,9 @@ Future<void> init() async {
   sl.registerLazySingleton(() => CreateMeasurement(sl()));
   sl.registerLazySingleton(() => UpdateMeasurement(sl()));
   sl.registerLazySingleton(() => DeleteMeasurement(sl()));
+  sl.registerLazySingleton(() => BackupAndClearMeasurements(sl()));
+  sl.registerLazySingleton(() => AutoBackupMeasurements(sl()));
+  sl.registerLazySingleton(() => RestoreMeasurements(sl()));
   sl.registerLazySingleton(() => GetNextMeasurementNumber(sl()));
 
   // Repository

@@ -45,6 +45,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get cancel => 'Cancel·lar';
 
   @override
+  String get continueEditing => 'Continuar editant';
+
+  @override
   String get cancelNotification => 'Cancel·lar notificació';
 
   @override
@@ -52,6 +55,9 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get confirm => 'Confirmar';
+
+  @override
+  String get resume => 'Continuar';
 
   @override
   String get customSound => 'So personalitzat';
@@ -70,6 +76,9 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get defaultUsername => 'usuari';
+
+  @override
+  String get discard => 'Abandonar canvis';
 
   @override
   String get delete => 'Eliminar';
@@ -101,6 +110,13 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get discardChanges => 'Descartar canvis?';
+
+  @override
+  String get discardChangesMessage =>
+      'Vols abandonar els canvis realitzats en aquesta medició?';
+
+  @override
+  String get discardChangesTitle => 'Canvis sense desar';
 
   @override
   String get edit => 'Editar';
@@ -235,7 +251,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get friday => 'Divendres';
 
   @override
-  String get hasMeasuring => 'Hi ha mesurament?';
+  String get hasMeasuring => 'Estàs prenent algun medicament?';
 
   @override
   String get high => 'Alta';
@@ -562,4 +578,115 @@ class AppLocalizationsCa extends AppLocalizations {
   String repeatBody(Object minutes) {
     return 'Han passat $minutes minuts des de l\'avís inicial';
   }
+
+  @override
+  String get clearMeasurements => 'Netejar mesures';
+
+  @override
+  String get clearMeasurementsTitle => 'Netejar Mesures';
+
+  @override
+  String get fromDate => 'Des de la data';
+
+  @override
+  String get toDate => 'Fins a la data';
+
+  @override
+  String get noLimitFrom => 'Sense límit des de';
+
+  @override
+  String get noLimitTo => 'Sense límit fins';
+
+  @override
+  String get confirmDeleteMeasurements =>
+      'Esteu segur que voleu eliminar les mesures en aquest rang?';
+
+  @override
+  String deleteMeasurementsSummaryBoth(String fdesde, String fhasta) {
+    return 'Registres eliminats des de $fdesde fins a $fhasta.';
+  }
+
+  @override
+  String deleteMeasurementsSummaryUntil(String fhasta) {
+    return 'Registres eliminats fins a $fhasta.';
+  }
+
+  @override
+  String deleteMeasurementsSummaryFrom(String fdesde) {
+    return 'Registres eliminats des de $fdesde.';
+  }
+
+  @override
+  String get deleteMeasurementsSummaryAll => 'Tots els registres eliminats.';
+
+  @override
+  String backupSavedIn(String path) {
+    return 'Còpia de seguretat a $path';
+  }
+
+  @override
+  String get noMeasurementsToDelete =>
+      'No hi ha mesuraments per esborrar en aquest rang.';
+
+  @override
+  String get restoreMeasurements => 'Restaurar mesures';
+
+  @override
+  String get restoreMeasurementsTitle => 'Restaurar des de còpia de seguretat';
+
+  @override
+  String get selectBackupFile => 'Selecciona un fitxer de còpia de seguretat';
+
+  @override
+  String get confirmRestore =>
+      'Segur que voleu restaurar les mesures d\'aquest fitxer?\n\nLes dades existents amb el mateix ID seran sobrescrites.';
+
+  @override
+  String restoreSuccess(int count) {
+    return 'S\'han restaurat $count mesures amb èxit.';
+  }
+
+  @override
+  String get noBackupsFound =>
+      'No s\'han trobat fitxers de còpia de seguretat.';
+
+  @override
+  String get backupFolder => 'Carpeta de còpies de seguretat';
+
+  @override
+  String get autoBackupSuccess => 'Còpia de seguretat automàtica realitzada.';
+
+  @override
+  String get help => 'Ajuda';
+
+  @override
+  String get helpTitle => 'Guia d\'Ús';
+
+  @override
+  String get helpSectionTomaTitle => 'Com fer una presa correcta';
+
+  @override
+  String get helpSectionTomaContent =>
+      '1. Segueu tranquil·lament durant 5 minuts abans de la mesura.\n2. Col·loqueu el braç a l\'alçada del cor.\n3. No parleu ni us mogueu durant la mesura.\n4. Realitzeu 3 preses amb un interval d\'1 minut entre elles.';
+
+  @override
+  String get helpSectionColorsTitle => 'Interpretació de Colors';
+
+  @override
+  String get helpSectionColorsContent =>
+      '• Verd (Normal): Sístole < 130 i Diàstole < 85.\n• Taronja (Elevada): Sístole 130-139 o Diàstole 85-89.\n• Vermell (Alta): Sístole ≥ 140 o Diàstole ≥ 90.';
+
+  @override
+  String get helpSectionDataTitle => 'Seguretat de Dades';
+
+  @override
+  String get helpSectionDataContent =>
+      'L\'aplicació realitza còpies de seguretat automàtiques a la carpeta \'backup\' dels seus Documents. Es mantenen els últims 10 fitxers perquè pugui restaurar-los si cal.';
+
+  @override
+  String get helpSectionSchedulesTitle => 'Horaris i Alertes';
+
+  @override
+  String get helpSectionSchedulesContent =>
+      'Configureu les vostres hores de presa habituals a la secció d\'Horaris. L\'aplicació us notificarà i repetirà l\'avís si oblideu fer la mesura.';
 }

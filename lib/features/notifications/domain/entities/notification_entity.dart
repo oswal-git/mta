@@ -104,7 +104,7 @@ class NotificationEntity extends Equatable {
   /// No usa String.hashCode porque no es estable entre ejecuciones o reinicios.
   int get notificationId {
     // Si el ID contiene un número largo (como un timestamp), intentamos usarlo directamente
-    final numericPart = id.replaceAll(RegExp(r'[^0-9]'), '');
+    final numericPart = id.replaceAll(r'[^0-9]', '');
     if (numericPart.length >= 9) {
       // Usamos los últimos 9 dígitos para asegurar que quepa en un int de 31 bits
       return int.parse(numericPart.substring(numericPart.length - 9));

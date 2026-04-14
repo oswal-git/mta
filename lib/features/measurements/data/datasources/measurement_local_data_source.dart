@@ -9,7 +9,9 @@ abstract class MeasurementLocalDataSource {
   Future<MeasurementModel> createMeasurement(MeasurementModel measurement);
   Future<MeasurementModel> updateMeasurement(MeasurementModel measurement);
   Future<void> deleteMeasurement(String id);
+  Future<void> deleteMeasurementsByDateRange(String userId, DateTime? startDate, DateTime? endDate);
   Future<int> getNextMeasurementNumber(String userId, DateTime date);
+  Future<void> restoreMeasurements(List<MeasurementModel> measurements);
 }
 
 class MeasurementLocalDataSourceImpl implements MeasurementLocalDataSource {
@@ -22,7 +24,10 @@ class MeasurementLocalDataSourceImpl implements MeasurementLocalDataSource {
     try {
       final measurements = await (database.select(database.measurementsDao)
             ..where((tbl) => tbl.userId.equals(userId))
-            ..orderBy([(tbl) => drift.OrderingTerm.desc(tbl.measurementTime)]))
+            ..orderBy([
+              (tbl) => drift.OrderingTerm.desc(tbl.measurementTime),
+              (tbl) => drift.OrderingTerm.desc(tbl.measurementNumber),
+            ]))
           .get();
 
       return measurements.map((m) => MeasurementModel.fromDao(m)).toList();
@@ -96,6 +101,26 @@ class MeasurementLocalDataSourceImpl implements MeasurementLocalDataSource {
   }
 
   @override
+  Future<void> deleteMeasurementsByDateRange(String userId, DateTime? startDate, DateTime? endDate) async {
+    try {
+      await (database.delete(database.measurementsDao)
+            ..where((tbl) {
+              var condition = tbl.userId.equals(userId);
+              if (startDate != null) {
+                condition = condition & tbl.measurementTime.isBiggerOrEqualValue(startDate);
+              }
+              if (endDate != null) {
+                condition = condition & tbl.measurementTime.isSmallerOrEqualValue(endDate);
+              }
+              return condition;
+            }))
+          .go();
+    } catch (e) {
+      throw CacheFailure('Failed to delete measurements by date range: ${e.toString()}');
+    }
+  }
+
+  @override
   Future<int> getNextMeasurementNumber(String userId, DateTime date) async {
     try {
       final measurements = await getMeasurements(userId);
@@ -121,6 +146,21 @@ class MeasurementLocalDataSourceImpl implements MeasurementLocalDataSource {
     } catch (e) {
       throw CacheFailure(
           'Failed to get next measurement number: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<void> restoreMeasurements(List<MeasurementModel> measurements) async {
+    try {
+      await database.batch((batch) {
+        batch.insertAll(
+          database.measurementsDao,
+          measurements.map((m) => m.toDao()).toList(),
+          mode: drift.InsertMode.insertOrReplace,
+        );
+      });
+    } catch (e) {
+      throw CacheFailure('Failed to restore measurements: ${e.toString()}');
     }
   }
 }
