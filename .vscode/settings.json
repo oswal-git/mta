@@ -2,20 +2,21 @@
     "files.associations": {
         "*.dart.js": "javascript"
     },
-    "javascript.validate.enable": false,
-    "typescript.validate.enable": false,
+    "js/ts.validate.enabled": false,
     "files.exclude": {
         "**/*.dart.js": true,
         "**/*.dart.js.map": true
     },
     "java.configuration.updateBuildConfiguration": "interactive",
-    "java.jdt.ls.java.home": "C:\\Program Files\\Android\\Android Studio1\\jbr",
-    "java.import.gradle.java.home": "C:\\Program Files\\Android\\Android Studio1\\jbr",
+    "java.jdt.ls.java.home": "C:\\Program Files\\Android\\Android Studio\\jbr",
+    "java.import.gradle.java.home": "C:\\Program Files\\Android\\Android Studio\\jbr",
     "java.configuration.runtimes": [
         {
             "name": "JavaSE-17",
-            "path": "C:\\Program Files\\Android\\Android Studio1\\jbr",
+            "path": "C:\\Program Files\\Android\\Android Studio\\jbr",
             "default": true
         }
-    ]
+    ],
+    "dart.flutterSdkPath": "C:\\flutter\\flutter",
+    "dart.sdkPath": "C:\\flutter\\flutter\\bin\\cache\\dart-sdk"
 }
