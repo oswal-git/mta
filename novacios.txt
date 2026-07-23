@@ -9,6 +9,7 @@
 ├── pubspec.lock
 ├── pubspec.yaml
 ├── README.md
+├── TODO.md
 ├── assets
   ├── sounds
       ├── notification.mp3
@@ -38,10 +39,20 @@
         ├── app_localizations.dart
     ├── routes
         ├── app_router.dart
+    ├── services
+        ├── sound_service.dart
+    ├── theme
+        ├── app_colors.dart
+        ├── app_icons.dart
+        ├── app_spacing.dart
+        ├── app_theme.dart
+        ├── app_typography.dart
+        ├── theme.dart
     ├── usecases
         ├── usecases.dart
     ├── utils
         ├── constants.dart
+        ├── logging.dart
         ├── utils_barrel.dart
         ├── validators.dart
   ├── features
@@ -67,7 +78,7 @@
             ├── measurement_local_data_source.dart
         ├── models
             ├── measurement_model.dart
-        ├── repostoris
+        ├── repositories
             ├── measurement_repository_impl.dart
       ├── domain
         ├── entities
@@ -75,11 +86,14 @@
         ├── repositories
             ├── measurement_repository.dart
         ├── usecases
+            ├── auto_backup_measurements.dart
+            ├── backup_and_clear_measurements.dart
             ├── create_measurement.dart
             ├── delete_measurement.dart
             ├── get_measurement_by_id.dart
             ├── get_measurements.dart
             ├── get_next_measurement_number.dart
+            ├── restore_measurements.dart
             ├── update_measurement.dart
       ├── presentation
         ├── bloc
@@ -87,17 +101,22 @@
             ├── measurement_event.dart
             ├── measurement_state.dart
         ├── pages
+            ├── clear_measurements_page.dart
+            ├── help_page.dart
             ├── home_page.dart
             ├── measurement_detail_page.dart
-            ├── measurement_form_page_copy.dart
             ├── measurement_form_page.dart
+            ├── restore_measurements_page.dart
         ├── widgets
+            ├── compact_increment_field_widget.dart
             ├── measurement_list_item.dart
             ├── user_selector_widget.dart
     ├── notifications
       ├── data
         ├── datasources
             ├── notification_native_data_source.dart
+        ├── models
+            ├── notification_strings.dart
         ├── repositories
             ├── notification_repository_impl.dart
       ├── domain

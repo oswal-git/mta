@@ -77,6 +77,7 @@ class _UserFormPageState extends State<UserFormPage> {
           _ageController.text = _existingUser!.age?.toString() ?? '';
           _takeMedication = _existingUser!.takeMedication;
           _medicationNameController.text = _existingUser!.medicationName ?? '';
+          _enableNotifications = _existingUser!.enableNotifications;
           _notificationSoundEnabled = _existingUser!.notificationSoundEnabled;
           _notificationSoundUri = _existingUser!.notificationSoundUri;
           _languageCode = _existingUser!.languageCode;

@@ -107,7 +107,7 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
         // 🔔 Detener notificaciones relacionadas con esta medición
         await _stopNotificationsForMeasurement(measurement);
 
-        emit(MeasurementOperationSuccess('Medición creada exitosamente',
+        emit(MeasurementOperationSuccess('measurementCreatedSuccess',
             userId: measurement.userId));
       },
     );
@@ -131,7 +131,7 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
         // 🔔 Detener notificaciones relacionadas con esta medición
         await _stopNotificationsForMeasurement(measurement);
 
-        emit(MeasurementOperationSuccess('Medición personalizada actualizada exitosamente',
+        emit(MeasurementOperationSuccess('measurementUpdatedSuccess',
             userId: measurement.userId));
 
         // 💾 Auto-backup (invisible)
@@ -156,7 +156,7 @@ class MeasurementBloc extends Bloc<MeasurementEvent, MeasurementState> {
     result.fold(
       (failure) => emit(MeasurementError(failure.message)),
       (_) {
-        emit(MeasurementOperationSuccess('Medición eliminada exitosamente'));
+        emit(MeasurementOperationSuccess('measurementDeletedSuccess'));
 
         // 💾 Auto-backup (invisible)
         add(AutoBackupEvent(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mta/core/l10n/app_localizations.dart';
 import 'package:mta/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:mta/features/notifications/presentation/bloc/notification_event.dart';
 import 'package:mta/features/notifications/presentation/bloc/notification_state.dart';
@@ -34,6 +35,8 @@ class _NotificationStatusWidgetState extends State<NotificationStatusWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return BlocListener<NotificationBloc, NotificationState>(
       listener: (context, state) {
         if (state is PermissionStatusChecked) {
@@ -84,7 +87,7 @@ class _NotificationStatusWidgetState extends State<NotificationStatusWidget> {
                           ),
                           const SizedBox(width: AppSpacing.gapSm),
                           Text(
-                            'Gestión de Alertas',
+                            l10n.alertManagement,
                             style: Theme.of(context)
                                 .textTheme
                                 .titleMedium
@@ -113,14 +116,14 @@ class _NotificationStatusWidgetState extends State<NotificationStatusWidget> {
                     children: [
                       Expanded(
                         child: _CompactPermissionBadge(
-                          label: 'Notificaciones',
+                          label: l10n.notificationsPermission,
                           isGranted: _hasNotif,
                         ),
                       ),
                       const SizedBox(width: AppSpacing.gapSm),
                       Expanded(
                         child: _CompactPermissionBadge(
-                          label: 'Alarmas Exactas',
+                          label: l10n.exactAlarmsPermission,
                           isGranted: _hasExact,
                         ),
                       ),
@@ -138,7 +141,7 @@ class _NotificationStatusWidgetState extends State<NotificationStatusWidget> {
                               .read<NotificationBloc>()
                               .add(const RequestPermissionsEvent()),
                           icon: const Icon(Icons.settings, size: AppIcons.sm),
-                          label: const Text('CORREGIR PERMISOS',
+                          label: Text(l10n.fixPermissions,
                               style: AppTypography.small),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.orange,

@@ -29,19 +29,17 @@ class SnoozeNotificationUseCase
   Future<Either<Failure, void>> call(SnoozeNotificationParams params) async {
     // Validar ID
     if (params.notificationId.isEmpty) {
-      return Left(ValidationFailure('ID de notificacion inválido'));
+      return Left(ValidationFailure('validationInvalidNotificationId'));
     }
 
     // Validar duración del snooze
     if (params.snoozeDuration.inSeconds <= 0) {
-      return Left(ValidationFailure('Duración de snooze inválida'));
+      return Left(ValidationFailure('validationInvalidSnoozeDuration'));
     }
 
     // Limitar duración máxima a 1 hora
     if (params.snoozeDuration.inHours > 1) {
-      return Left(ValidationFailure(
-        'La duración máxima de snooze es 1 hora',
-      ));
+      return Left(ValidationFailure('validationMaxSnoozeOneHour'));
     }
 
     return await repository.snoozeNotification(

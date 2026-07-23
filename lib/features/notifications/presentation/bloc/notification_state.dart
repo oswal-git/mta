@@ -20,7 +20,7 @@ class NotificationScheduled extends NotificationState {
   final String message;
 
   const NotificationScheduled({
-    this.message = 'Notificación programada correctamente',
+    this.message = 'notificationScheduledDefault',
   });
 
   @override
@@ -37,7 +37,7 @@ class NotificationCancelled extends NotificationState {
   final String message;
 
   const NotificationCancelled({
-    this.message = 'Notificación cancelada',
+    this.message = 'notificationCancelledDefault',
   });
 
   @override
@@ -63,7 +63,7 @@ class AllNotificationsCancelled extends NotificationState {
   final String message;
 
   const AllNotificationsCancelled({
-    this.message = 'Todas las notificaciones han sido canceladas',
+    this.message = 'allNotificationsCancelledDefault',
   });
 
   @override
@@ -91,7 +91,7 @@ class UserNotificationsScheduled extends NotificationState {
   const UserNotificationsScheduled({
     required this.count,
     String? message,
-  }) : message = message ?? 'Se programaron $count notificaciones';
+  }) : message = message ?? 'userNotificationsScheduled';
 
   @override
   List<Object?> get props => [count, message];

@@ -19,6 +19,8 @@ class ScheduleItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Dismissible(
       key: Key(schedule.id),
       direction: DismissDirection.endToStart,
@@ -36,7 +38,7 @@ class ScheduleItemWidget extends StatelessWidget {
             const Icon(Icons.delete, color: AppColors.white, size: AppIcons.lg),
             const SizedBox(height: 4),
             Text(
-              'Delete',
+              l10n.delete,
               style: AppTypography.bodyMedium.copyWith(
                 color: AppColors.white,
                 fontWeight: FontWeight.bold,
@@ -46,8 +48,6 @@ class ScheduleItemWidget extends StatelessWidget {
         ),
       ),
       confirmDismiss: (direction) async {
-        final l10n = AppLocalizations.of(context);
-
         return await showDialog<bool>(
           context: context,
           builder: (dialogContext) => AlertDialog(
@@ -119,8 +119,9 @@ class ScheduleItemWidget extends StatelessWidget {
                       // Notificación
                       Text(
                         schedule.isEnabled
-                            ? 'Notification 5 min before (${_getNotificationTime(schedule)})'
-                            : 'Disabled',
+                            ? l10n.notificationTimeInfo(
+                                '5', _getNotificationTime(schedule))
+                            : l10n.disabled,
                         style: AppTypography.caption.copyWith(
                           color: schedule.isEnabled
                               ? AppColors.success
@@ -139,15 +140,16 @@ class ScheduleItemWidget extends StatelessWidget {
                                 ? Icons.notifications_active
                                 : Icons.notifications_off,
                             size: AppIcons.tiny,
-                            color:
-                                schedule.isEnabled ? Colors.green : Colors.grey,
+                            color: schedule.isEnabled
+                                ? AppColors.success
+                                : AppColors.textDisabled,
                           ),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
                               schedule.isEnabled
-                                  ? 'Notification enabled'
-                                  : 'Notification disabled',
+                                  ? l10n.notificationEnabled
+                                  : l10n.notificationDisabled,
                               style: AppTypography.small.copyWith(
                                 color: schedule.isEnabled
                                     ? AppColors.success

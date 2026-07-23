@@ -10,6 +10,8 @@ import 'package:mta/features/measurements/presentation/bloc/measurement_event.da
 import 'package:mta/features/measurements/presentation/bloc/measurement_state.dart';
 import 'package:mta/features/measurements/presentation/widgets/measurement_list_item.dart';
 import 'package:mta/features/measurements/presentation/widgets/user_selector_widget.dart';
+import 'package:mta/features/notifications/presentation/bloc/notification_bloc.dart';
+import 'package:mta/features/notifications/presentation/bloc/notification_state.dart';
 import 'package:mta/features/users/presentation/bloc/user_bloc.dart';
 import 'package:mta/features/users/presentation/bloc/user_event.dart';
 import 'package:mta/features/users/presentation/bloc/user_state.dart';
@@ -23,7 +25,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final ScrollController _scrollController = ScrollController();
-  static const double _itemHeight = 56.0; // Estimated height of MeasurementListItem
+  static const double _itemHeight =
+      56.0; // Estimated height of MeasurementListItem
 
   @override
   void initState() {
@@ -72,14 +75,50 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
-    return BlocListener<UserBloc, UserState>(
-      listener: (context, state) {
-        if (state is UsersLoaded && state.activeUser != null) {
-          context.read<MeasurementBloc>().add(
-                LoadMeasurementsEvent(state.activeUser!.id),
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<UserBloc, UserState>(
+          listener: (context, state) {
+            if (state is UsersLoaded && state.activeUser != null) {
+              context.read<MeasurementBloc>().add(
+                    LoadMeasurementsEvent(state.activeUser!.id),
+                  );
+            }
+          },
+        ),
+        BlocListener<NotificationBloc, NotificationState>(
+          listener: (context, state) {
+            String? message;
+            bool isError = false;
+
+            if (state is UserNotificationsScheduled) {
+              message = l10n.userNotificationsScheduled(state.count);
+            } else if (state is NotificationScheduled) {
+              message = state.message == 'notificationScheduledDefault'
+                  ? l10n.notificationScheduledDefault
+                  : state.message;
+            } else if (state is NotificationCancelled) {
+              message = state.message == 'notificationCancelledDefault'
+                  ? l10n.notificationCancelledDefault
+                  : state.message;
+            } else if (state is NotificationError) {
+              isError = true;
+              message = state.message == 'errorNoActiveSchedules'
+                  ? l10n.errorNoActiveSchedules
+                  : state.message;
+            }
+
+            if (message != null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(message),
+                  backgroundColor: isError ? AppColors.error : null,
+                ),
               );
-        }
-      },
+            }
+          },
+        ),
+      ],
       child: Scaffold(
         appBar: AppBar(
           title: BlocBuilder<UserBloc, UserState>(
@@ -226,9 +265,20 @@ class _HomePageState extends State<HomePage> {
         body: BlocConsumer<MeasurementBloc, MeasurementState>(
           listener: (context, state) {
             if (state is MeasurementOperationSuccess) {
+              // Mapeo de claves del Bloc a literales localizados
+              String message = state.message;
+              if (message == 'measurementCreatedSuccess') {
+                message = l10n.measurementCreatedSuccess;
+              } else if (message == 'measurementUpdatedSuccess') {
+                message = l10n.measurementUpdatedSuccess;
+              } else if (message == 'measurementDeletedSuccess') {
+                message = l10n.measurementDeletedSuccess;
+              }
+
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message)),
+                SnackBar(content: Text(message)),
               );
+
               if (state.userId != null) {
                 context.read<MeasurementBloc>().add(
                       LoadMeasurementsEvent(state.userId!),
@@ -261,14 +311,14 @@ class _HomePageState extends State<HomePage> {
                       ),
                       const SizedBox(height: AppSpacing.gapMd),
                       Text(
-                        'No measurements yet',
+                        l10n.noMeasurementsYet,
                         style: AppTypography.h3.copyWith(
                           color: AppColors.textDisabled,
                         ),
                       ),
                       const SizedBox(height: AppSpacing.gapSm),
                       Text(
-                        'Tap the + button to add your first measurement',
+                        l10n.tapPlusToAddMeasurement,
                         style: AppTypography.bodyMedium.copyWith(
                           color: AppColors.textDisabled,
                         ),
@@ -366,7 +416,7 @@ class _HomePageState extends State<HomePage> {
                             final resultId = await context.push(
                               '${Routes.measurementDetail}?measurementId=${measurement.id}',
                             );
-                            
+
                             if (resultId != null && resultId is String) {
                               _scrollToItem(resultId, state.measurements);
                             }
@@ -381,7 +431,7 @@ class _HomePageState extends State<HomePage> {
 
             return Center(
               child: Text(
-                'Select a user to view measurements',
+                l10n.selectUserToViewMeasurements,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             );

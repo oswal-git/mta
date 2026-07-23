@@ -7,9 +7,9 @@ import 'package:mta/features/notifications/utils/notification_action_handler.dar
 import 'package:mta/features/notifications/utils/notification_permission_handler.dart';
 import 'package:mta/features/users/presentation/bloc/user_state.dart';
 
+import 'core/database/database_helper.dart';
 import 'core/di/injection_container.dart' as di;
 import 'core/routes/app_router.dart';
-import 'core/database/database_helper.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/l10n/app_localizations.dart';
 import 'package:timezone/data/latest.dart' as tz;
@@ -56,7 +56,6 @@ void main() async {
         tz.initializeTimeZones();
         final timeZoneInfo = await FlutterTimezone.getLocalTimezone();
         tz.setLocalLocation(tz.getLocation(timeZoneInfo.identifier));
-        tz.setLocalLocation(tz.getLocation(timeZoneInfo.identifier));
         debugPrint(
             '${fechaD()} Timezone initialized: ${timeZoneInfo.identifier}');
       } catch (e) {
@@ -84,7 +83,6 @@ void main() async {
               _onBackgroundNotificationResponse,
         );
         await _createNotificationChannels();
-        await _createNotificationChannels();
         debugPrint('${fechaD()} Notificaciones inicializadas');
       } catch (e) {
         debugPrint('${fechaD('❌')} Error notificaciones: $e');
@@ -95,8 +93,6 @@ void main() async {
     (() async {
       try {
         await DatabaseHelper.init();
-        await DatabaseHelper.init();
-        debugPrint('${fechaD()} Database ready');
       } catch (e) {
         debugPrint('${fechaD('❌')} Error DB: $e');
       }
@@ -246,33 +242,32 @@ Future<void> _createNotificationChannels() async {
 
   if (androidPlugin == null) return;
 
+  // Cargar AppLocalizations para el locale del sistema.
+  // Esto es una aproximación, ya que el contexto no está disponible aquí.
+  final systemLocale = WidgetsBinding.instance.platformDispatcher.locale;
+  final l10n = await AppLocalizations.delegate.load(systemLocale);
+
   // Canal principal de notificaciones
   final mainChannel = AndroidNotificationChannel(
     'mta_notifications_v5',
-    'MTA Alerta V5',
-    description: 'Canal para alertas principales',
+    l10n.notificationChannelMainName,
+    description: l10n.notificationChannelMainDescription,
     importance: Importance.max,
     playSound: true,
     enableVibration: true,
     enableLights: true,
   );
-
-  debugPrint(
-      '${fechaD()} Canal principal de notificaciones creado: ${mainChannel.id}');
 
   // Canal para repeticiones
   final repeatChannel = AndroidNotificationChannel(
     'mta_notifications_repeat_v5',
-    'MTA Recordatorio V5',
-    description: 'Canal para recordatorios constantes',
+    l10n.notificationChannelRepeatName,
+    description: l10n.notificationChannelRepeatDescription,
     importance: Importance.max,
     playSound: true,
     enableVibration: true,
     enableLights: true,
   );
-
-  debugPrint(
-      '${fechaD()} Canal de repeticiones de notificaciones creado: ${repeatChannel.id}');
 
   await androidPlugin.createNotificationChannel(mainChannel);
   await androidPlugin.createNotificationChannel(repeatChannel);

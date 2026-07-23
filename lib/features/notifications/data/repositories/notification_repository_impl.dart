@@ -30,12 +30,14 @@ class NotificationRepositoryImpl implements NotificationRepository {
   Future<Either<Failure, void>> scheduleNotification(
       NotificationEntity notification) async {
     try {
-      final strings = await _loadLocalizedStrings(notification.userId);
+      final l10n = await _getAppLocalizations(userId: notification.userId);
+      final strings = await _getNotificationStrings(l10n);
       await dataSource.scheduleNotification(notification, strings: strings);
       return const Right(null);
     } catch (e) {
+      final l10n = await _getAppLocalizations(userId: notification.userId);
       return Left(
-          CacheFailure('Error al programar notificación: ${e.toString()}'));
+          CacheFailure('${l10n.errorScheduleNotification}: ${e.toString()}'));
     }
   }
 
@@ -46,8 +48,10 @@ class NotificationRepositoryImpl implements NotificationRepository {
       await dataSource.cancelNotification(notificationId);
       return const Right(null);
     } catch (e) {
+      final l10n =
+          await _getAppLocalizations(); // No userId available here, use default
       return Left(
-          CacheFailure('Error al cancelar notificación: ${e.toString()}'));
+          CacheFailure('${l10n.errorCancelNotification}: ${e.toString()}'));
     }
   }
 
@@ -66,14 +70,16 @@ class NotificationRepositoryImpl implements NotificationRepository {
         userId = notification.userId;
       } catch (_) {}
 
-      final strings =
-          userId != null ? await _loadLocalizedStrings(userId) : null;
+      final l10n = await _getAppLocalizations(userId: userId);
+      final strings = await _getNotificationStrings(l10n);
       await dataSource.snoozeNotification(notificationId, snoozeDuration,
           strings: strings);
       return const Right(null);
     } catch (e) {
+      final l10n =
+          await _getAppLocalizations(); // userId might be null if not found
       return Left(
-          CacheFailure('Error al posponer notificación: ${e.toString()}'));
+          CacheFailure('${l10n.errorSnoozeNotification}: ${e.toString()}'));
     }
   }
 
@@ -83,9 +89,10 @@ class NotificationRepositoryImpl implements NotificationRepository {
       await dataSource.cancelAllNotifications();
       return const Right(null);
     } catch (e) {
-      return Left(CacheFailure(
-        'Error al cancelar todas las notificaciones: ${e.toString()}',
-      ));
+      final l10n =
+          await _getAppLocalizations(); // No userId available here, use default
+      return Left(
+          CacheFailure('${l10n.errorCancelAllNotifications}: ${e.toString()}'));
     }
   }
 
@@ -96,9 +103,10 @@ class NotificationRepositoryImpl implements NotificationRepository {
       final isActive = await dataSource.isNotificationActive(notificationId);
       return Right(isActive);
     } catch (e) {
+      final l10n =
+          await _getAppLocalizations(); // No userId available here, use default
       return Left(CacheFailure(
-        'Error al verificar notificacion: ${e.toString()}',
-      ));
+          '${l10n.errorCheckNotificationActive}: ${e.toString()}'));
     }
   }
 
@@ -110,7 +118,8 @@ class NotificationRepositoryImpl implements NotificationRepository {
   ) async {
     try {
       // 1. Obtener User y Schedule para reconstruir la notificación
-      // Esto es necesario porque _activeNotifications en memoria se pierde al reiniciar la app
+      // Esto es necesario porque _activeNotifications en memoria se pierde al reiniciar la app.
+      final l10n = await _getAppLocalizations(userId: userId);
       final userResult = await userRepository.getUsers();
       UserEntity? user;
       userResult.fold(
@@ -124,7 +133,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
 
       final schedulesResult = await scheduleRepository.getSchedules(userId);
       ScheduleEntity? schedule;
-      List<ScheduleEntity> allSchedules = [];
+      List<ScheduleEntity> allSchedules = []; // Initialize to avoid null issues
 
       schedulesResult.fold(
         (_) => null,
@@ -137,8 +146,12 @@ class NotificationRepositoryImpl implements NotificationRepository {
       );
 
       if (user == null || schedule == null) {
-        return Left(
-            CacheFailure('No se encontró usuario o schedule para detener'));
+        return Left(CacheFailure(l10n.errorUserOrScheduleNotFound));
+      }
+
+      // Si el usuario ha desactivado las notificaciones, no reprogramamos la de mañana
+      if (!user!.enableNotifications) {
+        return const Right(null);
       }
 
       DateTime? maxTime;
@@ -185,22 +198,24 @@ class NotificationRepositoryImpl implements NotificationRepository {
         notificationTime = notificationTime.add(const Duration(days: 1));
       }
 
+      final strings = await _getNotificationStrings(l10n);
       final notification = NotificationEntity(
         id: 'schedule_${schedule!.id}',
         scheduleId: schedule!.id,
         userId: user!.id,
         userName: user!.name,
-        notificationTime: notificationTime,
-        title: 'Recordatorio de tomar la tensión',
-        body: 'Es hora de registrar tu tensión',
+        notificationTime: notificationTime, // La hora de la notificación
+        title: strings.reminderMeasurementTitle
+            .replaceAll('{repetition}', '1') // Usar 1 para la principal
+            .replaceAll('{time}', schedule!.formattedTime),
+        body: strings
+            .scheduledTimeBody, // Ya localizado vía _loadLocalizedStrings
         label: schedule!.formattedTime,
         medication: user!.medicationName,
         soundEnabled: user!.notificationSoundEnabled,
         soundUri: user!.notificationSoundUri,
         isActive: true,
       );
-
-      final strings = await _loadLocalizedStrings(user!.id);
       await dataSource.stopNotificationsForScheduleTime(
         notification, // Pasamos la entidad completa
         scheduleTime,
@@ -209,9 +224,9 @@ class NotificationRepositoryImpl implements NotificationRepository {
       );
       return const Right(null);
     } catch (e) {
-      return Left(CacheFailure(
-        'Error al detener notificaciones: ${e.toString()}',
-      ));
+      final l10n = await _getAppLocalizations(userId: userId);
+      return Left(
+          CacheFailure('${l10n.errorStopNotifications}: ${e.toString()}'));
     }
   }
 
@@ -221,21 +236,29 @@ class NotificationRepositoryImpl implements NotificationRepository {
       {String? targetScheduleId}) async {
     try {
       // Obtener el usuario
+      final l10n = await _getAppLocalizations(userId: userId);
       final userResult = await userRepository.getUsers();
       if (userResult.isLeft()) {
-        return Left(CacheFailure('Error al obtener usuario'));
+        return Left(CacheFailure(l10n.errorGetUserForSchedule));
       }
 
       final users = userResult.getOrElse(() => []);
       final user = users.firstWhere(
-        (u) => u.id == userId,
-        orElse: () => throw Exception('Usuario no encontrado'),
+        (u) =>
+            u.id ==
+            userId, // This will throw if not found, caught by outer try-catch
+        orElse: () => throw Exception(l10n.errorUserNotFoundForLocalization),
       );
+
+      // Si el usuario ha desactivado las notificaciones globalmente, no programamos nada
+      if (!user.enableNotifications) {
+        return const Right(0);
+      }
 
       // Obtener los schedules activos del usuario
       final schedulesResult = await scheduleRepository.getSchedules(userId);
       if (schedulesResult.isLeft()) {
-        return Left(CacheFailure('Error al obtener schedules'));
+        return Left(CacheFailure(l10n.errorGetSchedulesForUser));
       }
 
       final schedules = schedulesResult
@@ -354,22 +377,23 @@ class NotificationRepositoryImpl implements NotificationRepository {
           finalNotificationTime = notificationTime.add(const Duration(days: 1));
         }
 
+        final strings = await _getNotificationStrings(l10n);
         final notification = NotificationEntity(
           id: 'schedule_${schedule.id}',
           scheduleId: schedule.id,
           userId: user.id,
           userName: user.name,
-          notificationTime: finalNotificationTime,
-          title: 'Recordatorio de tomar la tensión',
-          body: 'Es hora de registrar tu tensión',
+          notificationTime: finalNotificationTime, // La hora de la notificación
+          title: strings.reminderMeasurementTitle
+              .replaceAll('{repetition}', '1') // Usar 1 para la principal
+              .replaceAll('{time}', schedule.formattedTime),
+          body: strings.scheduledTimeBody,
           label: schedule.formattedTime,
           medication: user.medicationName,
           soundEnabled: user.notificationSoundEnabled,
           soundUri: user.notificationSoundUri,
           isActive: true,
         );
-
-        final strings = await _loadLocalizedStrings(user.id);
         await dataSource.scheduleNotification(notification,
             maxTime: maxTime, strings: strings);
         notificationsScheduled++;
@@ -381,9 +405,9 @@ class NotificationRepositoryImpl implements NotificationRepository {
           '📊 Total: $notificationsScheduled notificaciones recurrentes programadas');
       return Right(notificationsScheduled);
     } catch (e) {
+      final l10n = await _getAppLocalizations(userId: userId);
       return Left(CacheFailure(
-        'Error al programar notificaciones para usuario: ${e.toString()}',
-      ));
+          '${l10n.errorScheduleNotificationsForUser}: ${e.toString()}'));
     }
   }
 
@@ -393,10 +417,12 @@ class NotificationRepositoryImpl implements NotificationRepository {
       // 1. Cancelar todas
       await dataSource.cancelAllNotifications();
 
+      final l10n =
+          await _getAppLocalizations(); // No specific user yet, use default
       // 2. Obtener usuarios
       final usersResult = await userRepository.getUsers();
       if (usersResult.isLeft()) {
-        return Left(CacheFailure('Error al obtener usuarios para reprogramar'));
+        return Left(CacheFailure(l10n.errorGetUsersForReschedule));
       }
 
       final users = usersResult.getOrElse(() => []);
@@ -413,8 +439,10 @@ class NotificationRepositoryImpl implements NotificationRepository {
 
       return Right(totalScheduled);
     } catch (e) {
+      final l10n =
+          await _getAppLocalizations(); // Error might happen before user context
       return Left(
-          CacheFailure('Error en reprogramación general: ${e.toString()}'));
+          CacheFailure('${l10n.errorGeneralReschedule}: ${e.toString()}'));
     }
   }
 
@@ -422,11 +450,14 @@ class NotificationRepositoryImpl implements NotificationRepository {
   Future<Either<Failure, void>> testInstantNotification(
       NotificationEntity notification) async {
     try {
-      final strings = await _loadLocalizedStrings(notification.userId);
+      final l10n = await _getAppLocalizations(userId: notification.userId);
+      final strings = await _getNotificationStrings(l10n);
       await dataSource.showInstantNotification(notification, strings: strings);
       return const Right(null);
     } catch (e) {
-      return Left(CacheFailure('Error en prueba instantánea: ${e.toString()}'));
+      final l10n = await _getAppLocalizations(userId: notification.userId);
+      return Left(CacheFailure(
+          '${l10n.errorInstantNotificationTest}: ${e.toString()}'));
     }
   }
 
@@ -436,20 +467,33 @@ class NotificationRepositoryImpl implements NotificationRepository {
       await dataSource.logPendingNotifications();
       return const Right(null);
     } catch (e) {
-      return Left(CacheFailure('Error en log diagnóstico: ${e.toString()}'));
+      final l10n =
+          await _getAppLocalizations(); // No userId available here, use default
+      return Left(CacheFailure('${l10n.errorDiagnosticLog}: ${e.toString()}'));
     }
   }
 
-  /// Carga los strings localizados para un usuario específico sin usar context
-  Future<NotificationStrings> _loadLocalizedStrings(String userId) async {
-    final userResult = await userRepository.getUsers();
-    final users = userResult.getOrElse(() => []);
-    final user = users.firstWhere((u) => u.id == userId,
-        orElse: () => throw Exception('Usuario no encontrado'));
+  /// Carga el objeto AppLocalizations para un usuario específico o un locale por defecto.
+  /// Esto permite obtener traducciones para errores incluso cuando no hay un usuario activo.
+  Future<AppLocalizations> _getAppLocalizations({String? userId}) async {
+    Locale locale;
+    if (userId != null) {
+      final userResult = await userRepository.getUsers();
+      final users = userResult.getOrElse(() => []);
+      final user = users.firstWhere((u) => u.id == userId,
+          orElse: () => throw Exception('User not found for localization'));
+      locale = Locale(user.languageCode);
+    } else {
+      // Fallback a un locale por defecto si no hay userId (ej. para errores generales)
+      locale = const Locale(
+          'es'); // Se puede cambiar a otro por defecto si es necesario
+    }
+    return await AppLocalizations.delegate.load(locale);
+  }
 
-    final l10n =
-        await AppLocalizations.delegate.load(Locale(user.languageCode));
-
+  /// Carga el bundle de strings específicos para notificaciones.
+  Future<NotificationStrings> _getNotificationStrings(
+      AppLocalizations l10n) async {
     return NotificationStrings(
       channelAlertTitle: l10n.notificationChannelAlertTitle,
       channelRepeatTitle: l10n.notificationChannelRepeatTitle,
@@ -464,6 +508,10 @@ class NotificationRepositoryImpl implements NotificationRepository {
       reminderMeasurementTitle:
           l10n.reminderMeasurementTitle('{repetition}', '{time}'),
       preAvisoBody: l10n.preAvisoBody,
+      channelMainName: l10n.notificationChannelMainName,
+      channelMainDescription: l10n.notificationChannelMainDescription,
+      channelRepeatName: l10n.notificationChannelRepeatName,
+      channelRepeatDescription: l10n.notificationChannelRepeatDescription,
       scheduledTimeBody: l10n.scheduledTimeBody,
       repeatBody: l10n.repeatBody('{minutes}'),
     );

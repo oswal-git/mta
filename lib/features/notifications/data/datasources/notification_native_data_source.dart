@@ -177,9 +177,8 @@ class NotificationNativeDataSourceImpl implements NotificationNativeDataSource {
 
     await _notificationsPlugin.show(
       id,
-      '${strings?.testPrefix ?? '🧪 PRUEBA: '}${_buildTitle(notification, strings: strings)}',
-      strings?.testNotificationBody ??
-          'Si ves esto, el sistema de notificaciones funciona correctamente.',
+      '${strings?.testPrefix ?? '🧪 PRUEBA: '}${_buildTitle(notification, strings: strings)}', // Usar strings.testPrefix
+      strings?.testNotificationBody ?? 'Notification system test.',
       NotificationDetails(
         android: AndroidNotificationDetails(
           'mta_notifications_v5',
@@ -312,7 +311,8 @@ class NotificationNativeDataSourceImpl implements NotificationNativeDataSource {
     debugPrint(
         '${fechaD('🚀')} [OS Handshake SNOOZE - START] Time: $snoozedTime');
     await _notificationsPlugin.zonedSchedule(
-      notification.notificationId + 999, // ID único para snooze
+      notification.notificationId +
+          999, // ID único para snooze (no necesita localización)
       '⏰ ${_buildTitle(notification, repetition: 0, strings: strings)}',
       _buildBody(notification, repetition: 0, strings: strings),
       snoozedTime,
@@ -408,33 +408,36 @@ class NotificationNativeDataSourceImpl implements NotificationNativeDataSource {
   String _buildTitle(NotificationEntity notification,
       {int repetition = 0, NotificationStrings? strings}) {
     final timeStr = notification.notificationTime.toString().substring(0, 16);
-    if (repetition == -1) {
-      return strings?.nextMeasurementTime.replaceAll('{time}', timeStr) ??
-          'Próxima medición: $timeStr';
+    if (strings != null) {
+      if (repetition == -1) {
+        return strings.nextMeasurementTime.replaceAll('{time}', timeStr);
+      }
+      if (repetition == 0) {
+        return strings.measurementTimeTitle.replaceAll('{time}', timeStr);
+      }
+      return strings.reminderMeasurementTitle
+          .replaceAll('{repetition}', repetition.toString())
+          .replaceAll('{time}', timeStr);
     }
-    if (repetition == 0) {
-      return strings?.measurementTimeTitle.replaceAll('{time}', timeStr) ??
-          'Hora de medición: $timeStr';
-    }
-    return strings?.reminderMeasurementTitle
-            .replaceAll('{repetition}', repetition.toString())
-            .replaceAll('{time}', timeStr) ??
-        'RECORDATORIO ($repetitionª vez) medición: $timeStr';
+    // Fallback a la entidad que ya viene localizada del repositorio
+    return notification.title;
   }
 
   String _buildBody(NotificationEntity notification,
       {int repetition = 0, NotificationStrings? strings}) {
     final buffer = StringBuffer();
-    if (repetition == -1) {
-      buffer.write(
-          strings?.preAvisoBody ?? 'En 5 minutos toca su medición de tensión.');
-    } else if (repetition == 0) {
-      buffer.write(strings?.scheduledTimeBody ??
-          'Es el momento de realizar la medición programada.');
+    if (strings != null) {
+      if (repetition == -1) {
+        buffer.write(strings.preAvisoBody);
+      } else if (repetition == 0) {
+        buffer.write(strings.scheduledTimeBody);
+      } else {
+        buffer.write(strings.repeatBody
+            .replaceAll('{minutes}', (repetition * 10).toString()));
+      }
     } else {
-      buffer.write(strings?.repeatBody
-              .replaceAll('{minutes}', (repetition * 10).toString()) ??
-          'Han pasado ${repetition * 10} minutos desde el aviso inicial');
+      // Fallback to the body provided in the NotificationEntity (which should be localized by then)
+      buffer.write(notification.body);
     }
 
     if (notification.label?.isNotEmpty ?? false) {

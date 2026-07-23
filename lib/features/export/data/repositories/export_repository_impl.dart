@@ -33,8 +33,9 @@ class ExportRepositoryImpl implements ExportRepository {
           '${DateFormat('HH:mm:ss').format(DateTime.now())} -📦 ExportRepository - Filtered to ${filteredMeasurements.length} measurements');
 
       if (filteredMeasurements.isEmpty) {
-        return const Left(ValidationFailure(
-            'No measurements found in the selected date range'));
+        return Left(ValidationFailure(
+            params.translations['noMeasurementsInRange'] ??
+                'No measurements found in the selected date range'));
       }
 
 // 🎯 NUEVO: Ordenar por fecha/hora y luego por número de medición (Ascendente)
@@ -96,7 +97,8 @@ class ExportRepositoryImpl implements ExportRepository {
     } catch (e) {
       debugPrint(
           '${DateFormat('HH:mm:ss').format(DateTime.now())} -💥 ExportRepository - Unexpected error: $e');
-      return Left(CacheFailure('Unexpected error: $e'));
+      return Left(CacheFailure(
+          '${params.translations['errorGeneric'] ?? 'Unexpected error'}: $e'));
     }
   }
 }

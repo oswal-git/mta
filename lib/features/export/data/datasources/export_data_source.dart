@@ -41,7 +41,8 @@ abstract class ExportDataSource {
 class ExportDataSourceImpl implements ExportDataSource {
   final DateFormat _dateFormat = DateFormat('dd/MM/yyyy');
   final DateFormat _timeFormat = DateFormat('HH:mm');
-  final DateFormat _dayFormat = DateFormat('EEEE', 'es');
+  // Es mejor inicializar el formato de día sin un locale fijo para que use el sistema
+  // o pasarlo dinámicamente según el usuario.
 
   /// Obtiene el directorio público de Descargas
   Future<Directory> _getPublicDirectory(String username) async {
@@ -133,16 +134,20 @@ class ExportDataSourceImpl implements ExportDataSource {
       final sheet = excel['Measurements'];
 
       // Headers
+      // Nota: Aquí ya usas traducciones, pero si faltan, el fallback está hardcodeado.
+      final dayFormat = DateFormat('EEEE', translations['@@locale'] ?? 'es');
       sheet.appendRow([
-        TextCellValue(translations['header_date'] ?? 'Fecha'),
-        TextCellValue(translations['header_day'] ?? 'Día'),
-        TextCellValue(translations['header_time'] ?? 'Hora'),
-        TextCellValue(translations['header_systolic'] ?? 'Sistólica (mmHg)'),
-        TextCellValue(translations['header_diastolic'] ?? 'Diastólica (mmHg)'),
-        TextCellValue(translations['header_pulse'] ?? 'Pulsaciones (bpm)'),
-        TextCellValue(translations['header_model'] ?? 'Modelo'),
-        TextCellValue(translations['header_zone'] ?? 'Zona'),
-        TextCellValue(translations['header_note'] ?? 'Nota'),
+        TextCellValue(translations['exportHeaderDate'] ?? 'Date'),
+        TextCellValue(translations['exportHeaderDay'] ?? 'Day'),
+        TextCellValue(translations['exportHeaderTime'] ?? 'Time'),
+        TextCellValue(
+            translations['exportHeaderSystolic'] ?? 'Systolic (mmHg)'),
+        TextCellValue(
+            translations['exportHeaderDiastolic'] ?? 'Diastolic (mmHg)'),
+        TextCellValue(translations['exportHeaderPulse'] ?? 'Pulse (bpm)'),
+        TextCellValue(translations['exportHeaderModel'] ?? 'Model'),
+        TextCellValue(translations['exportHeaderZone'] ?? 'Zone'),
+        TextCellValue(translations['exportHeaderNote'] ?? 'Note'),
       ]);
 
       // Estilo para encabezados
@@ -160,7 +165,7 @@ class ExportDataSourceImpl implements ExportDataSource {
       for (final measurement in measurements) {
         sheet.appendRow([
           TextCellValue(_dateFormat.format(measurement.measurementTime)),
-          TextCellValue(_dayFormat.format(measurement.measurementTime)),
+          TextCellValue(dayFormat.format(measurement.measurementTime)),
           TextCellValue(_timeFormat.format(measurement.measurementTime)),
           // IntCellValue(measurement.measurementNumber),
           IntCellValue(measurement.systolic),
@@ -223,19 +228,22 @@ class ExportDataSourceImpl implements ExportDataSource {
       debugPrint(
           '${DateFormat('HH:mm:ss').format(DateTime.now())} -📊 ExportDataSource - Creating CSV file: $fileName for user: $username');
 
+      final dayFormat = DateFormat('EEEE', translations['@@locale'] ?? 'es');
+
       final buffer = StringBuffer();
 
       // Headers
-      final hDate = translations['header_date'] ?? 'Fecha';
-      final hDay = translations['header_day'] ?? 'Día';
-      final hTime = translations['header_time'] ?? 'Hora';
-      final hSystolic = translations['header_systolic'] ?? 'Sistólica (mmHg)';
+      final hDate = translations['exportHeaderDate'] ?? 'Fecha';
+      final hDay = translations['exportHeaderDay'] ?? 'Día';
+      final hTime = translations['exportHeaderTime'] ?? 'Hora';
+      final hSystolic =
+          translations['exportHeaderSystolic'] ?? 'Sistólica (mmHg)';
       final hDiastolic =
-          translations['header_diastolic'] ?? 'Diastólica (mmHg)';
-      final hPulse = translations['header_pulse'] ?? 'Pulsaciones (bpm)';
-      final hModel = translations['header_model'] ?? 'Modelo';
-      final hZone = translations['header_zone'] ?? 'Zona';
-      final hNote = translations['header_note'] ?? 'Nota';
+          translations['exportHeaderDiastolic'] ?? 'Diastólica (mmHg)';
+      final hPulse = translations['exportHeaderPulse'] ?? 'Pulsaciones (bpm)';
+      final hModel = translations['exportHeaderModel'] ?? 'Modelo';
+      final hZone = translations['exportHeaderZone'] ?? 'Zona';
+      final hNote = translations['exportHeaderNote'] ?? 'Nota';
 
       buffer.writeln(
           '$hDate,$hDay,$hTime,$hSystolic,$hDiastolic,$hPulse,$hModel,$hZone,$hNote');
@@ -243,7 +251,7 @@ class ExportDataSourceImpl implements ExportDataSource {
       // Data rows
       for (final measurement in measurements) {
         final date = _dateFormat.format(measurement.measurementTime);
-        final day = _dayFormat.format(measurement.measurementTime);
+        final day = dayFormat.format(measurement.measurementTime);
         final time = _timeFormat.format(measurement.measurementTime);
         // final number = measurement.measurementNumber;
         final systolic = measurement.systolic;
@@ -299,6 +307,8 @@ class ExportDataSourceImpl implements ExportDataSource {
       debugPrint(
           '${DateFormat('HH:mm:ss').format(DateTime.now())} -📊 ExportDataSource - Creating PDF file: $fileName for user: $username');
 
+      final dayFormat = DateFormat('EEEE', translations['@@locale'] ?? 'es');
+
       final pdf = pw.Document();
 
       // Datos del encabezado
@@ -323,7 +333,7 @@ class ExportDataSourceImpl implements ExportDataSource {
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
                     pw.Text(
-                      translations['pdf_title'] ??
+                      translations['exportPdfTitle'] ??
                           'Listado de Mediciones de Tensión Arterial',
                       style: pw.TextStyle(
                         fontSize: 18,
@@ -340,27 +350,27 @@ class ExportDataSourceImpl implements ExportDataSource {
                             crossAxisAlignment: pw.CrossAxisAlignment.start,
                             children: [
                               _buildHeaderRow(
-                                  '${translations['header_user_name'] ?? 'Nombre'}:',
+                                  '${translations['userName'] ?? 'Nombre'}:',
                                   username),
                               pw.SizedBox(height: 8),
                               _buildHeaderRow(
-                                  '${translations['header_user_age'] ?? 'Edad'}:',
+                                  '${translations['userAge'] ?? 'Edad'}:',
                                   userAge?.toString() ?? 'N/A'),
                               pw.SizedBox(height: 8),
                               _buildHeaderRow(
-                                  '${translations['header_medication'] ?? 'Medicación'}:',
+                                  '${translations['medicationName'] ?? 'Medicación'}:',
                                   medicacion ?? 'N/A'),
                               pw.SizedBox(height: 8),
                               _buildHeaderRow(
-                                  '${translations['header_period'] ?? 'Período'}:',
+                                  '${translations['exportHeaderPeriod'] ?? 'Período'}:',
                                   '$startDateStr - $endDateStr'),
                               pw.SizedBox(height: 8),
                               _buildHeaderRow(
-                                  '${translations['header_model'] ?? 'Modelo'}:',
+                                  '${translations['exportHeaderModel'] ?? 'Modelo'}:',
                                   userBpMonitorModel ?? 'N/A'),
                               pw.SizedBox(height: 8),
                               _buildHeaderRow(
-                                  '${translations['header_zone'] ?? 'Zona'}:',
+                                  '${translations['exportHeaderZone'] ?? 'Zona'}:',
                                   translations[
                                           'location_$userMeasurementLocation'] ??
                                       userMeasurementLocation ??
@@ -397,20 +407,27 @@ class ExportDataSourceImpl implements ExportDataSource {
                       color: PdfColors.blue100,
                     ),
                     children: [
-                      _buildTableHeader(translations['header_date'] ?? 'Fecha'),
-                      _buildTableHeader(translations['header_day'] ?? 'Día'),
-                      _buildTableHeader(translations['header_time'] ?? 'Hora'),
-                      _buildTableHeader(translations['header_systolic_short'] ??
-                          'Sist.\n(mmHg)'),
                       _buildTableHeader(
-                          translations['header_diastolic_short'] ??
+                          translations['exportHeaderDate'] ?? 'Fecha'),
+                      _buildTableHeader(
+                          translations['exportHeaderDay'] ?? 'Día'),
+                      _buildTableHeader(
+                          translations['exportHeaderTime'] ?? 'Hora'),
+                      _buildTableHeader(
+                          translations['exportHeaderSystolicShort'] ??
+                              'Sist.\n(mmHg)'),
+                      _buildTableHeader(
+                          translations['exportHeaderDiastolicShort'] ??
                               'Diast.\n(mmHg)'),
                       _buildTableHeader(
-                          translations['header_pulse_short'] ?? 'Puls.\n(bpm)'),
+                          translations['exportHeaderPulseShort'] ??
+                              'Puls.\n(bpm)'),
                       _buildTableHeader(
-                          translations['header_model'] ?? 'Modelo'),
-                      _buildTableHeader(translations['header_zone'] ?? 'Zona'),
-                      _buildTableHeader(translations['header_note'] ?? 'Nota'),
+                          translations['exportHeaderModel'] ?? 'Modelo'),
+                      _buildTableHeader(
+                          translations['exportHeaderZone'] ?? 'Zona'),
+                      _buildTableHeader(
+                          translations['exportHeaderNote'] ?? 'Nota'),
                     ],
                   ),
                   // Filas de datos
@@ -420,7 +437,7 @@ class ExportDataSourceImpl implements ExportDataSource {
                         _buildTableCell(
                             _dateFormat.format(measurement.measurementTime)),
                         _buildTableCell(
-                            _dayFormat.format(measurement.measurementTime)),
+                            dayFormat.format(measurement.measurementTime)),
                         _buildTableCell(
                             _timeFormat.format(measurement.measurementTime)),
                         // _buildTableCell(

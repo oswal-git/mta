@@ -56,33 +56,45 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
 
   void _initializeForm() {
     final userState = context.read<UserBloc>().state;
+    dynamic targetUser;
 
     // If a userId was passed in the route, set it as active user
     if (widget.userId != null) {
-      debugPrint(
-          '📋 MeasurementForm - Setting active user from route: ${widget.userId}');
-      context.read<UserBloc>().add(SetActiveUserEvent(widget.userId!));
       _userId = widget.userId;
+      if (userState is UsersLoaded) {
+        debugPrint(
+            '📋 MeasurementForm - Searching for user ${widget.userId} in loaded users');
+        try {
+          targetUser = userState.users.firstWhere((u) => u.id == widget.userId);
+        } catch (_) {}
+
+        if (userState.activeUser?.id != widget.userId) {
+          context.read<UserBloc>().add(SetActiveUserEvent(widget.userId!));
+        }
+      }
     } else if (userState is UsersLoaded && userState.activeUser != null) {
       _userId = userState.activeUser!.id;
-      // Heredar valores del usuario por defecto
-      _bpMonitorModelController.text =
-          userState.activeUser!.bpMonitorModel ?? '';
-      _measurementLocation = userState.activeUser!.measurementLocation;
-    } else {
-      debugPrint(
-          '⚠️ MeasurementForm - No active user found, attempting to load users');
-      // Intentar cargar usuarios si no están cargados aún
+      targetUser = userState.activeUser;
+    }
+
+    // If users aren't loaded yet, request load and wait for listener
+    if (userState is! UsersLoaded) {
+      debugPrint('⏳ MeasurementForm - Waiting for users to load...');
       context.read<UserBloc>().add(LoadUsersEvent());
       return;
+    }
+
+    if (targetUser != null) {
+      // Heredar valores del usuario por defecto
+      _bpMonitorModelController.text = targetUser.bpMonitorModel ?? '';
+      _measurementLocation = targetUser.measurementLocation;
     }
 
     setState(() {
       _currentMeasurementNumber = 1;
       _selectedDateTime = DateTime.now();
       _isDateTimeManuallyChanged = false;
-      _isInitialized =
-          true; // Mark as initialized since we don't wait for Bloc anymore
+      _isInitialized = true;
     });
   }
 
@@ -271,7 +283,8 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final dateTimeFormat = DateFormat('dd/MM/yyyy HH:mm');
+    final dateTimeFormat =
+        DateFormat.yMd(Localizations.localeOf(context).toString()).add_Hm();
 
     return PopScope(
       canPop: true,
@@ -311,9 +324,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
           BlocListener<UserBloc, UserState>(
             listener: (context, state) {
               // Cuando se cargan los usuarios, intentar inicializar de nuevo
-              if (state is UsersLoaded &&
-                  state.activeUser != null &&
-                  !_isInitialized) {
+              if (!_isInitialized) {
                 debugPrint(
                     '✅ MeasurementForm - Users loaded, initializing form');
                 _initializeForm();
@@ -328,7 +339,8 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                 ? null
                 : IconButton(
                     icon: const Icon(Icons.home),
-                    tooltip: 'Home',
+                    tooltip: l10n
+                        .backToHome, // Usamos la clave existente 'backToHome'
                     onPressed: () => context.go(Routes.home),
                   ),
             actions: [
@@ -450,7 +462,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                                     child: CompactIncrementFieldWidget(
                                       label: l10n.systole,
                                       controller: _systolicController,
-                                      unit: 'mmHg',
+                                      unit: l10n.unitMmHg,
                                       icon: Icons.arrow_upward,
                                       min: 50,
                                       max: 250,
@@ -462,7 +474,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                                     child: CompactIncrementFieldWidget(
                                       label: l10n.pulse,
                                       controller: _pulseController,
-                                      unit: 'bpm',
+                                      unit: l10n.unitBpm,
                                       icon: Icons.favorite,
                                       min: 30,
                                       max: 200,
@@ -480,7 +492,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                                     child: CompactIncrementFieldWidget(
                                       label: l10n.diastole,
                                       controller: _diastolicController,
-                                      unit: 'mmHg',
+                                      unit: l10n.unitMmHg,
                                       icon: Icons.arrow_downward,
                                       min: 30,
                                       max: 150,
@@ -550,7 +562,8 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                                         controller: _bpMonitorModelController,
                                         decoration: InputDecoration(
                                           labelText:
-                                              '${l10n.bloodPressureMonitorModel} (opcional)',
+                                              l10n.bloodPressureMonitorModel,
+                                          hintText: l10n.optional,
                                           prefixIcon:
                                               const Icon(Icons.monitor_heart),
                                           isDense: true,
@@ -562,8 +575,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                                         initialValue: _measurementLocation,
                                         isExpanded: true,
                                         decoration: InputDecoration(
-                                          labelText:
-                                              '${l10n.measurementLocation} (opcional)',
+                                          labelText: l10n.measurementLocation,
                                           prefixIcon: const Icon(
                                               Icons.accessibility_new),
                                           isDense: true,

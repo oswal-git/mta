@@ -132,9 +132,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       (failure) => emit(NotificationError(failure.message)),
       (count) {
         if (count == 0) {
-          emit(const NotificationError(
-            'No se encontraron schedules activos para programar notificaciones',
-          ));
+          emit(const NotificationError('errorNoActiveSchedules'));
         } else {
           emit(UserNotificationsScheduled(count: count));
         }

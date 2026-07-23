@@ -13,12 +13,11 @@ class ScheduleNotificationUseCase implements UseCase<void, NotificationEntity> {
   Future<Either<Failure, void>> call(NotificationEntity params) async {
     // Validaciones
     if (params.userName.isEmpty) {
-      return Left(ValidationFailure('El nombre de usuario es requerido'));
+      return Left(ValidationFailure('validationUserNameRequired'));
     }
 
     if (params.title.isEmpty) {
-      return Left(
-          ValidationFailure('El título de la notificación es requerido'));
+      return Left(ValidationFailure('validationNotificationTitleRequired'));
     }
 
     return await repository.scheduleNotification(params);

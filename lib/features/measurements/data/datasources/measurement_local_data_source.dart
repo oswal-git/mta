@@ -9,7 +9,8 @@ abstract class MeasurementLocalDataSource {
   Future<MeasurementModel> createMeasurement(MeasurementModel measurement);
   Future<MeasurementModel> updateMeasurement(MeasurementModel measurement);
   Future<void> deleteMeasurement(String id);
-  Future<void> deleteMeasurementsByDateRange(String userId, DateTime? startDate, DateTime? endDate);
+  Future<void> deleteMeasurementsByDateRange(
+      String userId, DateTime? startDate, DateTime? endDate);
   Future<int> getNextMeasurementNumber(String userId, DateTime date);
   Future<void> restoreMeasurements(List<MeasurementModel> measurements);
 }
@@ -32,7 +33,8 @@ class MeasurementLocalDataSourceImpl implements MeasurementLocalDataSource {
 
       return measurements.map((m) => MeasurementModel.fromDao(m)).toList();
     } catch (e) {
-      throw CacheFailure('Failed to load measurements: ${e.toString()}');
+      throw CacheFailure(
+          'Database failure: Failed to load measurements for user $userId. ${e.toString()}');
     }
   }
 
@@ -46,7 +48,8 @@ class MeasurementLocalDataSourceImpl implements MeasurementLocalDataSource {
 
       return measurement != null ? MeasurementModel.fromDao(measurement) : null;
     } catch (e) {
-      throw CacheFailure('Failed to load measurement: ${e.toString()}');
+      throw CacheFailure(
+          'Database failure: Failed to load measurement $id. ${e.toString()}');
     }
   }
 
@@ -54,25 +57,11 @@ class MeasurementLocalDataSourceImpl implements MeasurementLocalDataSource {
   Future<MeasurementModel> createMeasurement(
       MeasurementModel measurement) async {
     try {
-      await database.into(database.measurementsDao).insert(
-            MeasurementsDaoCompanion(
-              id: drift.Value(measurement.id),
-              userId: drift.Value(measurement.userId),
-              measurementTime: drift.Value(measurement.measurementTime),
-              measurementNumber: drift.Value(measurement.measurementNumber),
-              systolic: drift.Value(measurement.systolic),
-              diastolic: drift.Value(measurement.diastolic),
-              pulse: drift.Value(measurement.pulse),
-              note: drift.Value(measurement.note),
-              bpMonitorModel: drift.Value(measurement.bpMonitorModel),
-              measurementLocation: drift.Value(measurement.measurementLocation),
-              createdAt: drift.Value(measurement.createdAt),
-              updatedAt: drift.Value(measurement.updatedAt),
-            ),
-          );
+      await database.into(database.measurementsDao).insert(measurement.toDao());
       return measurement;
     } catch (e) {
-      throw CacheFailure('Failed to create measurement: ${e.toString()}');
+      throw CacheFailure(
+          'Database failure: Failed to create measurement. ${e.toString()}');
     }
   }
 
@@ -85,7 +74,8 @@ class MeasurementLocalDataSourceImpl implements MeasurementLocalDataSource {
           );
       return measurement;
     } catch (e) {
-      throw CacheFailure('Failed to update measurement: ${e.toString()}');
+      throw CacheFailure(
+          'Database failure: Failed to update measurement ${measurement.id}. ${e.toString()}');
     }
   }
 
@@ -96,56 +86,57 @@ class MeasurementLocalDataSourceImpl implements MeasurementLocalDataSource {
             ..where((tbl) => tbl.id.equals(id)))
           .go();
     } catch (e) {
-      throw CacheFailure('Failed to delete measurement: ${e.toString()}');
+      throw CacheFailure(
+          'Database failure: Failed to delete measurement $id. ${e.toString()}');
     }
   }
 
   @override
-  Future<void> deleteMeasurementsByDateRange(String userId, DateTime? startDate, DateTime? endDate) async {
+  Future<void> deleteMeasurementsByDateRange(
+      String userId, DateTime? startDate, DateTime? endDate) async {
     try {
       await (database.delete(database.measurementsDao)
             ..where((tbl) {
               var condition = tbl.userId.equals(userId);
               if (startDate != null) {
-                condition = condition & tbl.measurementTime.isBiggerOrEqualValue(startDate);
+                condition = condition &
+                    tbl.measurementTime.isBiggerOrEqualValue(startDate);
               }
               if (endDate != null) {
-                condition = condition & tbl.measurementTime.isSmallerOrEqualValue(endDate);
+                condition = condition &
+                    tbl.measurementTime.isSmallerOrEqualValue(endDate);
               }
               return condition;
             }))
           .go();
     } catch (e) {
-      throw CacheFailure('Failed to delete measurements by date range: ${e.toString()}');
+      throw CacheFailure(
+          'Database failure: Failed to delete measurements in range for user $userId. ${e.toString()}');
     }
   }
 
   @override
   Future<int> getNextMeasurementNumber(String userId, DateTime date) async {
     try {
-      final measurements = await getMeasurements(userId);
+      final startOfDay = DateTime(date.year, date.month, date.day);
+      final endOfDay = startOfDay.add(const Duration(days: 1));
 
-      // Filter measurements from the same date
-      final sameDateMeasurements = measurements.where((m) {
-        final mDate = m.measurementTime;
-        return mDate.year == date.year &&
-            mDate.month == date.month &&
-            mDate.day == date.day;
-      }).toList();
+      final query = database.selectOnly(database.measurementsDao)
+        ..addColumns([database.measurementsDao.measurementNumber.max()])
+        ..where(database.measurementsDao.userId.equals(userId) &
+            database.measurementsDao.measurementTime
+                .isBiggerOrEqualValue(startOfDay) &
+            database.measurementsDao.measurementTime
+                .isSmallerThanValue(endOfDay));
 
-      if (sameDateMeasurements.isEmpty) {
-        return 1;
-      }
+      final result = await query.getSingle();
+      final maxNumber =
+          result.read(database.measurementsDao.measurementNumber.max());
 
-      // Get the maximum measurement number for that date
-      final maxNumber = sameDateMeasurements
-          .map((m) => m.measurementNumber)
-          .reduce((a, b) => a > b ? a : b);
-
-      return maxNumber + 1;
+      return (maxNumber ?? 0) + 1;
     } catch (e) {
       throw CacheFailure(
-          'Failed to get next measurement number: ${e.toString()}');
+          'Database failure: Failed to calculate next measurement number. ${e.toString()}');
     }
   }
 
@@ -160,7 +151,8 @@ class MeasurementLocalDataSourceImpl implements MeasurementLocalDataSource {
         );
       });
     } catch (e) {
-      throw CacheFailure('Failed to restore measurements: ${e.toString()}');
+      throw CacheFailure(
+          'Database failure: Failed to restore batch measurements. ${e.toString()}');
     }
   }
 }

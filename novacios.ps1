@@ -49,4 +49,4 @@ function Show-Tree {
 }
 
 # Ejecutar la función y mostrar la salida
-Show-Tree -Path . -ExcludeTopLevel "android","build","ios","linux","macos","web","windows",".dart_tool",".idea",".vscode",".git"
+Show-Tree -Path . -ExcludeTopLevel "android","build","ios","linux","macos","web","windows",".dart_tool",".idea","tareas_gemini",".vscode",".git"

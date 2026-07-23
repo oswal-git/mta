@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:mta/core/l10n/app_localizations.dart';
 import 'package:mta/core/routes/app_router.dart';
 import 'package:mta/core/utils/constants.dart';
 import 'package:mta/core/theme/theme.dart';
@@ -162,7 +163,9 @@ class _SplashPageState extends State<SplashPage> {
                 ),
                 const SizedBox(height: AppSpacing.gapSm),
                 Text(
-                  'Blood Pressure Manager',
+                  // Subtítulo de la aplicación
+                  AppLocalizations.of(context)
+                      .appSubtitle, // Localizar el subtítulo
                   style: AppTypography.h3.copyWith(
                     color: AppColors.white.withValues(alpha: 0.9),
                   ),

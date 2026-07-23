@@ -12,6 +12,10 @@ class NotificationStrings {
   final String measurementTimeTitle; // Template: {time}
   final String reminderMeasurementTitle; // Template: {repetition}, {time}
   final String preAvisoBody;
+  final String channelMainName;
+  final String channelMainDescription;
+  final String channelRepeatName;
+  final String channelRepeatDescription;
   final String scheduledTimeBody;
   final String repeatBody; // Template: {minutes}
 
@@ -28,6 +32,10 @@ class NotificationStrings {
     required this.measurementTimeTitle,
     required this.reminderMeasurementTitle,
     required this.preAvisoBody,
+    required this.channelMainName,
+    required this.channelMainDescription,
+    required this.channelRepeatName,
+    required this.channelRepeatDescription,
     required this.scheduledTimeBody,
     required this.repeatBody,
   });

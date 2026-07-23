@@ -11,7 +11,7 @@ class CancelNotificationUseCase implements UseCase<void, String> {
   @override
   Future<Either<Failure, void>> call(String notificationId) async {
     if (notificationId.isEmpty) {
-      return Left(ValidationFailure('ID de notificación inválido'));
+      return Left(ValidationFailure('validationInvalidNotificationId'));
     }
 
     return await repository.cancelNotification(notificationId);
