@@ -33,7 +33,6 @@ tareas_gemini/
 .pub/
 /build/
 /coverage/
-pubspec.lock
 
 # Symbolication related
 app.*.symbols
