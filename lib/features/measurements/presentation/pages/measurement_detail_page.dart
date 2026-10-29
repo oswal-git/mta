@@ -346,6 +346,47 @@ class _MeasurementDetailViewState extends State<_MeasurementDetailView> {
     super.dispose();
   }
 
+  Future<void> _pickDateTime() async {
+    FocusScope.of(context).unfocus();
+
+    final DateTime initial =
+        _selectedDateTime ?? widget.measurement.measurementTime;
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: initial,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+    );
+
+    if (pickedDate != null && mounted) {
+      final TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(initial),
+        builder: (context, child) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              alwaysUse24HourFormat: true,
+            ),
+            child: child!,
+          );
+        },
+      );
+
+      if (pickedTime != null && mounted) {
+        setState(() {
+          _selectedDateTime = DateTime(
+            pickedDate.year,
+            pickedDate.month,
+            pickedDate.day,
+            pickedTime.hour,
+            pickedTime.minute,
+          );
+        });
+        _checkDirty();
+      }
+    }
+  }
+
   void _updateMeasurement() {
     if (_formKey.currentState!.validate()) {
       final updatedMeasurement = widget.measurement.copyWith(
@@ -506,14 +547,26 @@ class _MeasurementDetailViewState extends State<_MeasurementDetailView> {
                           const Icon(Icons.calendar_today),
                           const SizedBox(width: AppSpacing.gapSm),
                           Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(l10n.measurementTime),
-                                Text(_selectedDateTime != null
-                                    ? dateFormat.format(_selectedDateTime!)
-                                    : ''),
-                              ]),
-                          const SizedBox(width: AppSpacing.gapMd),
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(l10n.measurementTime),
+                              Row(
+                                children: [
+                                  Text(_selectedDateTime != null
+                                      ? dateFormat.format(_selectedDateTime!)
+                                      : ''),
+                                  if (_isEditing) ...[
+                                    const SizedBox(width: 8),
+                                    IconButton(
+                                      icon: const Icon(Icons.edit_calendar),
+                                      tooltip: l10n.edit,
+                                      onPressed: _pickDateTime,
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ],
@@ -740,7 +793,7 @@ class _MeasurementDetailViewState extends State<_MeasurementDetailView> {
                                   ),
                                 ),
                               ),
-                            )
+                            ),
                         ],
                       ),
                     ),
