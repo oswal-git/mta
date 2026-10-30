@@ -23,7 +23,7 @@ class BackupAndClearMeasurements
       // 1. Obtener todas las mediciones del usuario
       final result = await repository.getMeasurements(params.userId);
 
-      return result.fold(
+      return await result.fold(
         (failure) => Left(failure),
         (measurements) async {
           // 2. Filtrar por fechas
@@ -54,20 +54,23 @@ class BackupAndClearMeasurements
           final normalizedUserName = params.userName.toLowerCase();
           Directory eliminadosDir;
           if (Platform.isAndroid) {
-            eliminadosDir = Directory('/storage/emulated/0/Documents/MTA/$normalizedUserName/eliminados');
+            eliminadosDir = Directory(
+                '/storage/emulated/0/Documents/MTA/$normalizedUserName/eliminados');
             try {
               if (!await eliminadosDir.exists()) {
                 await eliminadosDir.create(recursive: true);
               }
             } catch (e) {
-              eliminadosDir = Directory('/storage/emulated/0/Downloads/MTA/$normalizedUserName/eliminados');
+              eliminadosDir = Directory(
+                  '/storage/emulated/0/Downloads/MTA/$normalizedUserName/eliminados');
               if (!await eliminadosDir.exists()) {
                 await eliminadosDir.create(recursive: true);
               }
             }
           } else {
             final docsDir = await getApplicationDocumentsDirectory();
-            eliminadosDir = Directory('${docsDir.path}/mta/$normalizedUserName/eliminados');
+            eliminadosDir =
+                Directory('${docsDir.path}/mta/$normalizedUserName/eliminados');
             if (!await eliminadosDir.exists()) {
               await eliminadosDir.create(recursive: true);
             }
@@ -75,9 +78,9 @@ class BackupAndClearMeasurements
 
           final formatTS = DateFormat('yyyy-MM-dd_HHmmss');
           final formatShortName = DateFormat('yyyyMMdd');
-          
+
           final ts = formatTS.format(DateTime.now());
-          
+
           String filename;
           if (params.startDate != null && params.endDate != null) {
             final fdesde = formatShortName.format(params.startDate!);

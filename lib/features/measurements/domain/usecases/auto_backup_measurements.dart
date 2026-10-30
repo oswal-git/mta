@@ -21,7 +21,7 @@ class AutoBackupMeasurements implements UseCase<String, AutoBackupParams> {
       // 1. Obtener todas las mediciones del usuario
       final result = await repository.getMeasurements(params.userId);
 
-      return result.fold(
+      return await result.fold(
         (failure) => Left(failure),
         (measurements) async {
           if (measurements.isEmpty) {
@@ -90,7 +90,8 @@ class AutoBackupMeasurements implements UseCase<String, AutoBackupParams> {
           final files = backupDir
               .listSync()
               .whereType<File>()
-              .where((f) => f.path.endsWith('.csv') && f.path.contains('backup-'))
+              .where(
+                  (f) => f.path.endsWith('.csv') && f.path.contains('backup-'))
               .toList();
 
           // Ordenar por nombre (el TS asegura el orden cronológico)

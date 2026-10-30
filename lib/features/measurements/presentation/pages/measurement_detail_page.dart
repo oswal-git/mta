@@ -346,6 +346,7 @@ class _MeasurementDetailViewState extends State<_MeasurementDetailView> {
     super.dispose();
   }
 
+  // TODO: validar que la fecha/hora elegida no sea futura
   Future<void> _pickDateTime() async {
     FocusScope.of(context).unfocus();
 

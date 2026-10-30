@@ -54,7 +54,9 @@ class RestoreMeasurements implements UseCase<int, RestoreParams> {
         // Build a standard row list based on discovered indices
         final standardRow = [
           idIndex >= 0 ? row[idIndex] : '', // id
-          userIdIndex >= 0 ? row[userIdIndex] : '', // userId (will be ignored by factory)
+          userIdIndex >= 0
+              ? row[userIdIndex]
+              : '', // userId (will be ignored by factory)
           timeIndex >= 0 ? row[timeIndex] : '', // measurementTime
           numIndex >= 0 ? row[numIndex] : 0, // measurementNumber
           systIndex >= 0 ? row[systIndex] : 0, // systolic
@@ -68,7 +70,8 @@ class RestoreMeasurements implements UseCase<int, RestoreParams> {
         ];
 
         try {
-          measurements.add(MeasurementModel.fromCsvRow(standardRow, params.userId));
+          measurements
+              .add(MeasurementModel.fromCsvRow(standardRow, params.userId));
         } catch (e) {
           debugPrint('Error parsing row: $e');
         }
@@ -80,7 +83,7 @@ class RestoreMeasurements implements UseCase<int, RestoreParams> {
 
       final result = await repository.restoreMeasurements(measurements);
 
-      return result.fold(
+      return await result.fold(
         (failure) => Left(failure),
         (_) => Right(measurements.length),
       );
