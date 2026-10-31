@@ -1769,8 +1769,7 @@ final class $$UsersDaoTableReferences
   static MultiTypedResultKey<$MeasurementsDaoTable, List<MeasurementsDaoData>>
       _measurementsDaoRefsTable(_$AppDatabase db) =>
           MultiTypedResultKey.fromTable(db.measurementsDao,
-              aliasName: $_aliasNameGenerator(
-                  db.usersDao.id, db.measurementsDao.userId));
+              aliasName: 'users__id__measurements__user_id');
 
   $$MeasurementsDaoTableProcessedTableManager get measurementsDaoRefs {
     final manager =
@@ -1786,8 +1785,7 @@ final class $$UsersDaoTableReferences
   static MultiTypedResultKey<$SchedulesDaoTable, List<SchedulesDaoData>>
       _schedulesDaoRefsTable(_$AppDatabase db) =>
           MultiTypedResultKey.fromTable(db.schedulesDao,
-              aliasName:
-                  $_aliasNameGenerator(db.usersDao.id, db.schedulesDao.userId));
+              aliasName: 'users__id__schedules__user_id');
 
   $$SchedulesDaoTableProcessedTableManager get schedulesDaoRefs {
     final manager = $$SchedulesDaoTableTableManager($_db, $_db.schedulesDao)
@@ -2132,8 +2130,10 @@ class $$UsersDaoTableTableManager extends RootTableManager<
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
-              .map((e) =>
-                  (e.readTable(table), $$UsersDaoTableReferences(db, table, e)))
+              .map((e) => (
+                    e.readTable<$UsersDaoTable, UsersDaoData>(table),
+                    $$UsersDaoTableReferences(db, table, e)
+                  ))
               .toList(),
           prefetchHooksCallback: (
               {measurementsDaoRefs = false, schedulesDaoRefs = false}) {
@@ -2147,28 +2147,34 @@ class $$UsersDaoTableTableManager extends RootTableManager<
               getPrefetchedDataCallback: (items) async {
                 return [
                   if (measurementsDaoRefs)
-                    await $_getPrefetchedData<UsersDaoData, $UsersDaoTable, MeasurementsDaoData>(
+                    await $_getPrefetchedDataByColumns<
+                            UsersDaoData,
+                            $UsersDaoTable,
+                            MeasurementsDaoData,
+                            $MeasurementsDaoTable>(
                         currentTable: table,
                         referencedTable: $$UsersDaoTableReferences
                             ._measurementsDaoRefsTable(db),
                         managerFromTypedResult: (p0) =>
                             $$UsersDaoTableReferences(db, table, p0)
                                 .measurementsDaoRefs,
-                        referencedItemsForCurrentItem: (item,
-                                referencedItems) =>
-                            referencedItems.where((e) => e.userId == item.id),
+                        currentColumn: 'id',
+                        referencedColumn: 'user_id',
                         typedResults: items),
                   if (schedulesDaoRefs)
-                    await $_getPrefetchedData<UsersDaoData, $UsersDaoTable, SchedulesDaoData>(
+                    await $_getPrefetchedDataByColumns<
+                            UsersDaoData,
+                            $UsersDaoTable,
+                            SchedulesDaoData,
+                            $SchedulesDaoTable>(
                         currentTable: table,
                         referencedTable: $$UsersDaoTableReferences
                             ._schedulesDaoRefsTable(db),
                         managerFromTypedResult: (p0) =>
                             $$UsersDaoTableReferences(db, table, p0)
                                 .schedulesDaoRefs,
-                        referencedItemsForCurrentItem: (item,
-                                referencedItems) =>
-                            referencedItems.where((e) => e.userId == item.id),
+                        currentColumn: 'id',
+                        referencedColumn: 'user_id',
                         typedResults: items)
                 ];
               },
@@ -2228,8 +2234,7 @@ final class $$MeasurementsDaoTableReferences extends BaseReferences<
       super.$_db, super.$_table, super.$_typedResult);
 
   static $UsersDaoTable _userIdTable(_$AppDatabase db) =>
-      db.usersDao.createAlias(
-          $_aliasNameGenerator(db.measurementsDao.userId, db.usersDao.id));
+      db.usersDao.createAlias('measurements__user_id__users__id');
 
   $$UsersDaoTableProcessedTableManager get userId {
     final $_column = $_itemColumn<String>('user_id')!;
@@ -2525,7 +2530,8 @@ class $$MeasurementsDaoTableTableManager extends RootTableManager<
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (
-                    e.readTable(table),
+                    e.readTable<$MeasurementsDaoTable, MeasurementsDaoData>(
+                        table),
                     $$MeasurementsDaoTableReferences(db, table, e)
                   ))
               .toList(),
@@ -2607,8 +2613,7 @@ final class $$SchedulesDaoTableReferences extends BaseReferences<_$AppDatabase,
   $$SchedulesDaoTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static $UsersDaoTable _userIdTable(_$AppDatabase db) =>
-      db.usersDao.createAlias(
-          $_aliasNameGenerator(db.schedulesDao.userId, db.usersDao.id));
+      db.usersDao.createAlias('schedules__user_id__users__id');
 
   $$UsersDaoTableProcessedTableManager get userId {
     final $_column = $_itemColumn<String>('user_id')!;
@@ -2830,7 +2835,7 @@ class $$SchedulesDaoTableTableManager extends RootTableManager<
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (
-                    e.readTable(table),
+                    e.readTable<$SchedulesDaoTable, SchedulesDaoData>(table),
                     $$SchedulesDaoTableReferences(db, table, e)
                   ))
               .toList(),
