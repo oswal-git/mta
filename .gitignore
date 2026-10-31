@@ -45,10 +45,5 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-lib/core/l10n/app_localizations_*.dart.vscode/settings.json
-.vscode/settings.json
-lib/core/l10n/app_localizations_*.dart
-.vscode/settings.json
-lib/core/l10n/app_localizations_*.dart
 .vscode/settings.json
 lib/core/l10n/app_localizations_*.dart
